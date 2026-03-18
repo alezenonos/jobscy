@@ -1,6 +1,6 @@
 # Handover Document — JobsCY
 
-> **Last updated:** 2026-03-18 (PR 2: Eurostat API Client + HANDOVER.md)
+> **Last updated:** 2026-03-18 (PR 3: Cyprus Data Pipeline)
 > **Branch:** `claude/cyprus-job-market-adaptation-HX1xe`
 > **Repo:** https://github.com/alezenonos/jobscy
 
@@ -13,11 +13,16 @@ JobsCY adapts [karpathy/jobs](https://github.com/karpathy/jobs) (a US BLS occupa
 ## Architecture
 
 ```
-Data Sources ──► Fetch/Parse ──► occupations.csv ──► score.py ──► scores.json
-                                                                      │
-                                              build_site_data.py ◄────┘
-                                                      │
-                                                site/data.json ──► site/index.html (treemap)
+Cyprus pipeline (new):
+  ISCO-08 data ──► generate_cy_occupations.py ──► occupations_cy.json
+  Eurostat API ──► make_cy_csv.py ─────────────► occupations_cy.csv
+                                                        │
+  LLM (OpenRouter) ──► score.py ──► scores.json ◄──────┘
+                                         │
+                     build_site_data.py ──┘──► site/data.json ──► site/index.html
+
+Legacy BLS pipeline (still works):
+  BLS HTML ──► scrape.py ──► parse/make_csv.py ──► occupations.csv ──► ...
 ```
 
 ### Key modules
@@ -25,11 +30,14 @@ Data Sources ──► Fetch/Parse ──► occupations.csv ──► score.py 
 | Module | Purpose | Status |
 |--------|---------|--------|
 | `eurostat.py` | Fetch Cyprus employment/wage data from Eurostat REST API | **Done (PR 2)** |
+| `generate_cy_occupations.py` | Generate `occupations_cy.json` from ISCO-08 classification | **Done (PR 3)** |
+| `make_cy_csv.py` | Build `occupations_cy.csv` from Eurostat data (EUR, ISCO) | **Done (PR 3)** |
+| `build_site_data.py` | Merge CSV + scores → `site/data.json` (auto-detects BLS/Cyprus format) | **Done (PR 3)** |
 | `scrape.py` | Scrape occupation detail pages (currently BLS) | Needs Cyprus adaptation |
-| `parse_occupations.py` | Parse occupation index into `occupations.json` | Needs Cyprus adaptation |
+| `parse_occupations.py` | Parse occupation index into `occupations.json` (legacy BLS) | Superseded by `generate_cy_occupations.py` |
 | `parse_detail.py` | Convert HTML detail pages to Markdown | Needs Cyprus adaptation |
 | `process.py` | Batch HTML→Markdown conversion | Works as-is |
-| `make_csv.py` | Build `occupations.csv` from parsed data | Needs Cyprus fields (EUR, ISCO) |
+| `make_csv.py` | Build `occupations.csv` from BLS HTML (legacy) | Superseded by `make_cy_csv.py` |
 | `score.py` | LLM-based AI exposure scoring via OpenRouter | Works, rubric needs Cyprus context |
 | `build_site_data.py` | Merge CSV + scores → `site/data.json` | Works as-is |
 | `make_prompt.py` | Generate single-file LLM prompt | Updated for EUR/Cyprus |
@@ -89,12 +97,24 @@ https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/{DATASET}?ge
 - CI workflow fixed to target `master` branch (was incorrectly set to `main`)
 - `HANDOVER.md` created as living project status document
 
-## Remaining work (roadmap)
+### PR 3: Cyprus Data Pipeline ✅
+- `generate_cy_occupations.py` — generates `occupations_cy.json` from ISCO-08 classification
+  - 39 sub-major group occupations with ISCO codes, categories, and slugs
+  - Optional inclusion of 10 major groups for aggregated views
+  - ISCO-based category system (managers, professionals, technicians, etc.)
+- `make_cy_csv.py` — builds `occupations_cy.csv` from Eurostat data
+  - Merges ISCO-08 occupation list with employment counts and EUR earnings
+  - Supports both live API fetching and cached JSON data
+  - Education level mapping by ISCO major group (ISCED-aligned)
+  - Cache save/load for offline development
+- `build_site_data.py` — refactored to auto-detect BLS vs Cyprus CSV format
+  - `merge_bls()` / `merge_cyprus()` / `detect_format()` functions
+  - Cyprus format: ISCO codes, EUR pay, employment in thousands→absolute
+  - BLS format: backward compatible with existing US data
+  - CLI args for explicit CSV/scores/output paths
+- 30 new tests across 3 test files (88 total)
 
-### PR 3: Cyprus Data Pipeline
-- Adapt `parse_occupations.py` to build `occupations.json` from HRDA 309 occupations + Eurostat ISCO codes
-- Adapt `make_csv.py` to produce `occupations.csv` from Eurostat API data (EUR wages, ISCO codes, employment counts)
-- Create `occupations_cy.json` as the new master occupation list
+## Remaining work (roadmap)
 
 ### PR 4: Scoring Adaptation
 - Update `score.py` system prompt for Cyprus/EU labour market context
