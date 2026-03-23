@@ -9,7 +9,10 @@ Eurostat SDMX 2.1 API docs:
 
 Key datasets:
     LFSA_EGAI2D  — Employment by ISCO-08 2-digit occupation
-    earn_ses_pub1s — Median gross hourly earnings by ISCO-08 1-digit
+    earn_ses_hourly — Mean gross hourly earnings by ISCO-08 1-digit
+
+Note: Eurostat SDMX 2.1 ignores dimension filters passed as query parameters.
+Filtering must use path-based keys: /data/{dataset}/{dim1}.{dim2}...{dimN}
 
 Usage:
     uv run python eurostat.py                     # fetch and print Cyprus data
@@ -84,19 +87,27 @@ ISCO08_2DIGIT = {
 }
 
 
-def fetch_sdmx_csv(dataset, params=None, client=None, verbose=False):
+def fetch_sdmx_csv(dataset, key="", params=None, client=None, verbose=False):
     """Fetch data from Eurostat SDMX 2.1 API in CSV format.
+
+    Eurostat SDMX 2.1 ignores dimension filters in query parameters.
+    Use the ``key`` argument for path-based filtering instead::
+
+        fetch_sdmx_csv("LFSA_EGAI2D", key="A..Y_GE15.T.THS_PER.CY")
 
     Args:
         dataset: Eurostat dataset code (e.g. 'LFSA_EGAI2D').
-        params: Dict of query parameters to filter the data.
+        key: SDMX dimension key for path-based filtering (dot-separated).
+            Empty positions match all values for that dimension.
+        params: Dict of query parameters (only for non-dimension params
+            like ``lastNPeriods`` and ``format``).
         client: Optional httpx.Client for connection reuse.
         verbose: Print request URL and response info for debugging.
 
     Returns:
         List of dicts, one per row in the CSV response.
     """
-    url = f"{BASE_URL}/{dataset}"
+    url = f"{BASE_URL}/{dataset}/{key}" if key else f"{BASE_URL}/{dataset}"
     query = {"format": "SDMX-CSV"}
     if params:
         query.update(params)
@@ -144,6 +155,9 @@ def fetch_json_stat(dataset, params=None, client=None):
 def fetch_employment_by_occupation(geo="CY", sex="T", age="Y_GE15", last_n=1, client=None, verbose=False):
     """Fetch employment counts by ISCO-08 2-digit occupation for a country.
 
+    Uses SDMX path-based key filtering. LFSA_EGAI2D dimensions (in order):
+    ``freq.isco08.age.sex.unit.geo``
+
     Args:
         geo: Country code (default 'CY' for Cyprus).
         sex: Sex filter ('T' total, 'M' male, 'F' female).
@@ -155,15 +169,16 @@ def fetch_employment_by_occupation(geo="CY", sex="T", age="Y_GE15", last_n=1, cl
     Returns:
         List of dicts with keys: isco_code, isco_label, employment_thousands, year.
     """
-    params = {
-        "geo": geo,
-        "sex": sex,
-        "age": age,
-        "unit": "THS_PER",
-        "lastNPeriods": str(last_n),
-    }
+    # LFSA_EGAI2D dimensions: freq.isco08.age.sex.unit.geo
+    # Leave isco08 empty to get all occupation codes.
+    key = f"A..{age}.{sex}.THS_PER.{geo}"
+    params = {"lastNPeriods": str(last_n)}
 
-    rows = fetch_sdmx_csv("LFSA_EGAI2D", params=params, client=client, verbose=verbose)
+    rows = fetch_sdmx_csv("LFSA_EGAI2D", key=key, params=params, client=client, verbose=verbose)
+
+    # Safety: verify geo filtering worked
+    if rows and "geo" in rows[0]:
+        rows = [r for r in rows if r.get("geo") == geo]
 
     results = []
     for row in rows:
@@ -191,8 +206,11 @@ def fetch_employment_by_occupation(geo="CY", sex="T", age="Y_GE15", last_n=1, cl
 def fetch_earnings_by_occupation(geo="CY", last_n=1, client=None, verbose=False):
     """Fetch mean gross hourly earnings by ISCO-08 1-digit occupation.
 
-    Uses the Structure of Earnings Survey (SES) dataset. Note: SES data
-    is only published every 4 years (latest available: 2022).
+    Uses the earn_ses_hourly dataset (Structure of Earnings Survey).
+    SES data is only published every 4 years (latest available: 2022).
+
+    earn_ses_hourly dimensions (in order):
+    ``freq.nace_r2.isco08.worktime.age.sex.indic_se.geo``
 
     Args:
         geo: Country code (default 'CY' for Cyprus).
@@ -203,19 +221,20 @@ def fetch_earnings_by_occupation(geo="CY", last_n=1, client=None, verbose=False)
     Returns:
         List of dicts with keys: isco_code, isco_label, hourly_earnings_eur, year.
     """
-    params = {
-        "geo": geo,
-        "isco08": "+".join(ISCO08_MAJOR_GROUPS.keys()),
-        "indic_se": "MEAN_ME_HRS",
-        "nace_r2": "B-S",
-        "worktime": "TOTAL",
-        "lastNPeriods": str(last_n),
-    }
+    # earn_ses_hourly dimensions: freq.nace_r2.isco08.worktime.age.sex.indic_se.geo
+    isco_list = "+".join(ISCO08_MAJOR_GROUPS.keys())
+    key = f"A.B-S.{isco_list}.TOTAL...MEAN_ME_HRS.{geo}"
+    params = {"lastNPeriods": str(last_n)}
 
-    rows = fetch_sdmx_csv("earn_ses_pub1s", params=params, client=client, verbose=verbose)
+    rows = fetch_sdmx_csv("earn_ses_hourly", key=key, params=params, client=client, verbose=verbose)
 
-    if not rows and verbose:
-        print(f"  [eurostat] WARNING: No earnings data returned for {geo}. Run diagnose_eurostat.py for details.")
+    # Safety: verify geo filtering worked
+    if rows and "geo" in rows[0]:
+        rows = [r for r in rows if r.get("geo") == geo]
+
+    if not rows:
+        print(f"WARNING: No earnings data returned for {geo}.")
+        print("  Run 'uv run python diagnose_eurostat.py' for details.")
 
     results = []
     for row in rows:
