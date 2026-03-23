@@ -33,11 +33,11 @@ ESTAT:LFSA_EGAI2D(1.0),2024-06-01,A,Y_GE15,OC5,T,THS_PER,CY,2023,,
 """
 
 SAMPLE_EARNINGS_CSV = """\
-DATAFLOW,LAST UPDATE,freq,isco08,indic_se,nace_r2,worktime,geo,TIME_PERIOD,OBS_VALUE,OBS_FLAG
-ESTAT:earn_ses_pub1s(1.0),2024-03-01,A,OC1,MEAN_ME_HRS,B-S,TOTAL,CY,2022,22.50,
-ESTAT:earn_ses_pub1s(1.0),2024-03-01,A,OC2,MEAN_ME_HRS,B-S,TOTAL,CY,2022,18.30,
-ESTAT:earn_ses_pub1s(1.0),2024-03-01,A,OC5,MEAN_ME_HRS,B-S,TOTAL,CY,2022,9.80,
-ESTAT:earn_ses_pub1s(1.0),2024-03-01,A,OC9,MEAN_ME_HRS,B-S,TOTAL,CY,2022,7.20,
+DATAFLOW,LAST UPDATE,freq,nace_r2,isco08,worktime,age,sex,indic_se,geo,TIME_PERIOD,OBS_VALUE,OBS_FLAG
+ESTAT:EARN_SES_HOURLY(1.0),2024-03-01,A,B-S,OC1,TOTAL,TOTAL,T,MEAN_ME_HRS,CY,2022,22.50,
+ESTAT:EARN_SES_HOURLY(1.0),2024-03-01,A,B-S,OC2,MEAN_ME_HRS,TOTAL,T,MEAN_ME_HRS,CY,2022,18.30,
+ESTAT:EARN_SES_HOURLY(1.0),2024-03-01,A,B-S,OC5,TOTAL,TOTAL,T,MEAN_ME_HRS,CY,2022,9.80,
+ESTAT:EARN_SES_HOURLY(1.0),2024-03-01,A,B-S,OC9,TOTAL,TOTAL,T,MEAN_ME_HRS,CY,2022,7.20,
 """
 
 
@@ -95,14 +95,24 @@ class TestFetchSdmxCsv:
         assert rows[0]["OBS_VALUE"] == "25.3"
         assert rows[0]["TIME_PERIOD"] == "2023"
 
-    def test_passes_correct_url(self):
+    def test_passes_correct_url_with_key(self):
         client = _mock_client(SAMPLE_EMPLOYMENT_CSV)
-        fetch_sdmx_csv("LFSA_EGAI2D", params={"geo": "CY"}, client=client)
+        fetch_sdmx_csv("LFSA_EGAI2D", key="A..Y_GE15.T.THS_PER.CY", client=client)
 
         call_args = client.get.call_args
-        assert "LFSA_EGAI2D" in call_args[0][0]
+        url = call_args[0][0]
+        assert "LFSA_EGAI2D" in url
+        assert "A..Y_GE15.T.THS_PER.CY" in url
         assert call_args[1]["params"]["format"] == "SDMX-CSV"
-        assert call_args[1]["params"]["geo"] == "CY"
+
+    def test_passes_correct_url_without_key(self):
+        client = _mock_client(SAMPLE_EMPLOYMENT_CSV)
+        fetch_sdmx_csv("LFSA_EGAI2D", params={"lastNPeriods": "1"}, client=client)
+
+        call_args = client.get.call_args
+        url = call_args[0][0]
+        assert url.endswith("LFSA_EGAI2D")
+        assert call_args[1]["params"]["format"] == "SDMX-CSV"
 
     def test_empty_response(self):
         csv_text = "DATAFLOW,LAST UPDATE,freq,isco08,geo,TIME_PERIOD,OBS_VALUE\n"
@@ -146,16 +156,19 @@ class TestFetchEmployment:
         assert len(results) == 1
         assert results[0]["isco_code"] == "OC1"
 
-    def test_passes_parameters(self):
+    def test_passes_parameters_via_key(self):
         client = _mock_client(SAMPLE_EMPLOYMENT_CSV)
         fetch_employment_by_occupation(geo="EL", sex="F", age="Y20-64", last_n=3, client=client)
 
         call_args = client.get.call_args
-        params = call_args[1]["params"]
-        assert params["geo"] == "EL"
-        assert params["sex"] == "F"
-        assert params["age"] == "Y20-64"
-        assert params["lastNPeriods"] == "3"
+        url = call_args[0][0]
+        # Dimensions are in the URL path key: freq.isco08.age.sex.unit.geo
+        assert "Y20-64" in url
+        assert "F" in url
+        assert "EL" in url
+        assert "THS_PER" in url
+        # lastNPeriods is a query param
+        assert call_args[1]["params"]["lastNPeriods"] == "3"
 
 
 # --- fetch_earnings_by_occupation tests ---
