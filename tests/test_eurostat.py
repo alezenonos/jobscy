@@ -34,10 +34,10 @@ ESTAT:LFSA_EGAI2D(1.0),2024-06-01,A,Y_GE15,OC5,T,THS_PER,CY,2023,,
 
 SAMPLE_EARNINGS_CSV = """\
 DATAFLOW,LAST UPDATE,freq,nace_r2,isco08,worktime,age,sex,indic_se,geo,TIME_PERIOD,OBS_VALUE,OBS_FLAG
-ESTAT:EARN_SES_HOURLY(1.0),2024-03-01,A,B-S,OC1,TOTAL,TOTAL,T,MEAN_ME_HRS,CY,2022,22.50,
-ESTAT:EARN_SES_HOURLY(1.0),2024-03-01,A,B-S,OC2,MEAN_ME_HRS,TOTAL,T,MEAN_ME_HRS,CY,2022,18.30,
-ESTAT:EARN_SES_HOURLY(1.0),2024-03-01,A,B-S,OC5,TOTAL,TOTAL,T,MEAN_ME_HRS,CY,2022,9.80,
-ESTAT:EARN_SES_HOURLY(1.0),2024-03-01,A,B-S,OC9,TOTAL,TOTAL,T,MEAN_ME_HRS,CY,2022,7.20,
+ESTAT:EARN_SES_HOURLY(1.0),2024-03-01,A,B-S,OC1,TOTAL,TOTAL,T,MEAN_E_EUR,CY,2022,22.50,
+ESTAT:EARN_SES_HOURLY(1.0),2024-03-01,A,B-S,OC2,TOTAL,TOTAL,T,MEAN_E_EUR,CY,2022,18.30,
+ESTAT:EARN_SES_HOURLY(1.0),2024-03-01,A,B-S,OC5,TOTAL,TOTAL,T,MEAN_E_EUR,CY,2022,9.80,
+ESTAT:EARN_SES_HOURLY(1.0),2024-03-01,A,B-S,OC9,TOTAL,TOTAL,T,MEAN_E_EUR,CY,2022,7.20,
 """
 
 
@@ -169,6 +169,23 @@ class TestFetchEmployment:
         assert "THS_PER" in url
         # lastNPeriods is a query param
         assert call_args[1]["params"]["lastNPeriods"] == "3"
+
+    def test_filters_to_most_recent_year(self):
+        """When multiple years are returned, only the latest should be kept."""
+        multi_year_csv = """\
+DATAFLOW,LAST UPDATE,freq,age,isco08,sex,unit,geo,TIME_PERIOD,OBS_VALUE,OBS_FLAG
+ESTAT:LFSA_EGAI2D(1.0),2024-06-01,A,Y_GE15,OC1,T,THS_PER,CY,2022,24.0,
+ESTAT:LFSA_EGAI2D(1.0),2024-06-01,A,Y_GE15,OC2,T,THS_PER,CY,2022,80.0,
+ESTAT:LFSA_EGAI2D(1.0),2024-06-01,A,Y_GE15,OC1,T,THS_PER,CY,2023,25.3,
+ESTAT:LFSA_EGAI2D(1.0),2024-06-01,A,Y_GE15,OC2,T,THS_PER,CY,2023,82.1,
+"""
+        client = _mock_client(multi_year_csv)
+        results = fetch_employment_by_occupation(geo="CY", client=client)
+
+        # Should only have 2023 data
+        assert len(results) == 2
+        assert all(r["year"] == "2023" for r in results)
+        assert results[0]["employment_thousands"] == 25.3
 
 
 # --- fetch_earnings_by_occupation tests ---
