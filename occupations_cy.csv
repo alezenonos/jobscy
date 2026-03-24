@@ -1,40 +1,40 @@
 title,category,slug,isco_code,median_pay_annual_eur,median_pay_hourly_eur,entry_education,employment_thousands,year_employment,year_earnings
-"Chief executives, senior officials and legislators",managers,chief-executives-senior-officials-and-legislators,OC11,78458,37.72,Bachelor's degree or higher,2.7,2024,2022
-Administrative and commercial managers,managers,administrative-and-commercial-managers,OC12,78458,37.72,Bachelor's degree or higher,6.1,2024,2022
-Production and specialised services managers,managers,production-and-specialised-services-managers,OC13,78458,37.72,Bachelor's degree or higher,8.1,2024,2022
-"Hospitality, retail and other services managers",managers,hospitality-retail-and-other-services-managers,OC14,78458,37.72,Bachelor's degree or higher,5.6,2024,2022
-Science and engineering professionals,professionals,science-and-engineering-professionals,OC21,24128,11.60,Bachelor's degree or higher,18.0,2024,2022
-Health professionals,professionals,health-professionals,OC22,24128,11.60,Bachelor's degree or higher,16.8,2024,2022
-Teaching professionals,professionals,teaching-professionals,OC23,24128,11.60,Bachelor's degree or higher,26.4,2024,2022
-Business and administration professionals,professionals,business-and-administration-professionals,OC24,24128,11.60,Bachelor's degree or higher,21.5,2024,2022
-Information and communications technology professionals,professionals,information-and-communications-technology-professionals,OC25,24128,11.60,Bachelor's degree or higher,14.3,2024,2022
-"Legal, social and cultural professionals",professionals,legal-social-and-cultural-professionals,OC26,24128,11.60,Bachelor's degree or higher,13.0,2024,2022
-Science and engineering associate professionals,technicians-and-associate-professionals,science-and-engineering-associate-professionals,OC31,32427,15.59,Short-cycle tertiary / Associate,9.7,2024,2018
-Health associate professionals,technicians-and-associate-professionals,health-associate-professionals,OC32,32427,15.59,Short-cycle tertiary / Associate,3.3,2024,2018
-Business and administration associate professionals,technicians-and-associate-professionals,business-and-administration-associate-professionals,OC33,32427,15.59,Short-cycle tertiary / Associate,51.9,2024,2018
-"Legal, social, cultural and related associate professionals",technicians-and-associate-professionals,legal-social-cultural-and-related-associate-professionals,OC34,32427,15.59,Short-cycle tertiary / Associate,5.6,2024,2018
-Information and communications technicians,technicians-and-associate-professionals,information-and-communications-technicians,OC35,32427,15.59,Short-cycle tertiary / Associate,3.1,2024,2018
-General and keyboard clerks,clerical-support-workers,general-and-keyboard-clerks,OC41,15163,7.29,Upper secondary / Vocational,22.4,2024,2022
-Customer services clerks,clerical-support-workers,customer-services-clerks,OC42,15163,7.29,Upper secondary / Vocational,9.4,2024,2022
-Numerical and material recording clerks,clerical-support-workers,numerical-and-material-recording-clerks,OC43,15163,7.29,Upper secondary / Vocational,14.1,2024,2022
-Other clerical support workers,clerical-support-workers,other-clerical-support-workers,OC44,15163,7.29,Upper secondary / Vocational,2.4,2024,2022
-Personal service workers,service-and-sales-workers,personal-service-workers,OC51,13208,6.35,Upper secondary / Vocational,32.6,2024,2022
-Sales workers,service-and-sales-workers,sales-workers,OC52,13208,6.35,Upper secondary / Vocational,34.7,2024,2022
-Personal care workers,service-and-sales-workers,personal-care-workers,OC53,13208,6.35,Upper secondary / Vocational,6.9,2024,2022
-Protective services workers,service-and-sales-workers,protective-services-workers,OC54,13208,6.35,Upper secondary / Vocational,11.0,2024,2022
-Market-oriented skilled agricultural workers,skilled-agriculture-forestry-fishery,market-oriented-skilled-agricultural-workers,OC61,18470,8.88,Upper secondary / Vocational,7.1,2024,2010
-"Market-oriented skilled forestry, fishery and hunting workers",skilled-agriculture-forestry-fishery,market-oriented-skilled-forestry-fishery-and-hunting-workers,OC62,18470,8.88,Upper secondary / Vocational,7.4,2024,2010
-"Building and related trades workers, excluding electricians",craft-and-related-trades,building-and-related-trades-workers-excluding-electricians,OC71,25542,12.28,Upper secondary / Vocational,24.6,2024,2022
-"Metal, machinery and related trades workers",craft-and-related-trades,metal-machinery-and-related-trades-workers,OC72,25542,12.28,Upper secondary / Vocational,9.3,2024,2022
-Handicraft and printing workers,craft-and-related-trades,handicraft-and-printing-workers,OC73,25542,12.28,Upper secondary / Vocational,1.4,2024,2022
-Electrical and electronic trades workers,craft-and-related-trades,electrical-and-electronic-trades-workers,OC74,25542,12.28,Upper secondary / Vocational,7.8,2024,2022
-"Food processing, wood working, garment and other craft and related trades workers",craft-and-related-trades,food-processing-wood-working-garment-and-other-craft-and-related-trades-workers,OC75,25542,12.28,Upper secondary / Vocational,5.0,2024,2022
-Stationary plant and machine operators,plant-and-machine-operators,stationary-plant-and-machine-operators,OC81,18387,8.84,Lower secondary or below,3.3,2024,2010
-Assemblers,plant-and-machine-operators,assemblers,OC82,18387,8.84,Lower secondary or below,22.9,2024,2010
-Drivers and mobile plant operators,plant-and-machine-operators,drivers-and-mobile-plant-operators,OC83,18387,8.84,Lower secondary or below,19.5,2024,2010
-Cleaners and helpers,elementary-occupations,cleaners-and-helpers,OC91,10546,5.07,Lower secondary or below,36.8,2024,2022
-"Agricultural, forestry and fishery labourers",elementary-occupations,agricultural-forestry-and-fishery-labourers,OC92,10546,5.07,Lower secondary or below,4.7,2024,2022
-"Labourers in mining, construction, manufacturing and transport",elementary-occupations,labourers-in-mining-construction-manufacturing-and-transport,OC93,10546,5.07,Lower secondary or below,9.1,2024,2022
-Food preparation assistants,elementary-occupations,food-preparation-assistants,OC94,10546,5.07,Lower secondary or below,7.0,2024,2022
-Street and related sales and service workers,elementary-occupations,street-and-related-sales-and-service-workers,OC95,10546,5.07,Lower secondary or below,62.2,2024,2022
-Refuse workers and other elementary workers,elementary-occupations,refuse-workers-and-other-elementary-workers,OC96,10546,5.07,Lower secondary or below,4.4,2024,2022
+"Chief executives, senior officials and legislators",managers,chief-executives-senior-officials-and-legislators,OC11,40830,19.63,Bachelor's degree or higher,2.7,2024,2002
+Administrative and commercial managers,managers,administrative-and-commercial-managers,OC12,40830,19.63,Bachelor's degree or higher,6.1,2024,2002
+Production and specialised services managers,managers,production-and-specialised-services-managers,OC13,40830,19.63,Bachelor's degree or higher,8.1,2024,2002
+"Hospitality, retail and other services managers",managers,hospitality-retail-and-other-services-managers,OC14,40830,19.63,Bachelor's degree or higher,5.6,2024,2002
+Science and engineering professionals,professionals,science-and-engineering-professionals,OC21,26728,12.85,Bachelor's degree or higher,18.0,2024,2002
+Health professionals,professionals,health-professionals,OC22,26728,12.85,Bachelor's degree or higher,16.8,2024,2002
+Teaching professionals,professionals,teaching-professionals,OC23,26728,12.85,Bachelor's degree or higher,26.4,2024,2002
+Business and administration professionals,professionals,business-and-administration-professionals,OC24,26728,12.85,Bachelor's degree or higher,21.5,2024,2002
+Information and communications technology professionals,professionals,information-and-communications-technology-professionals,OC25,26728,12.85,Bachelor's degree or higher,14.3,2024,2002
+"Legal, social and cultural professionals",professionals,legal-social-and-cultural-professionals,OC26,26728,12.85,Bachelor's degree or higher,13.0,2024,2002
+Science and engineering associate professionals,technicians-and-associate-professionals,science-and-engineering-associate-professionals,OC31,21112,10.15,Short-cycle tertiary / Associate,9.7,2024,2002
+Health associate professionals,technicians-and-associate-professionals,health-associate-professionals,OC32,21112,10.15,Short-cycle tertiary / Associate,3.3,2024,2002
+Business and administration associate professionals,technicians-and-associate-professionals,business-and-administration-associate-professionals,OC33,21112,10.15,Short-cycle tertiary / Associate,51.9,2024,2002
+"Legal, social, cultural and related associate professionals",technicians-and-associate-professionals,legal-social-cultural-and-related-associate-professionals,OC34,21112,10.15,Short-cycle tertiary / Associate,5.6,2024,2002
+Information and communications technicians,technicians-and-associate-professionals,information-and-communications-technicians,OC35,21112,10.15,Short-cycle tertiary / Associate,3.1,2024,2002
+General and keyboard clerks,clerical-support-workers,general-and-keyboard-clerks,OC41,14144,6.80,Upper secondary / Vocational,22.4,2024,2002
+Customer services clerks,clerical-support-workers,customer-services-clerks,OC42,14144,6.80,Upper secondary / Vocational,9.4,2024,2002
+Numerical and material recording clerks,clerical-support-workers,numerical-and-material-recording-clerks,OC43,14144,6.80,Upper secondary / Vocational,14.1,2024,2002
+Other clerical support workers,clerical-support-workers,other-clerical-support-workers,OC44,14144,6.80,Upper secondary / Vocational,2.4,2024,2002
+Personal service workers,service-and-sales-workers,personal-service-workers,OC51,13395,6.44,Upper secondary / Vocational,32.6,2024,2002
+Sales workers,service-and-sales-workers,sales-workers,OC52,13395,6.44,Upper secondary / Vocational,34.7,2024,2002
+Personal care workers,service-and-sales-workers,personal-care-workers,OC53,13395,6.44,Upper secondary / Vocational,6.9,2024,2002
+Protective services workers,service-and-sales-workers,protective-services-workers,OC54,13395,6.44,Upper secondary / Vocational,11.0,2024,2002
+Market-oriented skilled agricultural workers,skilled-agriculture-forestry-fishery,market-oriented-skilled-agricultural-workers,OC61,13374,6.43,Upper secondary / Vocational,7.1,2024,2002
+"Market-oriented skilled forestry, fishery and hunting workers",skilled-agriculture-forestry-fishery,market-oriented-skilled-forestry-fishery-and-hunting-workers,OC62,13374,6.43,Upper secondary / Vocational,7.4,2024,2002
+"Building and related trades workers, excluding electricians",craft-and-related-trades,building-and-related-trades-workers-excluding-electricians,OC71,17264,8.30,Upper secondary / Vocational,24.6,2024,2002
+"Metal, machinery and related trades workers",craft-and-related-trades,metal-machinery-and-related-trades-workers,OC72,17264,8.30,Upper secondary / Vocational,9.3,2024,2002
+Handicraft and printing workers,craft-and-related-trades,handicraft-and-printing-workers,OC73,17264,8.30,Upper secondary / Vocational,1.4,2024,2002
+Electrical and electronic trades workers,craft-and-related-trades,electrical-and-electronic-trades-workers,OC74,17264,8.30,Upper secondary / Vocational,7.8,2024,2002
+"Food processing, wood working, garment and other craft and related trades workers",craft-and-related-trades,food-processing-wood-working-garment-and-other-craft-and-related-trades-workers,OC75,17264,8.30,Upper secondary / Vocational,5.0,2024,2002
+Stationary plant and machine operators,plant-and-machine-operators,stationary-plant-and-machine-operators,OC81,13998,6.73,Lower secondary or below,3.3,2024,2002
+Assemblers,plant-and-machine-operators,assemblers,OC82,13998,6.73,Lower secondary or below,22.9,2024,2002
+Drivers and mobile plant operators,plant-and-machine-operators,drivers-and-mobile-plant-operators,OC83,13998,6.73,Lower secondary or below,19.5,2024,2002
+Cleaners and helpers,elementary-occupations,cleaners-and-helpers,OC91,12126,5.83,Lower secondary or below,36.8,2024,2002
+"Agricultural, forestry and fishery labourers",elementary-occupations,agricultural-forestry-and-fishery-labourers,OC92,12126,5.83,Lower secondary or below,4.7,2024,2002
+"Labourers in mining, construction, manufacturing and transport",elementary-occupations,labourers-in-mining-construction-manufacturing-and-transport,OC93,12126,5.83,Lower secondary or below,9.1,2024,2002
+Food preparation assistants,elementary-occupations,food-preparation-assistants,OC94,12126,5.83,Lower secondary or below,7.0,2024,2002
+Street and related sales and service workers,elementary-occupations,street-and-related-sales-and-service-workers,OC95,12126,5.83,Lower secondary or below,62.2,2024,2002
+Refuse workers and other elementary workers,elementary-occupations,refuse-workers-and-other-elementary-workers,OC96,12126,5.83,Lower secondary or below,4.4,2024,2002
