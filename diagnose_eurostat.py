@@ -120,7 +120,7 @@ def diagnose_earnings(client):
         for dim in ["nace_r2", "worktime", "age", "sex", "isco08"]:
             vals = sorted({row.get(dim, "?") for row in rows})
             print(f"  Unique {dim}: {vals}")
-        print(f"\n  Sample rows (first 5):")
+        print("\n  Sample rows (first 5):")
         for row in rows[:5]:
             print(f"    nace={row.get('nace_r2')} isco={row.get('isco08')} "
                   f"wt={row.get('worktime')} age={row.get('age')} sex={row.get('sex')} "
