@@ -1,9 +1,8 @@
 """
 Score each occupation's AI exposure using an LLM via OpenRouter.
 
-Supports two input modes:
-  1. Markdown descriptions from pages/<slug>.md (legacy BLS pipeline)
-  2. ISCO-08 occupation titles from occupations_cy.json (Cyprus pipeline)
+Reads ISCO-08 occupation titles from occupations_cy.json and scores each
+for AI exposure in the Cyprus/EU labour market context.
 
 Results are cached incrementally to scores.json so the script can be
 resumed if interrupted.
@@ -169,39 +168,22 @@ def build_isco_prompt(occ):
     return "\n".join(lines)
 
 
-def detect_occupation_format(occupations):
-    """Detect whether occupation list is BLS or Cyprus format."""
-    if occupations and "isco_code" in occupations[0]:
-        return "cyprus"
-    return "bls"
-
-
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--model", default=DEFAULT_MODEL)
-    parser.add_argument("--occupations", default=None, help="Occupations JSON file (auto-detects)")
+    parser.add_argument("--occupations", default=None, help="Occupations JSON file (default: occupations_cy.json)")
     parser.add_argument("--start", type=int, default=0)
     parser.add_argument("--end", type=int, default=None)
     parser.add_argument("--delay", type=float, default=0.5)
     parser.add_argument("--force", action="store_true", help="Re-score even if already cached")
     args = parser.parse_args()
 
-    # Auto-detect occupations file
-    occ_path = args.occupations
-    if occ_path is None:
-        if os.path.exists("occupations_cy.json"):
-            occ_path = "occupations_cy.json"
-        elif os.path.exists("occupations.json"):
-            occ_path = "occupations.json"
-        else:
-            print("Error: no occupations JSON found.")
-            return
+    occ_path = args.occupations or "occupations_cy.json"
 
     with open(occ_path) as f:
         occupations = json.load(f)
 
-    fmt = detect_occupation_format(occupations)
-    print(f"Using {occ_path} ({fmt} format)")
+    print(f"Using {occ_path}")
 
     subset = occupations[args.start : args.end]
 
@@ -224,16 +206,7 @@ def main():
         if slug in scores:
             continue
 
-        # Build prompt text: prefer markdown file, fall back to ISCO prompt
-        md_path = f"pages/{slug}.md"
-        if os.path.exists(md_path):
-            with open(md_path) as f:
-                text = f.read()
-        elif fmt == "cyprus":
-            text = build_isco_prompt(occ)
-        else:
-            print(f"  [{i + 1}] SKIP {slug} (no markdown)")
-            continue
+        text = build_isco_prompt(occ)
 
         print(f"  [{i + 1}/{len(subset)}] {occ['title']}...", end=" ", flush=True)
 

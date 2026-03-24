@@ -3,9 +3,7 @@ Generate prompt.md — a single file containing all project data, designed to be
 copy-pasted into an LLM for analysis and conversation about AI exposure of the
 Cyprus labour market.
 
-Supports two input modes:
-  1. Cyprus format: occupations_cy.json + occupations_cy.csv (ISCO-08, EUR)
-  2. Legacy BLS format: occupations.json + occupations.csv (SOC, USD)
+Reads occupations_cy.json + occupations_cy.csv (ISCO-08, EUR) and scores.json.
 
 Usage:
     uv run python make_prompt.py
@@ -15,7 +13,6 @@ Usage:
 import argparse
 import csv
 import json
-import os
 
 
 def fmt_pay(pay):
@@ -32,13 +29,6 @@ def fmt_jobs(jobs):
     if jobs >= 1_000:
         return f"{jobs / 1e3:.0f}K"
     return str(jobs)
-
-
-def detect_format(fieldnames):
-    """Detect whether CSV is Cyprus or BLS format."""
-    if "isco_code" in fieldnames or "median_pay_annual_eur" in fieldnames:
-        return "cyprus"
-    return "bls"
 
 
 def load_records_cyprus(occupations, csv_rows, scores):
@@ -68,32 +58,6 @@ def load_records_cyprus(occupations, csv_rows, scores):
     return records
 
 
-def load_records_bls(occupations, csv_rows, scores):
-    """Merge BLS-format data into unified records."""
-    records = []
-    for occ in occupations:
-        slug = occ["slug"]
-        row = csv_rows.get(slug, {})
-        score = scores.get(slug, {})
-        pay = int(row["median_pay_annual"]) if row.get("median_pay_annual") else None
-        jobs = int(row["num_jobs_2024"]) if row.get("num_jobs_2024") else None
-        records.append(
-            {
-                "title": occ["title"],
-                "slug": slug,
-                "category": row.get("category", occ.get("category", "")),
-                "pay": pay,
-                "jobs": jobs,
-                "outlook_pct": int(row["outlook_pct"]) if row.get("outlook_pct") else None,
-                "outlook_desc": row.get("outlook_desc", ""),
-                "education": row.get("entry_education", ""),
-                "exposure": score.get("exposure"),
-                "rationale": score.get("rationale", ""),
-            }
-        )
-    return records
-
-
 def main():
     parser = argparse.ArgumentParser(description="Generate prompt.md from occupation data")
     parser.add_argument("--occupations", default=None, help="Occupations JSON file (auto-detects)")
@@ -101,33 +65,21 @@ def main():
     parser.add_argument("--scores", default="scores.json", help="Scores JSON file")
     args = parser.parse_args()
 
-    # Auto-detect occupations file
-    occ_path = args.occupations
-    if occ_path is None:
-        occ_path = "occupations_cy.json" if os.path.exists("occupations_cy.json") else "occupations.json"
-
-    csv_path = args.csv
-    if csv_path is None:
-        csv_path = "occupations_cy.csv" if os.path.exists("occupations_cy.csv") else "occupations.csv"
+    occ_path = args.occupations or "occupations_cy.json"
+    csv_path = args.csv or "occupations_cy.csv"
 
     with open(occ_path) as f:
         occupations = json.load(f)
 
     with open(csv_path) as f:
         reader = csv.DictReader(f)
-        fieldnames = reader.fieldnames or []
         csv_rows = {row["slug"]: row for row in reader}
 
     with open(args.scores) as f:
         scores = {s["slug"]: s for s in json.load(f)}
 
-    fmt = detect_format(fieldnames)
-    print(f"Using {occ_path} + {csv_path} ({fmt} format)")
-
-    if fmt == "cyprus":
-        records = load_records_cyprus(occupations, csv_rows, scores)
-    else:
-        records = load_records_bls(occupations, csv_rows, scores)
+    print(f"Using {occ_path} + {csv_path}")
+    records = load_records_cyprus(occupations, csv_rows, scores)
 
     # Sort by exposure desc, then jobs desc
     records.sort(key=lambda r: (-(r["exposure"] or 0), -(r["jobs"] or 0)))
@@ -227,25 +179,13 @@ def main():
     # By education
     lines.append("### Average exposure by education level (job-weighted)")
     lines.append("")
-    if fmt == "cyprus":
-        edu_groups = [
-            ("Lower secondary", ["Lower secondary or below"]),
-            ("Vocational", ["Upper secondary / Vocational"]),
-            ("Associate / Short-cycle", ["Short-cycle tertiary / Associate"]),
-            ("Bachelor's+", ["Bachelor's degree or higher"]),
-            ("Military", ["Varies (military)"]),
-        ]
-    else:
-        edu_groups = [
-            ("No degree / HS diploma", ["No formal educational credential", "High school diploma or equivalent"]),
-            (
-                "Postsecondary / Associate's",
-                ["Postsecondary nondegree award", "Some college, no degree", "Associate's degree"],
-            ),
-            ("Bachelor's", ["Bachelor's degree"]),
-            ("Master's", ["Master's degree"]),
-            ("Doctoral / Professional", ["Doctoral or professional degree"]),
-        ]
+    edu_groups = [
+        ("Lower secondary", ["Lower secondary or below"]),
+        ("Vocational", ["Upper secondary / Vocational"]),
+        ("Associate / Short-cycle", ["Short-cycle tertiary / Associate"]),
+        ("Bachelor's+", ["Bachelor's degree or higher"]),
+        ("Military", ["Varies (military)"]),
+    ]
     lines.append("| Education | Avg exposure | Jobs |")
     lines.append("|-----------|-------------|------|")
     for name, matches in edu_groups:
@@ -297,21 +237,11 @@ def main():
             edu = r["education"] if r["education"] else "?"
             # Truncate education for readability
             edu_short = {
-                # Cyprus / ISCED
                 "Lower secondary or below": "Lower sec.",
                 "Upper secondary / Vocational": "Vocational",
                 "Short-cycle tertiary / Associate": "Associate",
                 "Bachelor's degree or higher": "Bachelor's+",
                 "Varies (military)": "Military",
-                # Legacy BLS
-                "High school diploma or equivalent": "HS diploma",
-                "Bachelor's degree": "Bachelor's",
-                "Master's degree": "Master's",
-                "Doctoral or professional degree": "Doctoral",
-                "Associate's degree": "Associate's",
-                "Postsecondary nondegree award": "Postsecondary",
-                "No formal educational credential": "No formal",
-                "Some college, no degree": "Some college",
             }.get(edu, edu)
             rationale = r["rationale"].replace("|", "/").replace("\n", " ")
             lines.append(
