@@ -43,14 +43,14 @@ def load_occupations(path="occupations_cy.json"):
         return json.load(f)
 
 
-def fetch_eurostat_data(geo="CY", client=None):
+def fetch_eurostat_data(geo="CY", client=None, verbose=False):
     """Fetch employment and earnings data from Eurostat API.
 
     Returns:
         Tuple of (employment_data, earnings_data).
     """
     employment = fetch_employment_by_occupation(geo=geo, client=client)
-    earnings = fetch_earnings_by_occupation(geo=geo, client=client)
+    earnings = fetch_earnings_by_occupation(geo=geo, client=client, verbose=verbose)
     return employment, earnings
 
 
@@ -176,7 +176,7 @@ def main():
         employment, earnings = load_cached_data(args.cached)
     else:
         print(f"Fetching data from Eurostat for {args.geo}...")
-        employment, earnings = fetch_eurostat_data(geo=args.geo)
+        employment, earnings = fetch_eurostat_data(geo=args.geo, verbose=args.verbose)
 
     if not earnings:
         print("WARNING: No earnings data returned from Eurostat.")
@@ -203,11 +203,17 @@ def main():
     print(f"  With earnings data: {with_pay}/{len(rows)}")
 
     if rows:
-        print("\nSample rows:")
-        for r in rows[:3]:
+        # Show one sample per ISCO major group to verify distinct earnings
+        print("\nSample rows (one per major group):")
+        seen_parents = set()
+        for r in rows:
+            parent = r["isco_code"][:3]
+            if parent in seen_parents:
+                continue
+            seen_parents.add(parent)
             pay = f"€{r['median_pay_annual_eur']}" if r["median_pay_annual_eur"] else "—"
             emp = f"{r['employment_thousands']}K" if r["employment_thousands"] else "—"
-            print(f"  {r['title']}: {pay}/yr, {emp} employed")
+            print(f"  {r['isco_code']} {r['title']}: {pay}/yr, {emp} employed")
 
 
 if __name__ == "__main__":
