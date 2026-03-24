@@ -227,10 +227,12 @@ def fetch_earnings_by_occupation(geo="CY", last_n=1, client=None, verbose=False)
         List of dicts with keys: isco_code, isco_label, hourly_earnings_eur, year.
     """
     # earn_ses_hourly dimensions: freq.nace_r2.isco08.worktime.age.sex.indic_se.geo
+    # Use a broad key (leave nace_r2, worktime, age, sex open) to avoid
+    # invalid dimension values, then post-filter for the rows we need.
     # OC0 (armed forces) is not available in earn_ses_hourly.
     isco_codes = [k for k in ISCO08_MAJOR_GROUPS if k != "OC0"]
     isco_list = "+".join(isco_codes)
-    key = f"A.B-S.{isco_list}.TOTAL...MEAN_E_EUR.{geo}"
+    key = f"A..{isco_list}....MEAN_E_EUR.{geo}"
     params = {"lastNPeriods": str(last_n)}
 
     try:
@@ -239,9 +241,12 @@ def fetch_earnings_by_occupation(geo="CY", last_n=1, client=None, verbose=False)
         print(f"WARNING: Earnings fetch failed: {exc}")
         rows = []
 
-    # Safety: verify geo filtering worked
-    if rows and "geo" in rows[0]:
-        rows = [r for r in rows if r.get("geo") == geo]
+    # Post-filter: keep only the aggregate rows we want.
+    valid_isco = set(isco_codes)
+    rows = [
+        r for r in rows
+        if r.get("geo") == geo and r.get("isco08") in valid_isco
+    ]
 
     if not rows:
         print(f"WARNING: No earnings data returned for {geo}.")
