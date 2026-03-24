@@ -110,8 +110,8 @@ def diagnose_earnings(client):
     # OC0 not available in earn_ses_hourly; valid indicator is MEAN_E_EUR
     isco_list = "+".join([f"OC{i}" for i in range(1, 10)])
 
-    print("\n--- Test 1: earn_ses_hourly with path key (FIXED approach) ---")
-    key = f"A.B-S.{isco_list}.TOTAL...MEAN_E_EUR.CY"
+    print("\n--- Test 1: earn_ses_hourly with broad key (FIXED approach) ---")
+    key = f"A..{isco_list}....MEAN_E_EUR.CY"
     rows, _ = fetch_csv("earn_ses_hourly", key=key, params={"lastNPeriods": "1"}, client=client)
     print(f"  Rows: {len(rows)}")
 
