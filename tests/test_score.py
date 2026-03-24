@@ -3,7 +3,6 @@
 from score import (
     SYSTEM_PROMPT,
     build_isco_prompt,
-    detect_occupation_format,
     parse_llm_response,
 )
 
@@ -59,23 +58,6 @@ def test_build_isco_prompt_minimal():
     assert "# General Clerks" in prompt
     assert "ISCO-08 Code" not in prompt
     assert "Major Group" not in prompt
-
-
-# --- detect_occupation_format ---
-
-
-def test_detect_occupation_format_cyprus():
-    occs = [{"title": "Managers", "isco_code": "1", "slug": "managers"}]
-    assert detect_occupation_format(occs) == "cyprus"
-
-
-def test_detect_occupation_format_bls():
-    occs = [{"title": "Accountants", "slug": "accountants"}]
-    assert detect_occupation_format(occs) == "bls"
-
-
-def test_detect_occupation_format_empty():
-    assert detect_occupation_format([]) == "bls"
 
 
 # --- SYSTEM_PROMPT content ---

@@ -62,8 +62,6 @@ The Cyprus pipeline flows: `generate_cy_occupations.py` → `make_cy_csv.py` →
 
 ### File naming
 - Cyprus data files: `occupations_cy.json`, `occupations_cy.csv`
-- Legacy BLS files: `occupations.json`, `occupations.csv`
-- Scripts auto-detect format and prefer Cyprus files when both exist
 
 ## Pull request process
 

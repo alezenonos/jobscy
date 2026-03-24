@@ -28,9 +28,6 @@ Cyprus pipeline:
   LLM (OpenRouter) ──► score.py ──► scores.json ◄──────┘
                                          │
                      build_site_data.py ──┘──► site/data.json ──► site/index.html
-
-Legacy BLS pipeline (still functional):
-  BLS HTML ──► scrape.py ──► parse/make_csv.py ──► occupations.csv ──► ...
 ```
 
 ## LLM-powered colouring
@@ -52,7 +49,7 @@ Fork `score.py` to write your own scoring criteria — e.g. green economy releva
 | `generate_cy_occupations.py` | Generate `occupations_cy.json` from ISCO-08 classification |
 | `make_cy_csv.py` | Build `occupations_cy.csv` from Eurostat data (EUR, ISCO-08) |
 | `score.py` | LLM-based AI exposure scoring via OpenRouter (ISCO-08 / Cyprus context) |
-| `build_site_data.py` | Merge CSV + scores → `site/data.json` (auto-detects format) |
+| `build_site_data.py` | Merge CSV + scores → `site/data.json` |
 | `make_prompt.py` | Generate single-file LLM prompt from all data |
 | `site/index.html` | Interactive treemap visualization (EUR, ISCO-08, Cyprus) |
 | `occupations_cy.json` | Master list of 39 ISCO-08 occupation groups |

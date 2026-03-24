@@ -24,9 +24,6 @@ Cyprus pipeline:
 
 Utilities:
   make_prompt.py ──► prompt.md (single-file LLM analysis document)
-
-Legacy BLS pipeline (still functional):
-  BLS HTML ──► scrape.py ──► parse/make_csv.py ──► occupations.csv ──► ...
 ```
 
 ### Key modules
@@ -36,15 +33,10 @@ Legacy BLS pipeline (still functional):
 | `eurostat.py` | Fetch Cyprus employment/wage data from Eurostat REST API | **Done (PR 2)** |
 | `generate_cy_occupations.py` | Generate `occupations_cy.json` from ISCO-08 classification | **Done (PR 3)** |
 | `make_cy_csv.py` | Build `occupations_cy.csv` from Eurostat data (EUR, ISCO) | **Done (PR 3)** |
-| `build_site_data.py` | Merge CSV + scores → `site/data.json` (auto-detects BLS/Cyprus format) | **Done (PR 3)** |
+| `build_site_data.py` | Merge CSV + scores → `site/data.json` | **Done (PR 3)** |
 | `score.py` | LLM-based AI exposure scoring via OpenRouter | **Done (PR 4)** |
-| `make_prompt.py` | Generate single-file LLM prompt (auto-detects format) | **Done (PR 6)** |
+| `make_prompt.py` | Generate single-file LLM prompt | **Done (PR 6)** |
 | `site/index.html` | Interactive treemap visualization (EUR, ISCO-08) | **Done (PR 5)** |
-| `scrape.py` | Scrape occupation detail pages (legacy BLS) | Legacy — not needed for Cyprus pipeline |
-| `parse_occupations.py` | Parse occupation index (legacy BLS) | Superseded by `generate_cy_occupations.py` |
-| `parse_detail.py` | Convert HTML detail pages to Markdown (legacy) | Legacy — not needed for Cyprus pipeline |
-| `make_csv.py` | Build `occupations.csv` from BLS HTML (legacy) | Superseded by `make_cy_csv.py` |
-
 ## Data sources (Cyprus/EU)
 
 | Source | What it provides | Access method | Priority |
@@ -108,10 +100,8 @@ https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/{DATASET}?ge
   - Supports both live API fetching and cached JSON data
   - Education level mapping by ISCO major group (ISCED-aligned)
   - Cache save/load for offline development
-- `build_site_data.py` — refactored to auto-detect BLS vs Cyprus CSV format
-  - `merge_bls()` / `merge_cyprus()` / `detect_format()` functions
-  - Cyprus format: ISCO codes, EUR pay, employment in thousands→absolute
-  - BLS format: backward compatible with existing US data
+- `build_site_data.py` — merges Cyprus CSV + scores into site/data.json
+  - `merge_cyprus()` function: ISCO codes, EUR pay, employment in thousands→absolute
   - CLI args for explicit CSV/scores/output paths
 - 30 new tests across 3 test files (88 total)
 
@@ -141,9 +131,9 @@ https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/{DATASET}?ge
 ### PR 6: Documentation Final Pass ✅
 - `README.md` — comprehensive rewrite with architecture diagram, accurate file list, Cyprus pipeline commands
 - `CONTRIBUTING.md` — new file: development setup, branch conventions, code quality, testing, PR process
-- `make_prompt.py` — adapted for Cyprus: auto-detects file format, ISCED education groups, ISCO-08 anchors
+- `make_prompt.py` — adapted for Cyprus: ISCED education groups, ISCO-08 anchors
 - `HANDOVER.md` — final update with troubleshooting section, all PRs marked complete
-- New tests for `make_prompt.py` (detect_format, load_records_cyprus, load_records_bls)
+- New tests for `make_prompt.py` (load_records_cyprus)
 
 ## Future enhancements
 
@@ -153,7 +143,6 @@ These are optional improvements beyond the initial 6-PR scope:
 - **Growth outlook:** Currently `None` for Cyprus occupations — integrate HRDA/Eurostat employment trend data
 - **EURES shortage data:** Add shortage/surplus indicators from EURES vacancy statistics
 - **3-digit ISCO:** Expand from 39 sub-major groups to ~130 minor groups if Eurostat provides sufficient Cyprus data
-- **Scraper adaptation:** Adapt `scrape.py` / `parse_detail.py` for HRDA/EURES web content instead of BLS
 - **Multilingual:** Greek language support for occupation titles (ISCO-08 has official Greek labels)
 
 ## Troubleshooting
@@ -179,9 +168,6 @@ uv run python make_cy_csv.py --load-cache
 
 ### Tests fail due to ISCO-08 count mismatch
 The `ISCO08_2DIGIT` dict in `eurostat.py` has 39 entries. Tests use `len(ISCO08_2DIGIT)` dynamically to avoid hardcoded count mismatches.
-
-### Legacy BLS pipeline
-The original BLS scripts (`scrape.py`, `parse_occupations.py`, `make_csv.py`, `parse_detail.py`) are still functional but are not part of the Cyprus pipeline. They remain for reference and backward compatibility.
 
 ## Development setup
 
