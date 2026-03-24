@@ -264,6 +264,12 @@ def fetch_earnings_by_occupation(geo="CY", last_n=1, client=None, verbose=False)
             filtered[code] = r
     rows = list(filtered.values())
 
+    if verbose:
+        print(f"  Earnings post-filter: {len(rows)} aggregate rows selected")
+        for r in rows:
+            print(f"    {r.get('isco08')}: nace={r.get('nace_r2')} wt={r.get('worktime')} "
+                  f"age={r.get('age')} sex={r.get('sex')} val={r.get('OBS_VALUE')}")
+
     if not rows:
         print(f"WARNING: No earnings data returned for {geo}.")
         print("  Run 'uv run python diagnose_eurostat.py' for details.")
