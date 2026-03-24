@@ -241,12 +241,28 @@ def fetch_earnings_by_occupation(geo="CY", last_n=1, client=None, verbose=False)
         print(f"WARNING: Earnings fetch failed: {exc}")
         rows = []
 
-    # Post-filter: keep only the aggregate rows we want.
+    # Post-filter: keep only aggregate rows (all sectors, all working times,
+    # all ages, both sexes).  Prefer the most-aggregate nace_r2 value available.
     valid_isco = set(isco_codes)
-    rows = [
-        r for r in rows
-        if r.get("geo") == geo and r.get("isco08") in valid_isco
-    ]
+    filtered: dict[str, dict] = {}  # isco_code -> best row
+    # Preference order for nace_r2 (most aggregate first)
+    nace_rank = {"B-S": 0, "B-N": 1, "TOTAL": 2}
+    for r in rows:
+        if r.get("geo") != geo or r.get("isco08") not in valid_isco:
+            continue
+        # Skip non-aggregate breakdowns
+        if r.get("sex", "T") not in ("T", "TOTAL", ""):
+            continue
+        if r.get("worktime", "TOTAL") not in ("TOTAL", ""):
+            continue
+        if r.get("age", "TOTAL") not in ("TOTAL", ""):
+            continue
+        code = r["isco08"]
+        rank = nace_rank.get(r.get("nace_r2", ""), 99)
+        prev = filtered.get(code)
+        if prev is None or rank < nace_rank.get(prev.get("nace_r2", ""), 99):
+            filtered[code] = r
+    rows = list(filtered.values())
 
     if not rows:
         print(f"WARNING: No earnings data returned for {geo}.")
