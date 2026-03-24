@@ -180,6 +180,11 @@ def fetch_employment_by_occupation(geo="CY", sex="T", age="Y_GE15", last_n=1, cl
     if rows and "geo" in rows[0]:
         rows = [r for r in rows if r.get("geo") == geo]
 
+    # lastNPeriods may return multiple years; keep only the most recent.
+    if rows:
+        max_year = max(r.get("TIME_PERIOD", "") for r in rows)
+        rows = [r for r in rows if r.get("TIME_PERIOD") == max_year]
+
     results = []
     for row in rows:
         isco_code = row.get("isco08", "")
@@ -222,11 +227,17 @@ def fetch_earnings_by_occupation(geo="CY", last_n=1, client=None, verbose=False)
         List of dicts with keys: isco_code, isco_label, hourly_earnings_eur, year.
     """
     # earn_ses_hourly dimensions: freq.nace_r2.isco08.worktime.age.sex.indic_se.geo
-    isco_list = "+".join(ISCO08_MAJOR_GROUPS.keys())
-    key = f"A.B-S.{isco_list}.TOTAL...MEAN_ME_HRS.{geo}"
+    # OC0 (armed forces) is not available in earn_ses_hourly.
+    isco_codes = [k for k in ISCO08_MAJOR_GROUPS if k != "OC0"]
+    isco_list = "+".join(isco_codes)
+    key = f"A.B-S.{isco_list}.TOTAL...MEAN_E_EUR.{geo}"
     params = {"lastNPeriods": str(last_n)}
 
-    rows = fetch_sdmx_csv("earn_ses_hourly", key=key, params=params, client=client, verbose=verbose)
+    try:
+        rows = fetch_sdmx_csv("earn_ses_hourly", key=key, params=params, client=client, verbose=verbose)
+    except Exception as exc:
+        print(f"WARNING: Earnings fetch failed: {exc}")
+        rows = []
 
     # Safety: verify geo filtering worked
     if rows and "geo" in rows[0]:

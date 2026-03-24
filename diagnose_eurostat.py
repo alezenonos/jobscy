@@ -107,10 +107,11 @@ def diagnose_earnings(client):
     print("=" * 70)
 
     # earn_ses_hourly dimensions: freq.nace_r2.isco08.worktime.age.sex.indic_se.geo
-    isco_list = "+".join([f"OC{i}" for i in range(10)])
+    # OC0 not available in earn_ses_hourly; valid indicator is MEAN_E_EUR
+    isco_list = "+".join([f"OC{i}" for i in range(1, 10)])
 
     print("\n--- Test 1: earn_ses_hourly with path key (FIXED approach) ---")
-    key = f"A.B-S.{isco_list}.TOTAL...MEAN_ME_HRS.CY"
+    key = f"A.B-S.{isco_list}.TOTAL...MEAN_E_EUR.CY"
     rows, _ = fetch_csv("earn_ses_hourly", key=key, params={"lastNPeriods": "1"}, client=client)
     print(f"  Rows: {len(rows)}")
 
