@@ -116,14 +116,15 @@ def diagnose_earnings(client):
     print(f"  Rows: {len(rows)}")
 
     if rows:
-        geos = {row.get("geo", "?") for row in rows}
-        print(f"  Unique geos: {geos}")
-        print("\n  Earnings data:")
-        for row in rows:
-            code = row.get("isco08", "?")
-            val = row.get("OBS_VALUE", "?")
-            year = row.get("TIME_PERIOD", "?")
-            print(f"    {code}: €{val}/hr ({year})")
+        # Show unique values per dimension to understand the data shape
+        for dim in ["nace_r2", "worktime", "age", "sex", "isco08"]:
+            vals = sorted({row.get(dim, "?") for row in rows})
+            print(f"  Unique {dim}: {vals}")
+        print(f"\n  Sample rows (first 5):")
+        for row in rows[:5]:
+            print(f"    nace={row.get('nace_r2')} isco={row.get('isco08')} "
+                  f"wt={row.get('worktime')} age={row.get('age')} sex={row.get('sex')} "
+                  f"val={row.get('OBS_VALUE')} year={row.get('TIME_PERIOD')}")
     else:
         print("  No data returned with full key. Trying broader queries...")
 
