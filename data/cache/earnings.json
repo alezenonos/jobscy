@@ -1,0 +1,56 @@
+[
+  {
+    "isco_code": "OC1",
+    "isco_label": "Managers",
+    "hourly_earnings_eur": 31.62,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC2",
+    "isco_label": "Professionals",
+    "hourly_earnings_eur": 17.73,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC3",
+    "isco_label": "Technicians and associate professionals",
+    "hourly_earnings_eur": 13.32,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC9",
+    "isco_label": "Elementary occupations",
+    "hourly_earnings_eur": 7.01,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC4",
+    "isco_label": "Clerical support workers",
+    "hourly_earnings_eur": 8.98,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC5",
+    "isco_label": "Service and sales workers",
+    "hourly_earnings_eur": 7.71,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC6",
+    "isco_label": "Skilled agricultural, forestry and fishery workers",
+    "hourly_earnings_eur": 6.87,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC7",
+    "isco_label": "Craft and related trades workers",
+    "hourly_earnings_eur": 10.07,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC8",
+    "isco_label": "Plant and machine operators and assemblers",
+    "hourly_earnings_eur": 9.8,
+    "year": "2022"
+  }
+]
