@@ -7,8 +7,11 @@ from eurostat import (
     ISCO08_2DIGIT,
     ISCO08_MAJOR_GROUPS,
     build_occupation_summary,
+    compute_cagr,
+    compute_cagr_from_series,
     fetch_earnings_by_occupation,
     fetch_employment_by_occupation,
+    fetch_employment_multi_year,
     fetch_json_stat,
     fetch_sdmx_csv,
 )
@@ -289,6 +292,85 @@ class TestBuildOccupationSummary:
 
 
 # --- JSON-stat endpoint tests ---
+
+
+SAMPLE_MULTI_YEAR_EMPLOYMENT_CSV = """\
+DATAFLOW,LAST UPDATE,freq,age,isco08,sex,unit,geo,TIME_PERIOD,OBS_VALUE,OBS_FLAG
+ESTAT:LFSA_EGAI2D(1.0),2024-06-01,A,Y_GE15,OC1,T,THS_PER,CY,2020,22.0,
+ESTAT:LFSA_EGAI2D(1.0),2024-06-01,A,Y_GE15,OC1,T,THS_PER,CY,2023,25.3,
+ESTAT:LFSA_EGAI2D(1.0),2024-06-01,A,Y_GE15,OC25,T,THS_PER,CY,2020,10.0,
+ESTAT:LFSA_EGAI2D(1.0),2024-06-01,A,Y_GE15,OC25,T,THS_PER,CY,2023,12.5,
+"""
+
+
+# --- fetch_employment_multi_year tests ---
+
+
+class TestFetchEmploymentMultiYear:
+    def test_returns_dict_by_code_and_year(self):
+        client = _mock_client(SAMPLE_MULTI_YEAR_EMPLOYMENT_CSV)
+        result = fetch_employment_multi_year(geo="CY", client=client)
+
+        assert "OC1" in result
+        assert "OC25" in result
+        assert result["OC1"]["2020"] == 22.0
+        assert result["OC1"]["2023"] == 25.3
+        assert result["OC25"]["2020"] == 10.0
+        assert result["OC25"]["2023"] == 12.5
+
+    def test_empty_response(self):
+        csv_text = "DATAFLOW,LAST UPDATE,freq,isco08,geo,TIME_PERIOD,OBS_VALUE\n"
+        client = _mock_client(csv_text)
+        result = fetch_employment_multi_year(geo="CY", client=client)
+        assert result == {}
+
+
+# --- compute_cagr tests ---
+
+
+class TestComputeCagr:
+    def test_positive_growth(self):
+        # 100 -> 110 over 1 year = 10%
+        assert abs(compute_cagr(100, 110, 1) - 10.0) < 0.01
+
+    def test_negative_growth(self):
+        # 100 -> 90 over 1 year = -10%
+        assert abs(compute_cagr(100, 90, 1) - (-10.0)) < 0.01
+
+    def test_multi_year(self):
+        # 100 -> 121 over 2 years = 10% CAGR
+        assert abs(compute_cagr(100, 121, 2) - 10.0) < 0.1
+
+    def test_zero_start_returns_none(self):
+        assert compute_cagr(0, 100, 1) is None
+
+    def test_negative_years_returns_none(self):
+        assert compute_cagr(100, 110, -1) is None
+
+    def test_zero_years_returns_none(self):
+        assert compute_cagr(100, 110, 0) is None
+
+
+class TestComputeCagrFromSeries:
+    def test_basic_series(self):
+        series = {"2020": 100.0, "2021": 105.0, "2022": 110.0}
+        cagr, start, end = compute_cagr_from_series(series)
+        assert cagr is not None
+        assert abs(cagr - 4.88) < 0.1
+        assert start == "2020"
+        assert end == "2022"
+
+    def test_single_year_returns_none(self):
+        cagr, _, _ = compute_cagr_from_series({"2020": 100.0})
+        assert cagr is None
+
+    def test_empty_returns_none(self):
+        cagr, _, _ = compute_cagr_from_series({})
+        assert cagr is None
+
+    def test_none_returns_none(self):
+        cagr, _, _ = compute_cagr_from_series(None)
+        assert cagr is None
 
 
 class TestFetchJsonStat:

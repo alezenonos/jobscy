@@ -297,6 +297,67 @@ def fetch_earnings_by_occupation(geo="CY", last_n=1, client=None, verbose=False)
     return results
 
 
+def fetch_employment_multi_year(geo="CY", sex="T", age="Y_GE15", last_n=10, client=None, verbose=False):
+    """Fetch employment counts by ISCO-08 2-digit occupation across multiple years.
+
+    Similar to :func:`fetch_employment_by_occupation` but returns data for all
+    available years (up to *last_n*), grouped by ISCO code.
+
+    Returns:
+        Dict mapping isco_code -> {year: employment_thousands}, e.g.
+        ``{"OC25": {"2020": 12.1, "2024": 14.3}}``.
+    """
+    key = f"A..{age}.{sex}.THS_PER.{geo}"
+    params = {"lastNPeriods": str(last_n)}
+
+    rows = fetch_sdmx_csv("LFSA_EGAI2D", key=key, params=params, client=client, verbose=verbose)
+
+    if rows and "geo" in rows[0]:
+        rows = [r for r in rows if r.get("geo") == geo]
+
+    result: dict[str, dict[str, float]] = {}
+    for row in rows:
+        code = row.get("isco08", "")
+        value = row.get("OBS_VALUE", "")
+        year = row.get("TIME_PERIOD", "")
+        if not value or value == ":" or not year:
+            continue
+        result.setdefault(code, {})[year] = float(value)
+
+    return result
+
+
+def compute_cagr(start_val, end_val, years):
+    """Compute compound annual growth rate as a percentage.
+
+    Returns:
+        CAGR as a percentage (e.g. 3.2 means 3.2% per year), or None if
+        inputs are invalid.
+    """
+    if not start_val or not end_val or start_val <= 0 or end_val <= 0 or years <= 0:
+        return None
+    return ((end_val / start_val) ** (1 / years) - 1) * 100
+
+
+def compute_cagr_from_series(series):
+    """Compute CAGR from a dict of {year: value}.
+
+    Uses the earliest and latest years in the series.
+
+    Returns:
+        Tuple of (cagr_percentage, start_year, end_year) or (None, None, None).
+    """
+    if not series or len(series) < 2:
+        return None, None, None
+    years = sorted(series.keys())
+    start_year, end_year = years[0], years[-1]
+    n_years = int(end_year) - int(start_year)
+    if n_years <= 0:
+        return None, None, None
+    cagr = compute_cagr(series[start_year], series[end_year], n_years)
+    return cagr, start_year, end_year
+
+
 def build_occupation_summary(employment_data, earnings_data):
     """Merge employment and earnings data into a unified summary.
 

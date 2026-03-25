@@ -1,0 +1,236 @@
+[
+  {
+    "slug": "chief-executives-senior-officials-and-legislators",
+    "title": "Chief executives, senior officials and legislators",
+    "outlook": 2,
+    "outlook_rationale": "Stable demand driven by ongoing economic growth in Cyprus, with slight expansion from new businesses in fintech and tech sectors. AI augments executive decision-making but does not reduce demand for leadership roles."
+  },
+  {
+    "slug": "administrative-and-commercial-managers",
+    "title": "Administrative and commercial managers",
+    "outlook": 3,
+    "outlook_rationale": "Moderate growth as Cyprus expands its financial services and tech sectors. Growing demand for commercial managers in tourism, shipping, and emerging digital industries, though AI-driven analytics may flatten growth somewhat."
+  },
+  {
+    "slug": "production-and-specialised-services-managers",
+    "title": "Production and specialised services managers",
+    "outlook": 2,
+    "outlook_rationale": "Steady demand driven by Cyprus's construction sector and manufacturing. Specialised services management in hospitality and shipping remains stable, with slight growth from infrastructure investment."
+  },
+  {
+    "slug": "hospitality-retail-and-other-services-managers",
+    "title": "Hospitality, retail and other services managers",
+    "outlook": 4,
+    "outlook_rationale": "Growing demand as Cyprus tourism continues expanding with new resort developments and year-round tourism strategies. Retail management evolving with e-commerce integration but physical retail remains strong in Cyprus."
+  },
+  {
+    "slug": "science-and-engineering-professionals",
+    "title": "Science and engineering professionals",
+    "outlook": 5,
+    "outlook_rationale": "Strong growth driven by EU green transition investment, renewable energy projects in Cyprus, and infrastructure development. Engineering demand bolstered by construction boom and environmental compliance requirements."
+  },
+  {
+    "slug": "health-professionals",
+    "title": "Health professionals",
+    "outlook": 8,
+    "outlook_rationale": "Strong growth driven by Cyprus's ageing population, expansion of the GESY national health system, and medical tourism. EU-wide healthcare workforce shortages create additional demand pressure."
+  },
+  {
+    "slug": "teaching-professionals",
+    "title": "Teaching professionals",
+    "outlook": 3,
+    "outlook_rationale": "Moderate growth from expanding higher education sector in Cyprus and demand for digital skills training. Demographic pressures (low birth rate) limit primary/secondary growth, but tertiary and vocational training expand."
+  },
+  {
+    "slug": "business-and-administration-professionals",
+    "title": "Business and administration professionals",
+    "outlook": 4,
+    "outlook_rationale": "Growing demand from Cyprus's expanding financial services, professional services, and fintech sectors. EU regulatory compliance (AML, ESG) creates new roles, though AI automates routine analytical tasks."
+  },
+  {
+    "slug": "information-and-communications-technology-professionals",
+    "title": "Information and communications technology professionals",
+    "outlook": 10,
+    "outlook_rationale": "Exceptional growth as Cyprus positions itself as an EU tech hub. Digital transformation across all sectors, EU Digital Decade targets, and strong demand for AI/ML, cybersecurity, and cloud professionals drive rapid expansion."
+  },
+  {
+    "slug": "legal-social-and-cultural-professionals",
+    "title": "Legal, social and cultural professionals",
+    "outlook": 3,
+    "outlook_rationale": "Moderate growth driven by EU regulatory complexity requiring more legal professionals, and social services expansion. Cultural and media professionals face mixed outlook with AI disrupting content creation but growing digital media demand."
+  },
+  {
+    "slug": "science-and-engineering-associate-professionals",
+    "title": "Science and engineering associate professionals",
+    "outlook": 4,
+    "outlook_rationale": "Moderate growth supported by construction, renewable energy, and environmental monitoring needs in Cyprus. Technical roles in quality control and engineering support remain in demand as infrastructure investment continues."
+  },
+  {
+    "slug": "health-associate-professionals",
+    "title": "Health associate professionals",
+    "outlook": 7,
+    "outlook_rationale": "Strong growth driven by GESY expansion, ageing population care needs, and EU-wide nursing shortages. Paramedical and nursing roles are among the most in-demand occupations across the EU."
+  },
+  {
+    "slug": "business-and-administration-associate-professionals",
+    "title": "Business and administration associate professionals",
+    "outlook": -2,
+    "outlook_rationale": "Slight decline as AI and automation handle routine financial record-keeping, sales administration, and clerical coordination. Large current workforce (51.9K) faces productivity-driven restructuring, though new compliance and support roles partially offset losses."
+  },
+  {
+    "slug": "legal-social-cultural-and-related-associate-professionals",
+    "title": "Legal, social, cultural and related associate professionals",
+    "outlook": 2,
+    "outlook_rationale": "Stable with slight growth from social services expansion and cultural sector digitization. AI impacts routine legal and documentation work, but interpersonal and creative roles maintain demand."
+  },
+  {
+    "slug": "information-and-communications-technicians",
+    "title": "Information and communications technicians",
+    "outlook": 6,
+    "outlook_rationale": "Solid growth as digital infrastructure expands across Cyprus. Network administration, cybersecurity support, and IT helpdesk roles grow with increasing digitization of businesses and government services."
+  },
+  {
+    "slug": "general-and-keyboard-clerks",
+    "title": "General and keyboard clerks",
+    "outlook": -8,
+    "outlook_rationale": "Significant decline as AI and RPA automate routine document processing, data entry, and filing tasks. E-government initiatives and digital workflows in Cyprus's public and private sectors accelerate displacement of traditional clerical roles."
+  },
+  {
+    "slug": "customer-services-clerks",
+    "title": "Customer services clerks",
+    "outlook": -5,
+    "outlook_rationale": "Moderate decline as AI chatbots and automated customer service systems handle routine inquiries. Tourism sector maintains some demand for multilingual human agents, but overall headcount trends downward."
+  },
+  {
+    "slug": "numerical-and-material-recording-clerks",
+    "title": "Numerical and material recording clerks",
+    "outlook": -6,
+    "outlook_rationale": "Notable decline as automated accounting software, inventory management systems, and OCR technology replace manual data recording. Financial sector digitization in Cyprus accelerates this trend."
+  },
+  {
+    "slug": "other-clerical-support-workers",
+    "title": "Other clerical support workers",
+    "outlook": -7,
+    "outlook_rationale": "Significant decline as document management, mail processing, and personnel record-keeping are automated. Cyprus's e-government push and EU digital transformation targets drive rapid replacement of manual clerical processes."
+  },
+  {
+    "slug": "personal-service-workers",
+    "title": "Personal service workers",
+    "outlook": 5,
+    "outlook_rationale": "Strong growth driven by Cyprus tourism expansion, restaurant sector growth, and rising demand for personal services. Hospitality and food service roles benefit from year-round tourism strategies and new hotel developments."
+  },
+  {
+    "slug": "sales-workers",
+    "title": "Sales workers",
+    "outlook": 0,
+    "outlook_rationale": "Stable overall with offsetting forces: e-commerce growth reduces physical retail demand, but Cyprus's tourism-driven retail and growing population sustain brick-and-mortar sales roles."
+  },
+  {
+    "slug": "personal-care-workers",
+    "title": "Personal care workers",
+    "outlook": 9,
+    "outlook_rationale": "Very strong growth driven by Cyprus's rapidly ageing population, expanding home care services, and EU-wide shortages in elderly care. GESY integration of long-term care services creates new demand."
+  },
+  {
+    "slug": "protective-services-workers",
+    "title": "Protective services workers",
+    "outlook": 1,
+    "outlook_rationale": "Largely stable with slight growth from expanding private security sector. AI surveillance supplements but doesn't replace physical security and emergency response roles. Public sector stability in Cyprus supports headcount."
+  },
+  {
+    "slug": "market-oriented-skilled-agricultural-workers",
+    "title": "Market-oriented skilled agricultural workers",
+    "outlook": -3,
+    "outlook_rationale": "Moderate decline as agricultural mechanization and precision farming reduce labor needs. Cyprus's small agricultural sector faces competition from EU imports, though specialty crops (citrus, wine) maintain some demand."
+  },
+  {
+    "slug": "market-oriented-skilled-forestry-fishery-and-hunting-workers",
+    "title": "Market-oriented skilled forestry, fishery and hunting workers",
+    "outlook": -2,
+    "outlook_rationale": "Slight decline as fishing fleet modernization and EU environmental regulations reduce workforce needs. Forest management remains limited in Cyprus's small forestry sector."
+  },
+  {
+    "slug": "building-and-related-trades-workers-excluding-electricians",
+    "title": "Building and related trades workers, excluding electricians",
+    "outlook": 3,
+    "outlook_rationale": "Moderate growth driven by Cyprus's ongoing construction boom, EU-funded infrastructure projects, and green building renovation requirements. Skilled trades shortages support wage growth and employment stability."
+  },
+  {
+    "slug": "metal-machinery-and-related-trades-workers",
+    "title": "Metal, machinery and related trades workers",
+    "outlook": 1,
+    "outlook_rationale": "Stable with slight growth from machinery maintenance demand in construction and shipping sectors. Industrial automation is limited in Cyprus's small manufacturing base."
+  },
+  {
+    "slug": "handicraft-and-printing-workers",
+    "title": "Handicraft and printing workers",
+    "outlook": -4,
+    "outlook_rationale": "Moderate decline as digital publishing replaces print media and automated printing reduces labor needs. Small artisanal sector in Cyprus maintains niche demand but overall headcount decreases."
+  },
+  {
+    "slug": "electrical-and-electronic-trades-workers",
+    "title": "Electrical and electronic trades workers",
+    "outlook": 4,
+    "outlook_rationale": "Moderate growth driven by solar energy installations, EV charging infrastructure, and smart building technology in Cyprus. EU green transition policies create sustained demand for electrical installation and maintenance workers."
+  },
+  {
+    "slug": "food-processing-wood-working-garment-and-other-craft-and-related-trades-workers",
+    "title": "Food processing, wood working, garment and other craft and related trades workers",
+    "outlook": -1,
+    "outlook_rationale": "Slight decline as food processing becomes more automated and garment manufacturing faces competition from lower-cost producers. Local food production for tourism sector provides some stability."
+  },
+  {
+    "slug": "stationary-plant-and-machine-operators",
+    "title": "Stationary plant and machine operators",
+    "outlook": -2,
+    "outlook_rationale": "Slight decline as industrial automation and predictive maintenance reduce operator headcount needs. Cyprus's limited manufacturing base means the impact is moderate."
+  },
+  {
+    "slug": "assemblers",
+    "title": "Assemblers",
+    "outlook": -3,
+    "outlook_rationale": "Moderate decline as robotics and automated assembly lines reduce manual assembly needs. Cyprus's small manufacturing sector means limited scale, but the trend follows EU-wide automation patterns."
+  },
+  {
+    "slug": "drivers-and-mobile-plant-operators",
+    "title": "Drivers and mobile plant operators",
+    "outlook": 0,
+    "outlook_rationale": "Stable in the medium term. While autonomous vehicle technology advances, Cyprus's complex urban environments and construction demand sustain driver employment. Delivery sector growth offsets potential autonomous driving displacement."
+  },
+  {
+    "slug": "cleaners-and-helpers",
+    "title": "Cleaners and helpers",
+    "outlook": 3,
+    "outlook_rationale": "Moderate growth driven by expanding tourism infrastructure, new hotel developments, and growing office space in Cyprus. Physical cleaning remains resistant to automation, and demographic trends reduce labor supply."
+  },
+  {
+    "slug": "agricultural-forestry-and-fishery-labourers",
+    "title": "Agricultural, forestry and fishery labourers",
+    "outlook": -4,
+    "outlook_rationale": "Notable decline as agricultural mechanization reduces demand for manual labor. EU agricultural policy shifts toward sustainability and technology further reduce unskilled labor needs in primary sectors."
+  },
+  {
+    "slug": "labourers-in-mining-construction-manufacturing-and-transport",
+    "title": "Labourers in mining, construction, manufacturing and transport",
+    "outlook": 1,
+    "outlook_rationale": "Stable with slight growth from ongoing construction demand in Cyprus. While manufacturing labor declines, construction and transport laborers remain in demand due to infrastructure investment."
+  },
+  {
+    "slug": "food-preparation-assistants",
+    "title": "Food preparation assistants",
+    "outlook": 4,
+    "outlook_rationale": "Moderate growth driven by tourism sector expansion and growing restaurant/hospitality industry in Cyprus. Physical food preparation tasks remain resistant to automation, and growing tourism creates sustained demand."
+  },
+  {
+    "slug": "street-and-related-sales-and-service-workers",
+    "title": "Street and related sales and service workers",
+    "outlook": 1,
+    "outlook_rationale": "Largely stable with slight growth from tourism-related street vending and informal services. Cyprus's large informal service sector (62.2K) reflects tourism dependency and seasonal employment patterns."
+  },
+  {
+    "slug": "refuse-workers-and-other-elementary-workers",
+    "title": "Refuse workers and other elementary workers",
+    "outlook": 0,
+    "outlook_rationale": "Stable demand as waste collection and municipal services maintain consistent employment. Smart waste management may improve route efficiency but physical collection labor remains essential."
+  }
+]
