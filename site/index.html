@@ -3,7 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cyprus Job Market Visualizer</title>
+<title>Cyprus Job Market Visualiser</title>
+<meta name="description" content="Interactive treemap of 39 ISCO-08 occupation groups in the Cyprus labour market — explore growth outlook, median pay, education, and AI exposure.">
+<meta property="og:title" content="Cyprus Job Market Visualiser">
+<meta property="og:description" content="Interactive treemap visualising the Cyprus labour market — 39 occupations sized by employment, coloured by growth outlook, pay, education, or AI exposure.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Cyprus Job Market Visualiser">
+<meta name="twitter:description" content="Interactive treemap visualising the Cyprus labour market — growth outlook, median pay, education, and AI exposure.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🇨🇾</text></svg>">
 <style>
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -206,10 +214,12 @@ canvas#canvas {
 </head>
 <body>
 
-<div id="wrapper">
-<div id="header">
+<noscript><p style="color:#e0e0e8;text-align:center;padding:40px;">This visualiser requires JavaScript to run. Please enable JavaScript in your browser.</p></noscript>
+<div id="loading" style="text-align:center;padding:60px 20px;color:#888894;">Loading job market data&hellip;</div>
+<div id="wrapper" style="display:none;">
+<header id="header">
   <div class="intro">
-    <h1>Cyprus Job Market Visualizer <a href="https://github.com/alezenonos/jobscy">GitHub</a></h1>
+    <h1>Cyprus Job Market Visualiser <a href="https://github.com/alezenonos/jobscy">GitHub</a></h1>
     <p>This is a research tool that visualizes <b>39 ISCO-08 occupation groups</b> from <a href="https://ec.europa.eu/eurostat">Eurostat</a> and <a href="https://www.anad.org.cy">HRDA/AnAD</a> data, covering the <b>Cyprus labour market</b>. Each rectangle's <b>area</b> is proportional to total employment. <b>Color</b> shows the selected metric &mdash; toggle between projected growth outlook, median pay (EUR), education requirements, and AI exposure. This is not a report, a paper, or a serious economic publication &mdash; it is a development tool for exploring Cyprus employment data visually.</p>
     <p><b>LLM-powered coloring:</b> The <a href="https://github.com/alezenonos/jobscy">source code</a> includes data pipelines, parsers, and a framework for writing custom LLM prompts to score and color occupations by any criteria. You write a prompt, the LLM scores each occupation, and the treemap colors accordingly. The "Digital AI Exposure" option is one example &mdash; it estimates how much current AI (which is primarily digital) will reshape each occupation. But you could write a different prompt for any question &mdash; e.g. exposure to humanoid robotics, offshoring risk, climate impact &mdash; and re-run the pipeline to get a different coloring.</p>
     <details>
@@ -247,11 +257,11 @@ Respond with ONLY a JSON object in this exact format, no other text:
   <div class="controls-row">
     <div class="stat-section">
       <h3>Layer</h3>
-      <div class="color-toggle" id="colorToggle">
-        <button data-mode="outlook" class="active">Growth Outlook</button>
-        <button data-mode="pay">Median Pay</button>
-        <button data-mode="education">Education</button>
-        <button data-mode="exposure">Digital AI Exposure</button>
+      <div class="color-toggle" id="colorToggle" role="group" aria-label="Colour metric">
+        <button data-mode="outlook" class="active" aria-pressed="true">Growth Outlook</button>
+        <button data-mode="pay" aria-pressed="false">Median Pay</button>
+        <button data-mode="education" aria-pressed="false">Education</button>
+        <button data-mode="exposure" aria-pressed="false">Digital AI Exposure</button>
       </div>
     </div>
     <div class="gradient-legend">
@@ -274,9 +284,11 @@ Respond with ONLY a JSON object in this exact format, no other text:
     <div class="stat-section" id="block7"></div>
     <div class="stat-section" id="block8"></div>
   </div>
-</div>
+</header>
 
-<canvas id="canvas"></canvas>
+<main>
+<canvas id="canvas" role="img" aria-label="Treemap visualisation of Cyprus occupations sized by employment and coloured by the selected metric"></canvas>
+</main>
 </div>
 
 <div id="tooltip">
@@ -882,8 +894,9 @@ document.getElementById("colorToggle").addEventListener("click", (e) => {
   const btn = e.target.closest("button");
   if (!btn || !btn.dataset.mode) return;
   colorMode = btn.dataset.mode;
-  document.querySelectorAll("#colorToggle button").forEach(b => b.classList.remove("active"));
+  document.querySelectorAll("#colorToggle button").forEach(b => { b.classList.remove("active"); b.setAttribute("aria-pressed", "false"); });
   btn.classList.add("active");
+  btn.setAttribute("aria-pressed", "true");
   updateStats();
   drawGradientLegend();
   draw();
@@ -894,12 +907,19 @@ document.getElementById("colorToggle").addEventListener("click", (e) => {
 // ── Load ───────────────────────────────────────────────────────────────
 
 fetch("data.json")
-  .then(r => r.json())
+  .then(r => { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
   .then(d => {
     data = d;
+    document.getElementById("loading").style.display = "none";
+    document.getElementById("wrapper").style.display = "";
     updateStats();
     drawGradientLegend();
     resize();
+  })
+  .catch(e => {
+    console.error("Failed to load data:", e);
+    document.getElementById("loading").innerHTML =
+      '<p style="color:#e05050;">Failed to load job market data. Please refresh or try again later.</p>';
   });
 
 window.addEventListener("resize", resize);

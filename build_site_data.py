@@ -2,7 +2,7 @@
 Build a compact JSON for the website by merging CSV stats with AI exposure scores.
 
 Reads occupations_cy.csv (Cyprus ISCO-08 data) and scores.json (AI exposure
-ratings) and writes site/data.json for the treemap visualization.
+ratings) and writes site/data.json for the treemap visualisation.
 
 Usage:
     uv run python build_site_data.py

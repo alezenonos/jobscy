@@ -1,6 +1,6 @@
-# JobsCY — Cyprus Job Market Visualizer
+# JobsCY — Cyprus Job Market Visualiser
 
-An interactive treemap visualization of the Cyprus labour market, with AI exposure scoring for occupations. Built on data from EU/Cyprus sources including [HRDA/AnAD](https://www.anad.org.cy), [Eurostat](https://ec.europa.eu/eurostat), and [EURES Cyprus](https://eures.europa.eu).
+An interactive treemap visualisation of the Cyprus labour market, with AI exposure scoring for occupations. Built on data from EU/Cyprus sources including [HRDA/AnAD](https://www.anad.org.cy), [Eurostat](https://ec.europa.eu/eurostat), and [EURES Cyprus](https://eures.europa.eu).
 
 ## What's here
 
@@ -51,7 +51,7 @@ Fork `score.py` to write your own scoring criteria — e.g. green economy releva
 | `score.py` | LLM-based AI exposure scoring via OpenRouter (ISCO-08 / Cyprus context) |
 | `build_site_data.py` | Merge CSV + scores → `site/data.json` |
 | `make_prompt.py` | Generate single-file LLM prompt from all data |
-| `site/index.html` | Interactive treemap visualization (EUR, ISCO-08, Cyprus) |
+| `site/index.html` | Interactive treemap visualisation (EUR, ISCO-08, Cyprus) |
 | `occupations_cy.json` | Master list of 39 ISCO-08 occupation groups |
 | `occupations_cy.csv` | Summary stats: pay (EUR), employment, education, ISCO codes |
 | `scores.json` | AI exposure scores (0-10) with rationales |
@@ -110,4 +110,4 @@ CI runs automatically on push via GitHub Actions (lint + test). See [CONTRIBUTIN
 
 ## Acknowledgements
 
-This project adapts the visualization approach from [karpathy/jobs](https://github.com/karpathy/jobs) for the Cyprus labour market using EU data sources.
+This project adapts the visualisation approach from [karpathy/jobs](https://github.com/karpathy/jobs) for the Cyprus labour market using EU data sources.

@@ -122,9 +122,11 @@ def diagnose_earnings(client):
             print(f"  Unique {dim}: {vals}")
         print("\n  Sample rows (first 5):")
         for row in rows[:5]:
-            print(f"    nace={row.get('nace_r2')} isco={row.get('isco08')} "
-                  f"wt={row.get('worktime')} age={row.get('age')} sex={row.get('sex')} "
-                  f"val={row.get('OBS_VALUE')} year={row.get('TIME_PERIOD')}")
+            print(
+                f"    nace={row.get('nace_r2')} isco={row.get('isco08')} "
+                f"wt={row.get('worktime')} age={row.get('age')} sex={row.get('sex')} "
+                f"val={row.get('OBS_VALUE')} year={row.get('TIME_PERIOD')}"
+            )
     else:
         print("  No data returned with full key. Trying broader queries...")
 

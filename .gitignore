@@ -15,7 +15,7 @@ wheels/
 # Parsed markdown (reproducible via process.py)
 pages/
 
-# Embeddings (unused in final visualization)
+# Embeddings (unused in final visualisation)
 embed.py
 embeddings.json
 

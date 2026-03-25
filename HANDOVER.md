@@ -36,7 +36,7 @@ Utilities:
 | `build_site_data.py` | Merge CSV + scores → `site/data.json` | **Done (PR 3)** |
 | `score.py` | LLM-based AI exposure scoring via OpenRouter | **Done (PR 4)** |
 | `make_prompt.py` | Generate single-file LLM prompt | **Done (PR 6)** |
-| `site/index.html` | Interactive treemap visualization (EUR, ISCO-08) | **Done (PR 5)** |
+| `site/index.html` | Interactive treemap visualisation (EUR, ISCO-08) | **Done (PR 5)** |
 ## Data sources (Cyprus/EU)
 
 | Source | What it provides | Access method | Priority |
@@ -115,7 +115,7 @@ https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/{DATASET}?ge
   - Updated `main()` — auto-detects `occupations_cy.json` vs `occupations.json`
 - 12 new tests in `tests/test_score.py` (97 total)
 
-### PR 5: Visualization + Site Update ✅
+### PR 5: Visualisation + Site Update ✅
 - `site/index.html` — fully adapted for Cyprus/EU
   - Title, header, descriptions updated (removed all US/BLS/karpathy references)
   - GitHub links point to `alezenonos/jobscy`
