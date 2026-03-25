@@ -43,6 +43,27 @@ ESTAT:EARN_SES_HOURLY(1.0),2024-03-01,A,B-S,OC5,TOTAL,TOTAL,T,MEAN_E_EUR,CY,2022
 ESTAT:EARN_SES_HOURLY(1.0),2024-03-01,A,B-S,OC9,TOTAL,TOTAL,T,MEAN_E_EUR,CY,2022,7.20,
 """
 
+# Sectoral-only data: no B-S/B-N/TOTAL aggregate rows
+SAMPLE_EARNINGS_SECTORAL_CSV = """\
+DATAFLOW,LAST UPDATE,freq,nace_r2,isco08,worktime,age,sex,indic_se,geo,TIME_PERIOD,OBS_VALUE,OBS_FLAG
+ESTAT:EARN_SES_HOURLY(1.0),2024-03-01,A,C,OC1,TOTAL,TOTAL,T,MEAN_E_EUR,CY,2018,20.00,
+ESTAT:EARN_SES_HOURLY(1.0),2024-03-01,A,G,OC1,TOTAL,TOTAL,T,MEAN_E_EUR,CY,2018,25.00,
+ESTAT:EARN_SES_HOURLY(1.0),2024-03-01,A,F,OC1,TOTAL,TOTAL,T,MEAN_E_EUR,CY,2018,21.00,
+ESTAT:EARN_SES_HOURLY(1.0),2024-03-01,A,C,OC2,TOTAL,TOTAL,T,MEAN_E_EUR,CY,2018,15.00,
+ESTAT:EARN_SES_HOURLY(1.0),2024-03-01,A,G,OC2,TOTAL,TOTAL,T,MEAN_E_EUR,CY,2018,18.00,
+"""
+
+# Mixed: old aggregate + newer sectoral-only
+SAMPLE_EARNINGS_MIXED_CSV = """\
+DATAFLOW,LAST UPDATE,freq,nace_r2,isco08,worktime,age,sex,indic_se,geo,TIME_PERIOD,OBS_VALUE,OBS_FLAG
+ESTAT:EARN_SES_HOURLY(1.0),2024-03-01,A,B-S,OC1,TOTAL,TOTAL,T,MEAN_E_EUR,CY,2002,19.63,
+ESTAT:EARN_SES_HOURLY(1.0),2024-03-01,A,B-S,OC2,TOTAL,TOTAL,T,MEAN_E_EUR,CY,2002,12.85,
+ESTAT:EARN_SES_HOURLY(1.0),2024-03-01,A,C,OC1,TOTAL,TOTAL,T,MEAN_E_EUR,CY,2018,28.00,
+ESTAT:EARN_SES_HOURLY(1.0),2024-03-01,A,G,OC1,TOTAL,TOTAL,T,MEAN_E_EUR,CY,2018,32.00,
+ESTAT:EARN_SES_HOURLY(1.0),2024-03-01,A,C,OC2,TOTAL,TOTAL,T,MEAN_E_EUR,CY,2018,20.00,
+ESTAT:EARN_SES_HOURLY(1.0),2024-03-01,A,G,OC2,TOTAL,TOTAL,T,MEAN_E_EUR,CY,2018,22.00,
+"""
+
 
 def _mock_response(text, status_code=200):
     """Create a mock httpx.Response."""
@@ -210,6 +231,48 @@ class TestFetchEarnings:
 
         oc2 = next(r for r in results if r["isco_code"] == "OC2")
         assert oc2["isco_label"] == "Professionals"
+
+    def test_sectoral_fallback_when_no_aggregates(self):
+        """When only sectoral rows exist, averages across sectors."""
+        client = _mock_client(SAMPLE_EARNINGS_SECTORAL_CSV)
+        results = fetch_earnings_by_occupation(geo="CY", client=client)
+
+        assert len(results) == 2
+        oc1 = next(r for r in results if r["isco_code"] == "OC1")
+        # Average of 20.00, 25.00, 21.00 = 22.0
+        assert oc1["hourly_earnings_eur"] == 22.0
+        assert oc1["year"] == "2018"
+
+        oc2 = next(r for r in results if r["isco_code"] == "OC2")
+        # Average of 15.00, 18.00 = 16.5
+        assert oc2["hourly_earnings_eur"] == 16.5
+        assert oc2["year"] == "2018"
+
+    def test_prefers_newer_sectoral_over_older_aggregate(self):
+        """When old aggregate and newer sectoral exist, uses newer sectoral average."""
+        client = _mock_client(SAMPLE_EARNINGS_MIXED_CSV)
+        results = fetch_earnings_by_occupation(geo="CY", client=client)
+
+        assert len(results) == 2
+        oc1 = next(r for r in results if r["isco_code"] == "OC1")
+        # Average of 28.00, 32.00 = 30.0 (2018), not 19.63 (2002)
+        assert oc1["hourly_earnings_eur"] == 30.0
+        assert oc1["year"] == "2018"
+
+        oc2 = next(r for r in results if r["isco_code"] == "OC2")
+        # Average of 20.00, 22.00 = 21.0 (2018), not 12.85 (2002)
+        assert oc2["hourly_earnings_eur"] == 21.0
+        assert oc2["year"] == "2018"
+
+    def test_prefers_aggregate_when_same_year(self):
+        """When aggregate exists for the latest year, uses aggregate (not average)."""
+        client = _mock_client(SAMPLE_EARNINGS_CSV)
+        results = fetch_earnings_by_occupation(geo="CY", client=client)
+
+        oc1 = next(r for r in results if r["isco_code"] == "OC1")
+        # Should use the B-S aggregate value, not compute an average
+        assert oc1["hourly_earnings_eur"] == 22.50
+        assert oc1["year"] == "2022"
 
 
 # --- build_occupation_summary tests ---
