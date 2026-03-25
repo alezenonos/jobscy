@@ -36,6 +36,63 @@ class TestMergeCyprus:
         assert data[0]["isco_code"] == "OC25"
         assert data[0]["exposure"] == 8
 
+    def test_merge_with_outlook(self):
+        rows = [
+            {
+                "title": "ICT Professionals",
+                "slug": "ict-professionals",
+                "category": "professionals",
+                "isco_code": "OC25",
+                "median_pay_annual_eur": "38064",
+                "median_pay_hourly_eur": "18.30",
+                "entry_education": "Bachelor's degree or higher",
+                "employment_thousands": "12.5",
+                "year_employment": "2023",
+                "year_earnings": "2022",
+            }
+        ]
+        scores = {
+            "ict-professionals": {
+                "slug": "ict-professionals",
+                "exposure": 8,
+                "rationale": "Digital work.",
+            }
+        }
+        outlook = {
+            "ict-professionals": {
+                "slug": "ict-professionals",
+                "outlook": 7.5,
+                "outlook_rationale": "Strong demand for ICT skills.",
+            }
+        }
+
+        data = merge_cyprus(rows, scores, outlook)
+        assert len(data) == 1
+        assert data[0]["outlook"] == 7.5
+        assert data[0]["outlook_rationale"] == "Strong demand for ICT skills."
+        assert data[0]["exposure"] == 8
+
+    def test_merge_without_outlook(self):
+        rows = [
+            {
+                "title": "ICT Professionals",
+                "slug": "ict-professionals",
+                "category": "professionals",
+                "isco_code": "OC25",
+                "median_pay_annual_eur": "38064",
+                "median_pay_hourly_eur": "18.30",
+                "entry_education": "Bachelor's degree or higher",
+                "employment_thousands": "12.5",
+                "year_employment": "2023",
+                "year_earnings": "2022",
+            }
+        ]
+        scores = {}
+
+        data = merge_cyprus(rows, scores)
+        assert data[0]["outlook"] is None
+        assert data[0]["outlook_rationale"] == ""
+
     def test_empty_employment(self):
         rows = [
             {
@@ -55,3 +112,4 @@ class TestMergeCyprus:
         assert data[0]["pay"] is None
         assert data[0]["jobs"] is None
         assert data[0]["exposure"] is None
+        assert data[0]["outlook"] is None

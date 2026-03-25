@@ -13,6 +13,7 @@ Usage:
 import argparse
 import csv
 import json
+import os
 
 
 def fmt_pay(pay):
@@ -31,16 +32,20 @@ def fmt_jobs(jobs):
     return str(jobs)
 
 
-def load_records_cyprus(occupations, csv_rows, scores):
+def load_records_cyprus(occupations, csv_rows, scores, outlook=None):
     """Merge Cyprus-format data into unified records."""
+    outlook = outlook or {}
     records = []
     for occ in occupations:
         slug = occ["slug"]
         row = csv_rows.get(slug, {})
         score = scores.get(slug, {})
+        outl = outlook.get(slug, {})
         pay = int(row["median_pay_annual_eur"]) if row.get("median_pay_annual_eur") else None
         emp_k = row.get("employment_thousands", "")
         jobs = round(float(emp_k) * 1000) if emp_k else None
+        outlook_val = outl.get("outlook")
+        outlook_pct = round(outlook_val) if outlook_val is not None else None
         records.append(
             {
                 "title": occ["title"],
@@ -48,8 +53,8 @@ def load_records_cyprus(occupations, csv_rows, scores):
                 "category": row.get("category", occ.get("category", "")),
                 "pay": pay,
                 "jobs": jobs,
-                "outlook_pct": None,  # Not yet available from Eurostat
-                "outlook_desc": "",
+                "outlook_pct": outlook_pct,
+                "outlook_desc": outl.get("outlook_rationale", outl.get("rationale", "")),
                 "education": row.get("entry_education", ""),
                 "exposure": score.get("exposure"),
                 "rationale": score.get("rationale", ""),
@@ -63,6 +68,7 @@ def main():
     parser.add_argument("--occupations", default=None, help="Occupations JSON file (auto-detects)")
     parser.add_argument("--csv", default=None, help="Occupations CSV file (auto-detects)")
     parser.add_argument("--scores", default="scores.json", help="Scores JSON file")
+    parser.add_argument("--outlook", default="outlook_scores.json", help="Outlook scores JSON file")
     args = parser.parse_args()
 
     occ_path = args.occupations or "occupations_cy.json"
@@ -78,8 +84,13 @@ def main():
     with open(args.scores) as f:
         scores = {s["slug"]: s for s in json.load(f)}
 
+    outlook = {}
+    if os.path.exists(args.outlook):
+        with open(args.outlook) as f:
+            outlook = {s["slug"]: s for s in json.load(f)}
+
     print(f"Using {occ_path} + {csv_path}")
-    records = load_records_cyprus(occupations, csv_rows, scores)
+    records = load_records_cyprus(occupations, csv_rows, scores, outlook)
 
     # Sort by exposure desc, then jobs desc
     records.sort(key=lambda r: (-(r["exposure"] or 0), -(r["jobs"] or 0)))
