@@ -208,18 +208,23 @@ def fetch_employment_by_occupation(geo="CY", sex="T", age="Y_GE15", last_n=1, cl
     return results
 
 
-def fetch_earnings_by_occupation(geo="CY", last_n=1, client=None, verbose=False):
+def fetch_earnings_by_occupation(geo="CY", last_n=10, client=None, verbose=False):
     """Fetch mean gross hourly earnings by ISCO-08 1-digit occupation.
 
     Uses the earn_ses_hourly dataset (Structure of Earnings Survey).
-    SES data is only published every 4 years (latest available: 2022).
+    SES data is published every 4 years (2002, 2006, 2010, 2014, 2018, 2022).
+
+    When pre-aggregated rows (nace_r2 = B-S/B-N/TOTAL) are unavailable for
+    the most recent year, computes a simple (unweighted) average across
+    available NACE sectors for that year.
 
     earn_ses_hourly dimensions (in order):
     ``freq.nace_r2.isco08.worktime.age.sex.indic_se.geo``
 
     Args:
         geo: Country code (default 'CY' for Cyprus).
-        last_n: Number of most recent periods to fetch.
+        last_n: Number of most recent periods to fetch (default 10 to
+            cover all SES waves).
         client: Optional httpx.Client.
         verbose: Print debug info.
 
@@ -236,39 +241,77 @@ def fetch_earnings_by_occupation(geo="CY", last_n=1, client=None, verbose=False)
     params = {"lastNPeriods": str(last_n)}
 
     try:
-        rows = fetch_sdmx_csv("earn_ses_hourly", key=key, params=params, client=client, verbose=verbose)
+        all_rows = fetch_sdmx_csv("earn_ses_hourly", key=key, params=params, client=client, verbose=verbose)
     except Exception as exc:
         print(f"WARNING: Earnings fetch failed: {exc}")
-        rows = []
+        all_rows = []
 
-    # Post-filter: keep only aggregate rows (all sectors, all working times,
-    # all ages, both sexes).  Prefer the most-aggregate nace_r2 value available.
+    # Identify rows that pass basic filters (correct geo, ISCO, sex, worktime, age)
     valid_isco = set(isco_codes)
-    filtered: dict[str, dict] = {}  # isco_code -> best row
-    # Preference order for nace_r2 (most aggregate first)
-    nace_rank = {"B-S": 0, "B-N": 1, "TOTAL": 2}
-    for r in rows:
+    basic_filtered = []
+    for r in all_rows:
         if r.get("geo") != geo or r.get("isco08") not in valid_isco:
             continue
-        # Skip non-aggregate breakdowns
         if r.get("sex", "T") not in ("T", "TOTAL", ""):
             continue
         if r.get("worktime", "TOTAL") not in ("TOTAL", ""):
             continue
         if r.get("age", "TOTAL") not in ("TOTAL", ""):
             continue
+        val = r.get("OBS_VALUE", "")
+        if not val or val == ":":
+            continue
+        basic_filtered.append(r)
+
+    # Pass 1: Try to find aggregate rows (B-S, B-N, or TOTAL nace_r2)
+    nace_rank = {"B-S": 0, "B-N": 1, "TOTAL": 2}
+    aggregates: dict[str, dict] = {}  # isco_code -> best aggregate row
+    for r in basic_filtered:
         code = r["isco08"]
         rank = nace_rank.get(r.get("nace_r2", ""), 99)
-        prev = filtered.get(code)
+        if rank > 2:
+            continue  # not an aggregate row
+        prev = aggregates.get(code)
         if prev is None or rank < nace_rank.get(prev.get("nace_r2", ""), 99):
-            filtered[code] = r
-    rows = list(filtered.values())
+            aggregates[code] = r
+
+    # Determine years available
+    agg_years = {r.get("TIME_PERIOD") for r in aggregates.values()} - {None, ""}
+    all_years = {r.get("TIME_PERIOD") for r in basic_filtered} - {None, ""}
+    max_agg_year = max(agg_years) if agg_years else ""
+    max_all_year = max(all_years) if all_years else ""
+
+    # Pass 2: If newer data exists only as sectoral breakdowns, average across sectors
+    if max_all_year > max_agg_year:
+        sector_rows = [r for r in basic_filtered if r.get("TIME_PERIOD") == max_all_year]
+
+        by_isco: dict[str, list[float]] = {}
+        for r in sector_rows:
+            by_isco.setdefault(r["isco08"], []).append(float(r["OBS_VALUE"]))
+
+        rows = [
+            {
+                "isco08": code,
+                "OBS_VALUE": str(round(sum(vals) / len(vals), 2)),
+                "TIME_PERIOD": max_all_year,
+                "nace_r2": "AVG",
+            }
+            for code, vals in by_isco.items()
+        ]
+
+        if verbose:
+            n_sectors = [len(v) for v in by_isco.values()]
+            avg_sectors = sum(n_sectors) / len(n_sectors) if n_sectors else 0
+            print(f"  Earnings: using sectoral average for {max_all_year} "
+                  f"(~{avg_sectors:.0f} sectors per occupation)")
+    else:
+        rows = list(aggregates.values())
 
     if verbose:
-        print(f"  Earnings post-filter: {len(rows)} aggregate rows selected")
+        print(f"  Earnings post-filter: {len(rows)} rows selected")
         for r in rows:
-            print(f"    {r.get('isco08')}: nace={r.get('nace_r2')} wt={r.get('worktime')} "
-                  f"age={r.get('age')} sex={r.get('sex')} val={r.get('OBS_VALUE')}")
+            print(f"    {r.get('isco08')}: nace={r.get('nace_r2')} "
+                  f"year={r.get('TIME_PERIOD')} val={r.get('OBS_VALUE')}")
 
     if not rows:
         print(f"WARNING: No earnings data returned for {geo}.")
