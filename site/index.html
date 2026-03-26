@@ -859,10 +859,9 @@ function updateExposureStats(totalJobs) {
 canvas.addEventListener("mousemove", (e) => {
   const hit = hitTest(e.clientX, e.clientY);
   if (hit !== hovered) { hovered = hit; draw(); }
-  if (hovered) { showTooltip(hovered, e.clientX, e.clientY); canvas.style.cursor = "pointer"; }
-  else { hideTooltip(); canvas.style.cursor = "default"; }
+  if (hovered) { showTooltip(hovered, e.clientX, e.clientY); }
+  else { hideTooltip(); }
 });
-canvas.addEventListener("click", (e) => { const hit = hitTest(e.clientX, e.clientY); if (hit && hit.isco_code) window.open("https://ec.europa.eu/eurostat/web/products-manuals-and-guidelines/-/ks-ra-08-002", "_blank"); });
 canvas.addEventListener("mouseleave", () => { hovered = null; hideTooltip(); draw(); });
 function resize() { dpr = window.devicePixelRatio || 1; layout(); draw(); }
 
