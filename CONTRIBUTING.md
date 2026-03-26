@@ -50,6 +50,10 @@ When adding new functionality:
 
 ## Project conventions
 
+### Language
+- Use **British English** in all documentation, comments, and user-facing text (e.g. colour, visualisation, labour, organise)
+- Code identifiers (variable names, CSS properties, etc.) follow their language conventions
+
 ### Currency and classifications
 - **EUR (€)** — never USD. Use `fmt_pay()` for formatting.
 - **ISCO-08** for occupations (10 major groups, 39 sub-major groups at 2-digit level)

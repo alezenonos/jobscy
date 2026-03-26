@@ -2,6 +2,8 @@
 
 An interactive treemap visualisation of the Cyprus labour market, with AI exposure scoring for occupations. Built on data from EU/Cyprus sources including [HRDA/AnAD](https://www.anad.org.cy), [Eurostat](https://ec.europa.eu/eurostat), and [EURES Cyprus](https://eures.europa.eu).
 
+**Created and maintained by [Alexandros Zenonos](https://github.com/alezenonos)**, adapted from [karpathy/jobs](https://github.com/karpathy/jobs) for the Cyprus labour market using EU data sources and international classifications (ISCO-08, NACE, ISCED).
+
 ## What's here
 
 An interactive treemap of **39 ISCO-08 occupation groups** covering the Cyprus labour market. Each rectangle's **area** is proportional to employment and **colour** shows the selected metric — toggle between growth outlook, median pay (EUR), education level, and AI exposure.
@@ -93,12 +95,21 @@ cd site && python -m http.server 8000
 ## Development
 
 ```bash
-uv run pytest -v           # run tests (97 tests)
+uv run pytest -v           # run tests (110+ tests)
 uv run ruff check .        # lint
 uv run ruff format .       # auto-format
 ```
 
-CI runs automatically on push via GitHub Actions (lint + test). See [CONTRIBUTING.md](CONTRIBUTING.md) for development guidelines.
+CI runs automatically on push via GitHub Actions (lint + test + site validation). See [CONTRIBUTING.md](CONTRIBUTING.md) for development guidelines.
+
+## Deployment
+
+The site is deployed as a static site on [Vercel](https://vercel.com). Configuration is in `vercel.json`:
+
+- **Output directory:** `site/`
+- **No build step** — the site is pre-built and committed to the repository
+- **Security headers:** HSTS, CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy
+- **Caching:** `data.json` is cached for 1 hour with 24-hour stale-while-revalidate
 
 ## Currency and classifications
 
@@ -110,4 +121,4 @@ CI runs automatically on push via GitHub Actions (lint + test). See [CONTRIBUTIN
 
 ## Acknowledgements
 
-This project adapts the visualisation approach from [karpathy/jobs](https://github.com/karpathy/jobs) for the Cyprus labour market using EU data sources.
+This project adapts the visualisation approach from [karpathy/jobs](https://github.com/karpathy/jobs) (a US BLS occupational treemap) for the Cyprus labour market using EU data sources and international classifications.

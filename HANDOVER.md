@@ -1,6 +1,6 @@
 # Handover Document — JobsCY
 
-> **Last updated:** 2026-03-20 (PR 6: Documentation Final Pass)
+> **Last updated:** 2026-03-26 (PR 7: CI/CD Hardening + Vercel Deployment)
 > **Branch:** `claude/cyprus-job-market-adaptation-HX1xe`
 > **Repo:** https://github.com/alezenonos/jobscy
 > **Status:** All 6 PRs complete. Project is functional end-to-end.
@@ -135,6 +135,19 @@ https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/{DATASET}?ge
 - `HANDOVER.md` — final update with troubleshooting section, all PRs marked complete
 - New tests for `make_prompt.py` (load_records_cyprus)
 
+### PR 7: CI/CD Hardening + Vercel Deployment ✅
+- `vercel.json` — added security headers:
+  - HSTS (`Strict-Transport-Security`) — forces HTTPS at browser level
+  - CSP (`Content-Security-Policy`) — restricts script/style/image sources to self only
+  - `Permissions-Policy` — denies unused browser APIs (camera, mic, geolocation, payment)
+  - `X-DNS-Prefetch-Control` — disables DNS prefetching for privacy
+- `site/index.html` — removed hardcoded Eurostat click handler (was opening same static URL for all boxes)
+- Documentation updates:
+  - `README.md` — added author attribution, deployment section, updated test count
+  - `CONTRIBUTING.md` — added British English convention
+  - `HANDOVER.md` — updated with PR 7 details
+  - `prompt.md` — fixed American English (optimize → optimise, labor → labour)
+
 ## Future enhancements
 
 These are optional improvements beyond the initial 6-PR scope:
@@ -188,4 +201,4 @@ Requires `.env` with `OPENROUTER_API_KEY` for LLM scoring only.
 - **Data period:** HRDA 2022-2032 forecasts, Eurostat latest available year
 - **Python:** 3.10+, formatted with ruff, tested with pytest
 - **CI:** GitHub Actions on push to `master` and `claude/*` branches, and on PRs to `master`
-- **Tests:** 100+ tests across 8 test files, all mocked (no external API calls)
+- **Tests:** 110+ tests across 8 test files, all mocked (no external API calls)
