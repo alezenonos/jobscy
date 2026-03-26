@@ -302,16 +302,16 @@ def fetch_earnings_by_occupation(geo="CY", last_n=10, client=None, verbose=False
         if verbose:
             n_sectors = [len(v) for v in by_isco.values()]
             avg_sectors = sum(n_sectors) / len(n_sectors) if n_sectors else 0
-            print(f"  Earnings: using sectoral average for {max_all_year} "
-                  f"(~{avg_sectors:.0f} sectors per occupation)")
+            print(f"  Earnings: using sectoral average for {max_all_year} (~{avg_sectors:.0f} sectors per occupation)")
     else:
         rows = list(aggregates.values())
 
     if verbose:
         print(f"  Earnings post-filter: {len(rows)} rows selected")
         for r in rows:
-            print(f"    {r.get('isco08')}: nace={r.get('nace_r2')} "
-                  f"year={r.get('TIME_PERIOD')} val={r.get('OBS_VALUE')}")
+            print(
+                f"    {r.get('isco08')}: nace={r.get('nace_r2')} year={r.get('TIME_PERIOD')} val={r.get('OBS_VALUE')}"
+            )
 
     if not rows:
         print(f"WARNING: No earnings data returned for {geo}.")

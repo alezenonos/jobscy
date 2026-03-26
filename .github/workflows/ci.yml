@@ -18,8 +18,23 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v4
-      - run: uv sync --extra dev
-      - run: uv run pytest --cov=. --cov-report=term-missing -v
+      - run: uv python install ${{ matrix.python-version }}
+      - run: uv sync --extra dev --python ${{ matrix.python-version }}
+      - run: uv run pytest --cov=. --cov-report=term-missing --cov-fail-under=45 --cov-config=pyproject.toml -v
+
+  site-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate site/data.json
+        run: python -c "import json, sys; d=json.load(open('site/data.json')); assert isinstance(d, list) and len(d) > 0, 'data.json must be a non-empty list'; print(f'OK: {len(d)} occupations')"
+      - name: Validate site/index.html exists
+        run: test -f site/index.html && echo "OK: index.html exists"
+      - name: Validate vercel.json
+        run: python -c "import json; json.load(open('vercel.json')); print('OK: vercel.json is valid JSON')"
