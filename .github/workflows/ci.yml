@@ -33,8 +33,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Validate site/data.json
-        run: python -c "import json, sys; d=json.load(open('site/data.json')); assert isinstance(d, list) and len(d) > 0, 'data.json must be a non-empty list'; print(f'OK: {len(d)} occupations')"
+        run: |
+          python << 'PYEOF'
+          import json
+          d = json.load(open("site/data.json"))
+          assert isinstance(d, list) and len(d) > 0, "data.json must be a non-empty list"
+          print(f"OK: {len(d)} occupations")
+          PYEOF
       - name: Validate site/index.html exists
-        run: test -f site/index.html && echo "OK: index.html exists"
+        run: test -f site/index.html
       - name: Validate vercel.json
-        run: python -c "import json; json.load(open('vercel.json')); print('OK: vercel.json is valid JSON')"
+        run: |
+          python << 'PYEOF'
+          import json
+          json.load(open("vercel.json"))
+          print("OK: vercel.json is valid JSON")
+          PYEOF
