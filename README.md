@@ -1,5 +1,12 @@
 # JobsCY — Cyprus Job Market Visualiser
 
+[![CI](https://github.com/alezenonos/jobscy/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/alezenonos/jobscy/actions/workflows/ci.yml)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+[![Coverage 46%](https://img.shields.io/badge/coverage-46%25-yellow.svg)](https://github.com/alezenonos/jobscy/actions)
+[![Licence MIT](https://img.shields.io/badge/licence-MIT-green.svg)](#)
+[![Deployed on Vercel](https://img.shields.io/badge/deployed-Vercel-black.svg)](https://vercel.com)
+
 An interactive treemap visualisation of the Cyprus labour market, with AI exposure scoring for occupations. Built on data from EU/Cyprus sources including [HRDA/AnAD](https://www.anad.org.cy), [Eurostat](https://ec.europa.eu/eurostat), and [EURES Cyprus](https://eures.europa.eu).
 
 **Created and maintained by [Alexandros Zenonos](https://github.com/alezenonos)**, adapted from [karpathy/jobs](https://github.com/karpathy/jobs) for the Cyprus labour market using EU data sources and international classifications (ISCO-08, NACE, ISCED).
