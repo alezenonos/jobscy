@@ -1,6 +1,6 @@
 [project]
 name = "jobscy"
-version = "0.1.0"
+version = "1.0.0"
 description = "Cyprus job market visualiser — interactive treemap of occupations with AI exposure scoring"
 readme = "README.md"
 requires-python = ">=3.10"
