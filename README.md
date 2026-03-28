@@ -19,13 +19,26 @@ Data is sourced from the Eurostat SDMX REST API (employment by ISCO-08 2-digit, 
 
 ## Data sources
 
-| Source | What it provides | Format |
-|--------|-----------------|--------|
-| **Eurostat API** | Employment by ISCO-08 (2-digit), wages by ISCO-08 (1-digit), filtered to Cyprus | REST API (CSV/JSON) |
-| **HRDA/AnAD** | 309 occupation forecasts (2022-2032), expansion + replacement demand | PDF / web tool |
-| **EURES** | Shortage/surplus occupations, vacancy statistics by ESCO occupation | Web dashboard |
-| **CEDEFOP** | Skills forecasts to 2035 by sector and occupation group | PDF / interactive tool |
-| **CYSTAT** | Aggregate employment, unemployment, labour costs | CYSTAT-DB / data.gov.cy |
+| Source | Dataset | What it provides | Link |
+|--------|---------|-----------------|------|
+| **Eurostat** | [`LFSA_EGAI2D`](https://ec.europa.eu/eurostat/databrowser/view/lfsa_egai2d/default/table?lang=en) | Employment by ISCO-08 2-digit, filtered to Cyprus (2024) | [SDMX API docs](https://wikis.ec.europa.eu/display/EUROSTATHELP/Transition+to+the+new+dissemination+chain) |
+| **Eurostat** | [`earn_ses_hourly`](https://ec.europa.eu/eurostat/databrowser/view/earn_ses_hourly/default/table?lang=en) | Mean gross hourly earnings by ISCO-08 1-digit, Cyprus (SES 2022) | [Dataset explorer](https://ec.europa.eu/eurostat/databrowser/view/earn_ses_hourly/default/table?lang=en) |
+| **HRDA/AnAD** | — | 309 occupation forecasts (2022-2032), expansion + replacement demand | [anad.org.cy](https://www.anad.org.cy) |
+| **EURES** | — | Shortage/surplus occupations, vacancy statistics by ESCO occupation | [eures.europa.eu](https://eures.europa.eu) |
+| **CEDEFOP** | — | Skills forecasts to 2035 by sector and occupation group | [cedefop.europa.eu](https://www.cedefop.europa.eu/en/tools/skills-intelligence) |
+| **CYSTAT** | — | Aggregate employment, unemployment, labour costs | [cystat.gov.cy](https://www.cystat.gov.cy) |
+
+### Earnings methodology
+
+Salary figures are derived from the Eurostat **Structure of Earnings Survey** ([`earn_ses_hourly`](https://ec.europa.eu/eurostat/databrowser/view/earn_ses_hourly/default/table?lang=en)), the official EU-wide enterprise survey on wages:
+
+- **Granularity:** SES provides earnings at **ISCO 1-digit** (major group) level only — all 2-digit occupations under the same group share the same figure (e.g. all Professionals = €36,878/year)
+- **Conversion:** Hourly earnings × 2,080 hours (40 h/week × 52 weeks) = annual pay
+- **Coverage:** Enterprises with **10+ employees** — excludes self-employed, micro-firms, and the informal economy
+- **Survey year:** 2022 (SES is published every 4 years; next wave: 2026)
+- **Metric:** Mean gross hourly earnings in EUR (`MEAN_E_EUR`)
+
+These are **statistical averages, not market salaries.** Actual compensation for specific roles in Cyprus may differ significantly due to sector, firm size, seniority, and private-sector premiums not captured by SES.
 
 ## Architecture
 
