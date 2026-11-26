@@ -1,0 +1,61 @@
+name: Refresh data
+
+# Fetches the latest Eurostat data, rebuilds site/data.json and opens a pull
+# request when anything changed. LLM scores are never re-run here: the PR lists
+# any occupations whose growth outlook should be re-scored by hand.
+
+on:
+  schedule:
+    - cron: "0 6 1 * *" # 06:00 UTC on the 1st of every month
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: refresh-data
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v4
+      - run: uv sync --extra dev
+
+      - name: Keep the current site data for comparison
+        run: cp site/data.json "$RUNNER_TEMP/data.old.json"
+
+      - name: Fetch employment and earnings (LFS, SES)
+        run: uv run python make_cy_csv.py --save-cache data/cache
+      - name: Fetch employment history and recompute growth (CAGR)
+        run: uv run python make_cagr.py --save-cache data/cache
+      - name: Fetch the wage index used for the pay estimate
+        run: uv run python refresh_data.py wage-index
+      - name: Rebuild site data
+        run: uv run python build_site_data.py
+      - name: Regenerate prompt.md
+        run: uv run python make_prompt.py
+
+      - name: Check the rebuilt data
+        run: uv run pytest tests/test_data_integrity.py tests/test_site_data.py
+
+      - name: Summarise changes
+        run: |
+          {
+            echo "Automated monthly refresh from Eurostat. LLM scores were not re-run."
+            echo
+            uv run python refresh_data.py report --old "$RUNNER_TEMP/data.old.json"
+          } > "$RUNNER_TEMP/report.md"
+          cat "$RUNNER_TEMP/report.md" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Open or update the pull request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: data-refresh
+          delete-branch: true
+          commit-message: "Refresh data from Eurostat"
+          title: "Refresh data from Eurostat"
+          body-path: ${{ runner.temp }}/report.md
