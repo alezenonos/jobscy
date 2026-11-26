@@ -3,7 +3,6 @@
 [![CI](https://github.com/alezenonos/jobscy/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/alezenonos/jobscy/actions/workflows/ci.yml)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
-[![Coverage 46%](https://img.shields.io/badge/coverage-46%25-yellow.svg)](https://github.com/alezenonos/jobscy/actions)
 [![Licence MIT](https://img.shields.io/badge/licence-MIT-green.svg)](LICENSE)
 [![Deployed on Vercel](https://img.shields.io/badge/deployed-Vercel-black.svg)](https://vercel.com)
 
@@ -13,7 +12,7 @@ An interactive treemap visualisation of the Cyprus labour market, with AI exposu
 
 ## What's here
 
-An interactive treemap of **39 ISCO-08 occupation groups** covering the Cyprus labour market. Each rectangle's **area** is proportional to employment and **colour** shows the selected metric — toggle between growth outlook, average pay (EUR, mean gross earnings), education level, and AI exposure.
+An interactive treemap of **39 ISCO-08 occupation groups** covering the Cyprus labour market. Each rectangle's **area** is proportional to employment and **colour** shows the selected metric — toggle between growth outlook, average pay (EUR, mean gross earnings), job openings, education level, and AI exposure. Tiles can be explored with a mouse, by tapping on a phone, or with the keyboard (Tab to the chart, then the arrow keys), and the same data is in a sortable table under the treemap.
 
 Data is sourced from the Eurostat SDMX REST API (employment by ISCO-08 2-digit, earnings by ISCO-08 1-digit, filtered to `geo=CY`). Growth outlook and AI exposure are **LLM estimates** (see below), not official forecasts. Official job-openings forecasts from HRDA (2022-2032) and Cedefop (2022-2035) are shown alongside them and drive the Job Openings layer.
 
@@ -73,14 +72,18 @@ These are **statistical averages, not market salaries.** Actual compensation for
 ## Architecture
 
 ```
-Cyprus pipeline:
   ISCO-08 data ──► generate_cy_occupations.py ──► occupations_cy.json
-  Eurostat API ──► make_cy_csv.py ─────────────► occupations_cy.csv
-                                                        │
-  LLM (OpenRouter) ──► score.py ──► scores.json ◄──────┘
-                                         │
-                     build_site_data.py ──┘──► site/data.json ──► site/index.html
+  Eurostat API ──► make_cy_csv.py ──► occupations_cy.csv ─────────────┐
+  Eurostat API ──► make_cagr.py ──► cagr.json                          │
+  LLM (OpenRouter) ──► score.py ──────────► scores.json ───────────────┤
+  LLM (OpenRouter) + cagr.json ──► score_outlook.py ──► outlook_scores.json
+                                                                       │
+  data/cache (wage index, sector pay, HRDA, Cedefop) ──► forecasts.py ─┤
+                                                                       ▼
+                                   build_site_data.py ──► site/data.json ──► site/index.html
 ```
+
+The data is refreshed automatically: `.github/workflows/refresh-data.yml` runs on the 1st of each month (or by hand from the Actions tab), fetches the latest Eurostat data, rebuilds `site/data.json` and opens a pull request when anything changed. It never re-runs the LLM; the pull request lists any growth-outlook scores that should be re-scored because the historical growth changed.
 
 ## LLM-powered colouring
 
@@ -101,11 +104,13 @@ Fork `score.py` to write your own scoring criteria — e.g. green economy releva
 | `generate_cy_occupations.py` | Generate `occupations_cy.json` from ISCO-08 classification |
 | `make_cy_csv.py` | Build `occupations_cy.csv` from Eurostat data (EUR, ISCO-08) |
 | `score.py` | LLM-based AI exposure scoring via OpenRouter (ISCO-08 / Cyprus context) |
+| `llm_scoring.py` | Shared scoring loop: keeps cached scores, validates answers, retries rate limits, records model and date |
 | `make_cagr.py` | Historical employment CAGR per ISCO-08 code from Eurostat → `cagr.json` |
 | `score_outlook.py` | LLM-based 10-year growth outlook, grounded with `cagr.json` |
 | `build_site_data.py` | Merge CSV + scores → `site/data.json` |
 | `forecasts.py` | Add 2025 pay estimate, pay by sector, HRDA and Cedefop forecasts to the site data |
 | `make_prompt.py` | Generate single-file LLM prompt from all data |
+| `refresh_data.py` | Wage index fetch and change report used by the monthly refresh workflow |
 | `site/index.html` | Interactive treemap visualisation (EUR, ISCO-08, Cyprus) |
 | `occupations_cy.json` | Master list of 39 ISCO-08 occupation groups |
 | `occupations_cy.csv` | Summary stats: pay (EUR), employment, education, ISCO codes |
@@ -134,7 +139,8 @@ uv run python generate_cy_occupations.py
 # Fetch Eurostat data and build CSV
 uv run python make_cy_csv.py
 
-# Score AI exposure (uses OpenRouter API)
+# Score AI exposure (uses OpenRouter API). Cached scores are kept; --force with
+# --start/--end re-scores only that range. Exits non-zero if any occupation failed.
 uv run python score.py
 
 # Build historical growth (Eurostat) and score growth outlook (uses OpenRouter API)
@@ -154,12 +160,12 @@ cd site && python -m http.server 8000
 ## Development
 
 ```bash
-uv run pytest -v           # run tests (119 tests)
+uv run pytest -v           # run tests
 uv run ruff check .        # lint
 uv run ruff format .       # auto-format
 ```
 
-CI runs automatically on push via GitHub Actions (lint + test + site validation). See [CONTRIBUTING.md](CONTRIBUTING.md) for development guidelines.
+CI runs automatically on push via GitHub Actions: lint, tests on Python 3.10-3.12, a `uv.lock` check, and integrity checks on the published data (`tests/test_data_integrity.py`: the CSV and `site/data.json` rebuild from `data/cache`, employment adds up to the Eurostat totals, values are in range, and the employment data is at most two years old). See [CONTRIBUTING.md](CONTRIBUTING.md) for development guidelines.
 
 ## Deployment
 
