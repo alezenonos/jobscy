@@ -218,3 +218,9 @@ def test_call_llm_non_json_answer_is_invalid(monkeypatch):
     monkeypatch.setenv("OPENROUTER_API_KEY", "k")
     with pytest.raises(InvalidScoreError):
         llm_scoring.call_llm(FakeClient([_ok("I think about 5")]), "s", "t", "m", sleep=lambda s: None)
+
+
+def test_call_llm_non_object_json_is_invalid(monkeypatch):
+    monkeypatch.setenv("OPENROUTER_API_KEY", "k")
+    with pytest.raises(InvalidScoreError):
+        llm_scoring.call_llm(FakeClient([_ok('[{"exposure": 3}]')]), "s", "t", "m", sleep=lambda s: None)

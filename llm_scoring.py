@@ -69,9 +69,12 @@ def call_llm(client, system_prompt, text, model, retries=4, backoff=2.0, sleep=t
             response.raise_for_status()
             content = response.json()["choices"][0]["message"]["content"]
             try:
-                return parse_llm_response(content)
+                result = parse_llm_response(content)
             except (json.JSONDecodeError, IndexError) as e:
                 raise InvalidScoreError(f"not valid JSON: {content[:80]!r}") from e
+            if not isinstance(result, dict):
+                raise InvalidScoreError(f"expected a JSON object, got {type(result).__name__}")
+            return result
         except (httpx.TimeoutException, httpx.TransportError):
             if attempt >= retries:
                 raise
