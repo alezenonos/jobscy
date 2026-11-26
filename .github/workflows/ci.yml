@@ -39,4 +39,5 @@ jobs:
       - name: Check the published data (rebuilds, totals, ranges, freshness)
         run: uv run pytest tests/test_data_integrity.py tests/test_site_data.py -v
       - name: Validate vercel.json
-        run: python -c "import json; json.load(open('vercel.json')); print('OK: vercel.json is valid JSON')"
+        run: |
+          python -c "import json; json.load(open('vercel.json')); print('OK: vercel.json is valid JSON')"
