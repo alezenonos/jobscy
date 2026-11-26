@@ -120,7 +120,7 @@ uv run python score.py
 
 # Build historical growth (Eurostat) and score growth outlook (uses OpenRouter API)
 uv run python make_cagr.py --save-cache data/cache
-uv run python score_outlook.py
+uv run python score_outlook.py   # re-scores any entry made without the current historical data
 
 # Build website data
 uv run python build_site_data.py

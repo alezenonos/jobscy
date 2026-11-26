@@ -156,6 +156,13 @@ def build_outlook_prompt(occ, cagr_data=None):
     return "\n".join(lines)
 
 
+def is_stale(cached, cagr_data):
+    """True if a cached score was made without the historical CAGR now available."""
+    if not cagr_data or cagr_data.get("cagr") is None:
+        return False
+    return cached.get("historical_cagr") != cagr_data["cagr"]
+
+
 def main():
     parser = argparse.ArgumentParser(description="Score occupation growth outlook via LLM")
     parser.add_argument("--model", default=DEFAULT_MODEL)
@@ -207,10 +214,10 @@ def main():
     for i, occ in enumerate(subset):
         slug = occ["slug"]
 
-        if slug in scores:
-            continue
-
         cagr_data = cagr_by_code.get(occ.get("isco_code"))
+
+        if slug in scores and not is_stale(scores[slug], cagr_data):
+            continue
         text = build_outlook_prompt(occ, cagr_data)
 
         print(f"  [{i + 1}/{len(subset)}] {occ['title']}...", end=" ", flush=True)
