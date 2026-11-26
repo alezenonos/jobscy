@@ -2,7 +2,7 @@
 
 All notable changes to JobsCY are listed here. The project follows [Semantic Versioning](https://semver.org/).
 
-## [Unreleased]
+## [1.2.0] — 2026-11-26
 
 ### Fixed
 - **Scoring scripts no longer lose saved scores.** `--force` with `--start`/`--end` used to shrink `scores.json` to that range. Scoring now goes through `llm_scoring.py`, which validates each answer, retries rate limits and server errors, records the model and date, and exits non-zero when anything failed.
@@ -52,5 +52,6 @@ All notable changes to JobsCY are listed here. The project follows [Semantic Ver
 
 First public release: interactive treemap of 39 ISCO-08 occupation groups in Cyprus, Eurostat employment and earnings pipeline, LLM-scored AI exposure and growth outlook, CI on GitHub Actions and deployment on Vercel.
 
+[1.2.0]: https://github.com/alezenonos/jobscy/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/alezenonos/jobscy/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/alezenonos/jobscy/releases/tag/v1.0.0
