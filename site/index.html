@@ -4,13 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Cyprus Job Market Visualiser</title>
-<meta name="description" content="Interactive treemap of 39 ISCO-08 occupation groups in the Cyprus labour market — explore growth outlook, median pay, education, and AI exposure.">
+<meta name="description" content="Interactive treemap of 39 ISCO-08 occupation groups in the Cyprus labour market — explore growth outlook, average pay, education, and AI exposure.">
 <meta property="og:title" content="Cyprus Job Market Visualiser">
 <meta property="og:description" content="Interactive treemap visualising the Cyprus labour market — 39 occupations sized by employment, coloured by growth outlook, pay, education, or AI exposure.">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Cyprus Job Market Visualiser">
-<meta name="twitter:description" content="Interactive treemap visualising the Cyprus labour market — growth outlook, median pay, education, and AI exposure.">
+<meta name="twitter:description" content="Interactive treemap visualising the Cyprus labour market — growth outlook, average pay, education, and AI exposure.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🇨🇾</text></svg>">
 <style>
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -220,7 +220,7 @@ canvas#canvas {
 <header id="header">
   <div class="intro">
     <h1>Cyprus Job Market Visualiser <a href="https://github.com/alezenonos/jobscy">GitHub</a></h1>
-    <p>This is a research tool that visualises <b>39 ISCO-08 occupation groups</b> in the <b>Cyprus labour market</b>, using <a href="https://ec.europa.eu/eurostat">Eurostat</a> employment (Labour Force Survey) and earnings (Structure of Earnings Survey) data. Each rectangle's <b>area</b> is proportional to total employment. <b>Colour</b> shows the selected metric &mdash; toggle between growth outlook, median pay (EUR), education requirements, and AI exposure. <b>Growth outlook and AI exposure are LLM estimates</b>, not official forecasts. This is not a report, a paper, or a serious economic publication &mdash; it is a development tool for exploring Cyprus employment data visually.</p>
+    <p>This is a research tool that visualises <b>39 ISCO-08 occupation groups</b> in the <b>Cyprus labour market</b>, using <a href="https://ec.europa.eu/eurostat">Eurostat</a> employment (Labour Force Survey) and earnings (Structure of Earnings Survey) data. Each rectangle's <b>area</b> is proportional to total employment. <b>Colour</b> shows the selected metric &mdash; toggle between growth outlook, average pay (EUR), education requirements, and AI exposure. <b>Growth outlook and AI exposure are LLM estimates</b>, not official forecasts. This is not a report, a paper, or a serious economic publication &mdash; it is a development tool for exploring Cyprus employment data visually.</p>
     <p><b>LLM-powered colouring:</b> The <a href="https://github.com/alezenonos/jobscy">source code</a> includes data pipelines, parsers, and a framework for writing custom LLM prompts to score and colour occupations by any criteria. You write a prompt, the LLM scores each occupation, and the treemap colours accordingly. The "Digital AI Exposure" option is one example &mdash; it estimates how much current AI (which is primarily digital) will reshape each occupation. But you could write a different prompt for any question &mdash; e.g. exposure to humanoid robotics, offshoring risk, climate impact &mdash; and re-run the pipeline to get a different colouring.</p>
     <details>
       <summary>View the Digital AI Exposure scoring prompt (example)</summary>
@@ -260,7 +260,7 @@ Respond with ONLY a JSON object in this exact format, no other text:
       <h3>Layer</h3>
       <div class="color-toggle" id="colorToggle" role="group" aria-label="Colour metric">
         <button data-mode="outlook" class="active" aria-pressed="true" title="10-year projected employment change (LLM estimate)">Growth Outlook (est.)</button>
-        <button data-mode="pay" aria-pressed="false">Median Pay</button>
+        <button data-mode="pay" aria-pressed="false">Average Pay</button>
         <button data-mode="education" aria-pressed="false">Education</button>
         <button data-mode="exposure" aria-pressed="false">Digital AI Exposure</button>
       </div>
@@ -543,7 +543,7 @@ function tooltipHighlight(d) {
     const v = d.pay;
     if (v == null) return "";
     const color = payColor(v, 1);
-    return `<span style="color:${color};font-weight:600;">Median Pay: ${formatPay(v)}</span>` +
+    return `<span style="color:${color};font-weight:600;">Average Pay: ${formatPay(v)}</span>` +
       `<div style="margin-top:3px;height:4px;background:rgba(255,255,255,0.08);border-radius:2px;">` +
       `<div style="height:100%;width:${Math.min(100, v / 80000 * 100)}%;background:${color};border-radius:2px;"></div></div>`;
   } else if (colorMode === "education") {
@@ -560,7 +560,7 @@ function showTooltip(d, mx, my) {
   tt.querySelector(".tt-title").textContent = d.title;
   tt.querySelector(".tt-exposure").innerHTML = tooltipHighlight(d);
   tt.querySelector(".tt-stats").innerHTML = `
-    <span class="label">Median pay</span><span class="value">${formatPay(d.pay)}</span>
+    <span class="label">Average pay</span><span class="value">${formatPay(d.pay)}</span>
     <span class="label">Employment</span><span class="value">${d.jobs_estimated ? '~' : ''}${formatNumber(d.jobs)}${d.jobs_estimated ? ' (estimate)' : ''}</span>
     <span class="label">10-yr outlook (est.)</span><span class="value">${d.outlook != null ? (d.outlook > 0 ? '+' : '') + d.outlook + '%' : '\u2014'} ${d.outlook_desc ? '(' + d.outlook_desc + ')' : ''}</span>
     <span class="label">Education</span><span class="value">${d.education || '\u2014'}</span>`;
