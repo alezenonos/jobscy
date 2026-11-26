@@ -15,7 +15,7 @@ An interactive treemap visualisation of the Cyprus labour market, with AI exposu
 
 An interactive treemap of **39 ISCO-08 occupation groups** covering the Cyprus labour market. Each rectangle's **area** is proportional to employment and **colour** shows the selected metric — toggle between growth outlook, average pay (EUR, mean gross earnings), education level, and AI exposure.
 
-Data is sourced from the Eurostat SDMX REST API (employment by ISCO-08 2-digit, earnings by ISCO-08 1-digit, filtered to `geo=CY`). Growth outlook and AI exposure are **LLM estimates** (see below), not official forecasts. HRDA occupational forecasts are not yet integrated.
+Data is sourced from the Eurostat SDMX REST API (employment by ISCO-08 2-digit, earnings by ISCO-08 1-digit, filtered to `geo=CY`). Growth outlook and AI exposure are **LLM estimates** (see below), not official forecasts. Official job-openings forecasts from HRDA (2022-2032) and Cedefop (2022-2035) are shown alongside them and drive the Job Openings layer.
 
 ## Data sources
 
@@ -25,14 +25,17 @@ Data is sourced from the Eurostat SDMX REST API (employment by ISCO-08 2-digit, 
 | **Eurostat** | [`earn_ses_hourly`](https://ec.europa.eu/eurostat/databrowser/view/earn_ses_hourly/default/table?lang=en) | Mean, median, P10 and P90 gross hourly earnings by ISCO-08 1-digit, Cyprus (SES 2022) | [Dataset explorer](https://ec.europa.eu/eurostat/databrowser/view/earn_ses_hourly/default/table?lang=en) |
 | **Eurostat** | [`LFSA_EGAI2D`](https://ec.europa.eu/eurostat/databrowser/view/lfsa_egai2d/default/table?lang=en) (multi-year) | Historical employment growth (CAGR) per ISCO-08 2-digit, 2011-2025, used to ground the growth outlook | — |
 | **Eurostat** | [`earn_ses22_28`](https://ec.europa.eu/eurostat/databrowser/view/earn_ses22_28/default/table?lang=en) | Mean gross **annual** earnings by ISCO-08 1-digit (includes 13th salary and bonuses), Cyprus (SES 2022) | — |
+| **Eurostat** | [`earn_ses22_49`](https://ec.europa.eu/eurostat/databrowser/view/earn_ses22_49/default/table?lang=en), [`earn_ses22_54`](https://ec.europa.eu/eurostat/databrowser/view/earn_ses22_54/default/table?lang=en) | Mean annual earnings and employee counts by ISCO-08 1-digit × NACE section (pay by sector) | `data/cache/earnings_by_sector.json` |
+| **Eurostat** | [`lc_lci_r2_a`](https://ec.europa.eu/eurostat/databrowser/view/lc_lci_r2_a/default/table?lang=en) | Cyprus labour cost index, wages and salaries (business economy), used to carry 2022 pay forward to 2025 | `data/cache/wage_index.json` |
+| **HRDA** | [Forecasts of Employment Needs in Cyprus 2022-2032](https://www.anad.org.cy/wps/wcm/connect/hrda/b6fbcbf8-14b0-4ee2-817b-ab97496d90a5/Provlepseis+2022-2032.pdf?MOD=AJPERES) (chapter 6) | Employment 2022/2032 and yearly expansion, replacement and total demand per ISCO-08 2-digit group | `data/cache/hrda_2022_2032.csv` |
+| **Cedefop** | [Skills Forecast 2025](https://www.cedefop.europa.eu/en/tools/skills-intelligence) | Job openings and employment growth 2022-2035 per ISCO-08 2-digit group, Cyprus | `data/cache/cedefop_2035.json` |
 
 **Not yet used** (candidates for future integration):
 
 | Source | What it would provide | Link |
 |--------|-----------------|------|
-| **HRDA/AnAD** | 309 occupation forecasts (2022-2032), expansion + replacement demand | [anad.org.cy](https://www.anad.org.cy) |
+| **HRDA/AnAD** | Forecasts for ~309 detailed occupations (finer than the 2-digit groups used here) | [anad.org.cy](https://www.anad.org.cy) |
 | **EURES** | Shortage/surplus occupations, vacancy statistics by ESCO occupation | [eures.europa.eu](https://eures.europa.eu) |
-| **CEDEFOP** | Skills forecasts to 2035 by sector and occupation group | [cedefop.europa.eu](https://www.cedefop.europa.eu/en/tools/skills-intelligence) |
 | **CYSTAT** | Aggregate employment, unemployment, labour costs | [cystat.gov.cy](https://www.cystat.gov.cy) |
 
 ### Employment methodology
@@ -42,6 +45,15 @@ Employment comes from the Eurostat LFS at ISCO 2-digit level. Eurostat suppresse
 ### Growth outlook methodology
 
 The 10-year growth outlook is produced by `score_outlook.py`, which asks an LLM to project employment change per occupation group. To ground the estimate, `make_cagr.py` computes each group's historical employment CAGR from the multi-year Eurostat LFS series and writes `cagr.json`, which `score_outlook.py` reads by default and includes in the prompt. The historical CAGR and period are shown in the tooltip when used. Note that the LFS has a break in series in 2021, so historical growth across that year should be read with care.
+
+### Job openings methodology
+
+`forecasts.py` adds the official forecasts to `site/data.json`:
+
+- **HRDA 2022-2032** (`hrda_*` fields): employment in 2022 and 2032, and average yearly openings split into expansion demand (new jobs) and replacement demand (people retiring or leaving). Transcribed by hand from chapter 6 of the HRDA report into `data/cache/hrda_2022_2032.csv`. The Job Openings layer colours each tile by yearly openings as a share of 2022 employment.
+- **Cedefop 2022-2035** (`cedefop_*` fields): total job openings and employment growth from the Skills Forecast for Cyprus, saved in `data/cache/cedefop_2035.json`. Cedefop does not publish assemblers (OC82) for Cyprus.
+
+HRDA's 2022 employment can differ from the Eurostat LFS 2025 figure used for tile sizes, because the base year and model differ. Both forecasts are shown next to the LLM growth outlook in its tooltip for comparison; the outlook scores themselves were not re-run.
 
 ### Earnings methodology
 
@@ -53,6 +65,8 @@ Salary figures are derived from the Eurostat **Structure of Earnings Survey** (S
 - **Sector aggregate:** `B-S_X_O` (whole economy excluding public administration). Earlier versions accidentally averaged the per-sector figures without weights, which understated pay (e.g. Professionals €36.9K instead of €41.8K).
 - **Coverage:** Enterprises with **10+ employees** — excludes self-employed, micro-firms, the public administration sector and the informal economy
 - **Survey year:** 2022 (SES is published every 4 years; the 2026 wave is expected around 2028)
+- **2025 estimate:** the site shows pay carried forward from 2022 to the latest year of the Eurostat labour cost index for wages and salaries (`lc_lci_r2_a`, B-S, 2022 = 108.0, 2025 = 124.7, so +15.5%). The uplift is the same for every group, so it moves levels, not the ranking. The original survey figure stays in `site/data.json` as `pay_survey` and in the tooltip. `occupations_cy.csv` keeps the survey values.
+- **Pay by sector:** mean annual earnings per major group in each NACE section (`earn_ses22_49`), uplifted the same way; sector cells with fewer than 500 employees are dropped as too noisy.
 
 These are **statistical averages, not market salaries.** Actual compensation for specific roles in Cyprus may differ significantly due to sector, firm size, seniority, and private-sector premiums not captured by SES.
 
@@ -90,6 +104,7 @@ Fork `score.py` to write your own scoring criteria — e.g. green economy releva
 | `make_cagr.py` | Historical employment CAGR per ISCO-08 code from Eurostat → `cagr.json` |
 | `score_outlook.py` | LLM-based 10-year growth outlook, grounded with `cagr.json` |
 | `build_site_data.py` | Merge CSV + scores → `site/data.json` |
+| `forecasts.py` | Add 2025 pay estimate, pay by sector, HRDA and Cedefop forecasts to the site data |
 | `make_prompt.py` | Generate single-file LLM prompt from all data |
 | `site/index.html` | Interactive treemap visualisation (EUR, ISCO-08, Cyprus) |
 | `occupations_cy.json` | Master list of 39 ISCO-08 occupation groups |

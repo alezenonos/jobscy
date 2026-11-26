@@ -2,7 +2,8 @@
 Build a compact JSON for the website by merging CSV stats with AI exposure scores.
 
 Reads occupations_cy.csv (Cyprus ISCO-08 data) and scores.json (AI exposure
-ratings) and writes site/data.json for the treemap visualisation.
+ratings), adds the 2025 pay estimate, pay by sector and the HRDA and Cedefop
+forecasts (see forecasts.py), and writes site/data.json for the treemap.
 
 Usage:
     uv run python build_site_data.py
@@ -13,6 +14,8 @@ import argparse
 import csv
 import json
 import os
+
+from forecasts import enrich
 
 
 def _int(value):
@@ -89,6 +92,7 @@ def main():
         rows = list(reader)
 
     data = merge_cyprus(rows, scores, outlook)
+    enrich(data)
 
     os.makedirs(os.path.dirname(args.output) or ".", exist_ok=True)
     with open(args.output, "w") as f:

@@ -1,0 +1,632 @@
+[
+  {
+    "isco_code": "OC1",
+    "nace_r2": "C",
+    "annual_earnings_eur": 70176.0,
+    "employees": 771,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC1",
+    "nace_r2": "F",
+    "annual_earnings_eur": 50508.0,
+    "employees": 438,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC1",
+    "nace_r2": "G",
+    "annual_earnings_eur": 57773.0,
+    "employees": 1601,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC1",
+    "nace_r2": "J",
+    "annual_earnings_eur": 82614.0,
+    "employees": 1818,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC1",
+    "nace_r2": "K",
+    "annual_earnings_eur": 70529.0,
+    "employees": 3054,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC1",
+    "nace_r2": "M",
+    "annual_earnings_eur": 94121.0,
+    "employees": 1421,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC1",
+    "nace_r2": "O",
+    "annual_earnings_eur": 75756.0,
+    "employees": 850,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC1",
+    "nace_r2": "P",
+    "annual_earnings_eur": 64756.0,
+    "employees": 1175,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC1",
+    "nace_r2": "Q",
+    "annual_earnings_eur": 76553.0,
+    "employees": 328,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC1",
+    "nace_r2": "R",
+    "annual_earnings_eur": 74297.0,
+    "employees": 179,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC2",
+    "nace_r2": "C",
+    "annual_earnings_eur": 29435.0,
+    "employees": 2237,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC2",
+    "nace_r2": "E",
+    "annual_earnings_eur": 41975.0,
+    "employees": 193,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC2",
+    "nace_r2": "F",
+    "annual_earnings_eur": 32372.0,
+    "employees": 2103,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC2",
+    "nace_r2": "G",
+    "annual_earnings_eur": 29236.0,
+    "employees": 2314,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC2",
+    "nace_r2": "H",
+    "annual_earnings_eur": 55937.0,
+    "employees": 2208,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC2",
+    "nace_r2": "I",
+    "annual_earnings_eur": 25173.0,
+    "employees": 1473,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC2",
+    "nace_r2": "J",
+    "annual_earnings_eur": 53572.0,
+    "employees": 5957,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC2",
+    "nace_r2": "K",
+    "annual_earnings_eur": 37424.0,
+    "employees": 5177,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC2",
+    "nace_r2": "M",
+    "annual_earnings_eur": 35611.0,
+    "employees": 10853,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC2",
+    "nace_r2": "O",
+    "annual_earnings_eur": 49079.0,
+    "employees": 2911,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC2",
+    "nace_r2": "P",
+    "annual_earnings_eur": 43546.0,
+    "employees": 20966,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC2",
+    "nace_r2": "Q",
+    "annual_earnings_eur": 48183.0,
+    "employees": 10783,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC2",
+    "nace_r2": "R",
+    "annual_earnings_eur": 32634.0,
+    "employees": 586,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC3",
+    "nace_r2": "C",
+    "annual_earnings_eur": 26182.0,
+    "employees": 2239,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC3",
+    "nace_r2": "E",
+    "annual_earnings_eur": 38230.0,
+    "employees": 222,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC3",
+    "nace_r2": "F",
+    "annual_earnings_eur": 32690.0,
+    "employees": 2265,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC3",
+    "nace_r2": "G",
+    "annual_earnings_eur": 25995.0,
+    "employees": 3130,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC3",
+    "nace_r2": "H",
+    "annual_earnings_eur": 43459.0,
+    "employees": 3532,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC3",
+    "nace_r2": "K",
+    "annual_earnings_eur": 34625.0,
+    "employees": 6192,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC3",
+    "nace_r2": "L",
+    "annual_earnings_eur": 134629.0,
+    "employees": 427,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC3",
+    "nace_r2": "M",
+    "annual_earnings_eur": 26388.0,
+    "employees": 4286,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC3",
+    "nace_r2": "N",
+    "annual_earnings_eur": 25324.0,
+    "employees": 574,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC3",
+    "nace_r2": "O",
+    "annual_earnings_eur": 40781.0,
+    "employees": 4618,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC3",
+    "nace_r2": "P",
+    "annual_earnings_eur": 30550.0,
+    "employees": 628,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC3",
+    "nace_r2": "Q",
+    "annual_earnings_eur": 30781.0,
+    "employees": 1528,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC3",
+    "nace_r2": "R",
+    "annual_earnings_eur": 21511.0,
+    "employees": 850,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC4",
+    "nace_r2": "C",
+    "annual_earnings_eur": 19175.0,
+    "employees": 2340,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC4",
+    "nace_r2": "E",
+    "annual_earnings_eur": 20274.0,
+    "employees": 205,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC4",
+    "nace_r2": "F",
+    "annual_earnings_eur": 19375.0,
+    "employees": 991,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC4",
+    "nace_r2": "G",
+    "annual_earnings_eur": 20933.0,
+    "employees": 6212,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC4",
+    "nace_r2": "H",
+    "annual_earnings_eur": 19209.0,
+    "employees": 3717,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC4",
+    "nace_r2": "I",
+    "annual_earnings_eur": 17123.0,
+    "employees": 3961,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC4",
+    "nace_r2": "J",
+    "annual_earnings_eur": 22563.0,
+    "employees": null,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC4",
+    "nace_r2": "K",
+    "annual_earnings_eur": 28320.0,
+    "employees": 2272,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC4",
+    "nace_r2": "L",
+    "annual_earnings_eur": 22322.0,
+    "employees": 135,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC4",
+    "nace_r2": "M",
+    "annual_earnings_eur": 21935.0,
+    "employees": 2306,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC4",
+    "nace_r2": "N",
+    "annual_earnings_eur": 24324.0,
+    "employees": 1796,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC4",
+    "nace_r2": "O",
+    "annual_earnings_eur": 22730.0,
+    "employees": 3354,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC4",
+    "nace_r2": "P",
+    "annual_earnings_eur": 21299.0,
+    "employees": 1403,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC4",
+    "nace_r2": "Q",
+    "annual_earnings_eur": 18722.0,
+    "employees": 1853,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC4",
+    "nace_r2": "R",
+    "annual_earnings_eur": 16757.0,
+    "employees": 1096,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC4",
+    "nace_r2": "S",
+    "annual_earnings_eur": 21122.0,
+    "employees": 551,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC5",
+    "nace_r2": "C",
+    "annual_earnings_eur": 16289.0,
+    "employees": 5632,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC5",
+    "nace_r2": "F",
+    "annual_earnings_eur": 24442.0,
+    "employees": 105,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC5",
+    "nace_r2": "G",
+    "annual_earnings_eur": 17679.0,
+    "employees": 17734,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC5",
+    "nace_r2": "I",
+    "annual_earnings_eur": 17731.0,
+    "employees": 17436,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC5",
+    "nace_r2": "M",
+    "annual_earnings_eur": 19729.0,
+    "employees": 162,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC5",
+    "nace_r2": "N",
+    "annual_earnings_eur": 14761.0,
+    "employees": 2827,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC5",
+    "nace_r2": "O",
+    "annual_earnings_eur": 29919.0,
+    "employees": 6745,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC5",
+    "nace_r2": "P",
+    "annual_earnings_eur": 14059.0,
+    "employees": 469,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC5",
+    "nace_r2": "Q",
+    "annual_earnings_eur": 18238.0,
+    "employees": 2001,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC5",
+    "nace_r2": "R",
+    "annual_earnings_eur": 21752.0,
+    "employees": 781,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC5",
+    "nace_r2": "S",
+    "annual_earnings_eur": 16919.0,
+    "employees": 577,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC6",
+    "nace_r2": "I",
+    "annual_earnings_eur": 17578.0,
+    "employees": 119,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC7",
+    "nace_r2": "C",
+    "annual_earnings_eur": 21787.0,
+    "employees": 3994,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC7",
+    "nace_r2": "F",
+    "annual_earnings_eur": 21537.0,
+    "employees": 7824,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC7",
+    "nace_r2": "G",
+    "annual_earnings_eur": 18359.0,
+    "employees": 4727,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC7",
+    "nace_r2": "H",
+    "annual_earnings_eur": 75000.0,
+    "employees": 130,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC7",
+    "nace_r2": "J",
+    "annual_earnings_eur": 21641.0,
+    "employees": 366,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC7",
+    "nace_r2": "O",
+    "annual_earnings_eur": 26494.0,
+    "employees": 1118,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC8",
+    "nace_r2": "C",
+    "annual_earnings_eur": 25717.0,
+    "employees": 3333,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC8",
+    "nace_r2": "F",
+    "annual_earnings_eur": 28652.0,
+    "employees": 332,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC8",
+    "nace_r2": "G",
+    "annual_earnings_eur": 18940.0,
+    "employees": 2697,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC8",
+    "nace_r2": "H",
+    "annual_earnings_eur": 25097.0,
+    "employees": 2076,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC8",
+    "nace_r2": "O",
+    "annual_earnings_eur": 27426.0,
+    "employees": 194,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC9",
+    "nace_r2": "C",
+    "annual_earnings_eur": 15519.0,
+    "employees": 5638,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC9",
+    "nace_r2": "E",
+    "annual_earnings_eur": 16146.0,
+    "employees": 975,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC9",
+    "nace_r2": "F",
+    "annual_earnings_eur": 18811.0,
+    "employees": 5550,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC9",
+    "nace_r2": "G",
+    "annual_earnings_eur": 14722.0,
+    "employees": 3975,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC9",
+    "nace_r2": "H",
+    "annual_earnings_eur": 21003.0,
+    "employees": 1234,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC9",
+    "nace_r2": "I",
+    "annual_earnings_eur": 15549.0,
+    "employees": 9421,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC9",
+    "nace_r2": "K",
+    "annual_earnings_eur": 23541.0,
+    "employees": 158,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC9",
+    "nace_r2": "L",
+    "annual_earnings_eur": 14778.0,
+    "employees": 71,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC9",
+    "nace_r2": "M",
+    "annual_earnings_eur": 16919.0,
+    "employees": 860,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC9",
+    "nace_r2": "N",
+    "annual_earnings_eur": 12070.0,
+    "employees": 3115,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC9",
+    "nace_r2": "O",
+    "annual_earnings_eur": 18631.0,
+    "employees": 3858,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC9",
+    "nace_r2": "P",
+    "annual_earnings_eur": 14824.0,
+    "employees": 174,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC9",
+    "nace_r2": "Q",
+    "annual_earnings_eur": 17082.0,
+    "employees": 1771,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC9",
+    "nace_r2": "R",
+    "annual_earnings_eur": 13627.0,
+    "employees": 499,
+    "year": "2022"
+  },
+  {
+    "isco_code": "OC9",
+    "nace_r2": "S",
+    "annual_earnings_eur": 15254.0,
+    "employees": 412,
+    "year": "2022"
+  }
+]

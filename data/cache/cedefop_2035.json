@@ -1,0 +1,237 @@
+{
+  "source": "Cedefop Skills Forecast 2025 (Skills Intelligence), Cyprus, 2022-2035",
+  "url": "https://www.cedefop.europa.eu/en/tools/skills-intelligence",
+  "period": "2022-2035",
+  "geo": "CY",
+  "occupations": {
+    "OC11": {
+      "job_openings": 4600,
+      "growth_pct": 88.68,
+      "growth": 1800,
+      "replacement": 2800
+    },
+    "OC12": {
+      "job_openings": 3600,
+      "growth_pct": 22.09,
+      "growth": 1100,
+      "replacement": 2500
+    },
+    "OC13": {
+      "job_openings": 9900,
+      "growth_pct": 67.42,
+      "growth": 5200,
+      "replacement": 4700
+    },
+    "OC14": {
+      "job_openings": 600,
+      "growth_pct": -18.33,
+      "growth": -600,
+      "replacement": 1200
+    },
+    "OC21": {
+      "job_openings": 13200,
+      "growth_pct": 17.12,
+      "growth": 3100,
+      "replacement": 10100
+    },
+    "OC22": {
+      "job_openings": 15500,
+      "growth_pct": 44.91,
+      "growth": 6500,
+      "replacement": 9000
+    },
+    "OC23": {
+      "job_openings": 14300,
+      "growth_pct": 15.87,
+      "growth": 3600,
+      "replacement": 10700
+    },
+    "OC24": {
+      "job_openings": 7100,
+      "growth_pct": 11.99,
+      "growth": 1900,
+      "replacement": 5200
+    },
+    "OC25": {
+      "job_openings": 9200,
+      "growth_pct": 67.73,
+      "growth": 6100,
+      "replacement": 3100
+    },
+    "OC26": {
+      "job_openings": 13000,
+      "growth_pct": 25.97,
+      "growth": 3800,
+      "replacement": 9200
+    },
+    "OC31": {
+      "job_openings": 7300,
+      "growth_pct": 23.55,
+      "growth": 2100,
+      "replacement": 5200
+    },
+    "OC32": {
+      "job_openings": 3200,
+      "growth_pct": 13.72,
+      "growth": 500,
+      "replacement": 2700
+    },
+    "OC33": {
+      "job_openings": 25600,
+      "growth_pct": 12.2,
+      "growth": 4900,
+      "replacement": 20700
+    },
+    "OC34": {
+      "job_openings": 5800,
+      "growth_pct": 44.51,
+      "growth": 2600,
+      "replacement": 3200
+    },
+    "OC35": {
+      "job_openings": 2500,
+      "growth_pct": 16.71,
+      "growth": 500,
+      "replacement": 2000
+    },
+    "OC41": {
+      "job_openings": 16300,
+      "growth_pct": 13.92,
+      "growth": 3300,
+      "replacement": 13000
+    },
+    "OC42": {
+      "job_openings": 10500,
+      "growth_pct": 20.61,
+      "growth": 2400,
+      "replacement": 8100
+    },
+    "OC43": {
+      "job_openings": 11700,
+      "growth_pct": 27.9,
+      "growth": 4400,
+      "replacement": 7300
+    },
+    "OC44": {
+      "job_openings": 3400,
+      "growth_pct": 79.18,
+      "growth": 2000,
+      "replacement": 1400
+    },
+    "OC51": {
+      "job_openings": 28200,
+      "growth_pct": 12.41,
+      "growth": 4200,
+      "replacement": 24000
+    },
+    "OC52": {
+      "job_openings": 29200,
+      "growth_pct": 6.78,
+      "growth": 2700,
+      "replacement": 26500
+    },
+    "OC53": {
+      "job_openings": 9700,
+      "growth_pct": 63.93,
+      "growth": 3900,
+      "replacement": 5800
+    },
+    "OC54": {
+      "job_openings": 5300,
+      "growth_pct": 3.53,
+      "growth": 400,
+      "replacement": 4900
+    },
+    "OC61": {
+      "job_openings": 5700,
+      "growth_pct": -23.81,
+      "growth": -1800,
+      "replacement": 7500
+    },
+    "OC62": {
+      "job_openings": 0,
+      "growth_pct": -16.99,
+      "growth": 0,
+      "replacement": 0
+    },
+    "OC71": {
+      "job_openings": 11200,
+      "growth_pct": 5.24,
+      "growth": 1200,
+      "replacement": 10000
+    },
+    "OC72": {
+      "job_openings": 5500,
+      "growth_pct": 3.27,
+      "growth": 300,
+      "replacement": 5200
+    },
+    "OC73": {
+      "job_openings": 900,
+      "growth_pct": -23.29,
+      "growth": -300,
+      "replacement": 1200
+    },
+    "OC74": {
+      "job_openings": 2900,
+      "growth_pct": 1.38,
+      "growth": 100,
+      "replacement": 2800
+    },
+    "OC75": {
+      "job_openings": 8400,
+      "growth_pct": 33.53,
+      "growth": 2100,
+      "replacement": 6300
+    },
+    "OC81": {
+      "job_openings": 6500,
+      "growth_pct": 80.94,
+      "growth": 3300,
+      "replacement": 3200
+    },
+    "OC83": {
+      "job_openings": 10600,
+      "growth_pct": 15.24,
+      "growth": 2300,
+      "replacement": 8300
+    },
+    "OC91": {
+      "job_openings": 22500,
+      "growth_pct": 2.25,
+      "growth": 800,
+      "replacement": 21700
+    },
+    "OC92": {
+      "job_openings": 600,
+      "growth_pct": -14.66,
+      "growth": -600,
+      "replacement": 1200
+    },
+    "OC93": {
+      "job_openings": 5900,
+      "growth_pct": -13.66,
+      "growth": -1700,
+      "replacement": 7600
+    },
+    "OC94": {
+      "job_openings": 3700,
+      "growth_pct": -0.38,
+      "growth": 0,
+      "replacement": 3700
+    },
+    "OC95": {
+      "job_openings": 1200,
+      "growth_pct": 74.84,
+      "growth": 400,
+      "replacement": 800
+    },
+    "OC96": {
+      "job_openings": 7700,
+      "growth_pct": 44.08,
+      "growth": 2600,
+      "replacement": 5100
+    }
+  },
+  "note": "Job openings = expansion (growth) + replacement demand, rounded to 100 by Cedefop. OC82 not published (too small); armed forces not covered."
+}

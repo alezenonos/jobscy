@@ -34,6 +34,7 @@ Utilities:
 | `generate_cy_occupations.py` | Generate `occupations_cy.json` from ISCO-08 classification | **Done (PR 3)** |
 | `make_cy_csv.py` | Build `occupations_cy.csv` from Eurostat data (EUR, ISCO) | **Done (PR 3)** |
 | `build_site_data.py` | Merge CSV + scores → `site/data.json` | **Done (PR 3)** |
+| `forecasts.py` | 2025 pay estimate, pay by sector, HRDA + Cedefop forecasts for the site | **Done (PR 27)** |
 | `score.py` | LLM-based AI exposure scoring via OpenRouter | **Done (PR 4)** |
 | `make_prompt.py` | Generate single-file LLM prompt | **Done (PR 6)** |
 | `site/index.html` | Interactive treemap visualisation (EUR, ISCO-08) | **Done (PR 5)** |
@@ -41,10 +42,10 @@ Utilities:
 
 | Source | What it provides | Access method | Priority |
 |--------|-----------------|---------------|----------|
-| **HRDA/AnAD** | 309 occupation forecasts (2022-2032), expansion + replacement demand | PDF / web tool (manual extract) | Primary |
+| **HRDA/AnAD** | Forecasts 2022-2032 per ISCO 2-digit group (used) and ~309 detailed occupations (not yet) | [PDF](https://www.anad.org.cy/wps/wcm/connect/hrda/b6fbcbf8-14b0-4ee2-817b-ab97496d90a5/Provlepseis+2022-2032.pdf?MOD=AJPERES), chapter 6, transcribed to `data/cache/hrda_2022_2032.csv` | Primary |
 | **Eurostat API** | Employment by ISCO-08 2-digit, wages by ISCO-08 1-digit, `geo=CY` | REST API (CSV/JSON) | Primary |
 | **EURES** | Shortage/surplus occupations, vacancy stats by ESCO | Web dashboard | Secondary |
-| **CEDEFOP** | Skills forecasts to 2035 by sector and occupation group | PDF / request form | Secondary |
+| **CEDEFOP** | Job openings and growth 2022-2035 per ISCO 2-digit group (used) | Skills Intelligence tool, CSV export, saved to `data/cache/cedefop_2035.json` | Secondary |
 | **CYSTAT** | Aggregate employment, unemployment, labour costs | CYSTAT-DB / data.gov.cy | Supporting |
 
 ### Key Eurostat datasets
@@ -55,6 +56,8 @@ Utilities:
 | `lfsa_eisn2` | Employment by occupation × economic activity | ISCO 1-digit × NACE |
 | `earn_ses_hourly` | Mean, median and decile gross hourly earnings (SES) | ISCO 1-digit × NACE aggregates, by country |
 | `earn_ses22_28` | Mean gross annual earnings (SES 2022) | ISCO 1-digit, by country, sex, age |
+| `earn_ses22_49` / `earn_ses22_54` | Mean annual earnings / employees by occupation × sector (SES 2022) | ISCO 1-digit × NACE section → `data/cache/earnings_by_sector.json` |
+| `lc_lci_r2_a` | Labour cost index, wages and salaries (D11), 2020=100 | NACE aggregates, yearly → `data/cache/wage_index.json` |
 
 ### Eurostat API format
 
@@ -153,8 +156,9 @@ https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/{DATASET}?ge
 
 These are optional improvements beyond the initial 6-PR scope:
 
-- **HRDA data integration:** Extract 309 individual occupation forecasts from HRDA PDFs for finer granularity than ISCO-08 2-digit
-- **Growth outlook:** Currently an LLM estimate grounded with Eurostat historical CAGR (`make_cagr.py`); replace with HRDA forecasts where available
+- **HRDA detail:** The 2-digit forecasts are integrated; the ~309 detailed occupations could add finer granularity
+- **Growth outlook:** Still an LLM estimate grounded with Eurostat historical CAGR (`make_cagr.py`). HRDA and Cedefop forecasts are now shown next to it and could be fed into the scoring prompt on the next re-score
+- **Refreshing the forecast caches:** `wage_index.json` and the sector pay file come from Eurostat (fetch in a browser if the API is blocked); HRDA and Cedefop values were transcribed by hand and need updating when new editions come out
 - **EURES shortage data:** Add shortage/surplus indicators from EURES vacancy statistics
 - **3-digit ISCO:** Expand from 39 sub-major groups to ~130 minor groups if Eurostat provides sufficient Cyprus data
 - **Multilingual:** Greek language support for occupation titles (ISCO-08 has official Greek labels)
