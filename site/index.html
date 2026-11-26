@@ -67,9 +67,13 @@ body {
   margin-bottom: 8px;
 }
 .intro a { color: var(--fg2); }
+.intro p.vintage { font-size: 12px; margin: -6px 0 12px; }
+.intro p.vintage:empty { display: none; }
 .intro strong, .intro b { color: var(--fg); font-weight: 600; }
 
 .intro details { margin: 10px 0; }
+.intro details.about > summary { font-size: 15px; color: var(--fg); font-weight: 600; margin-bottom: 8px; }
+.intro details.about[open] > summary { margin-bottom: 10px; }
 .intro summary {
   font-size: 14px;
   color: var(--fg2);
@@ -152,6 +156,7 @@ body {
 
 .color-toggle {
   display: flex;
+  flex-wrap: wrap;
   gap: 4px;
 }
 .color-toggle button {
@@ -170,6 +175,7 @@ body {
   color: var(--fg);
   border-color: rgba(255,255,255,0.2);
 }
+.color-toggle button:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
 .color-toggle button:hover:not(.active) {
   background: rgba(255,255,255,0.04);
 }
@@ -197,7 +203,7 @@ canvas#canvas {
   padding: 12px 16px;
   font-size: 13px;
   line-height: 1.5;
-  max-width: 340px;
+  max-width: min(340px, calc(100vw - 20px));
   opacity: 0;
   transition: opacity 0.12s;
   z-index: 20;
@@ -220,11 +226,14 @@ canvas#canvas {
 <header id="header">
   <div class="intro">
     <h1>Cyprus Job Market Visualiser <a href="https://github.com/alezenonos/jobscy">GitHub</a></h1>
+    <p class="vintage" id="vintage"></p>
     <p>This is a research tool that visualises <b>39 ISCO-08 occupation groups</b> in the <b>Cyprus labour market</b>, using <a href="https://ec.europa.eu/eurostat">Eurostat</a> employment (Labour Force Survey) and earnings (Structure of Earnings Survey) data, plus the official job-openings forecasts of the <a href="https://www.anad.org.cy/">HRDA</a> (2022&ndash;2032) and <a href="https://www.cedefop.europa.eu/en/tools/skills-intelligence">Cedefop</a> (2022&ndash;2035). Each rectangle's <b>area</b> is proportional to total employment. <b>Colour</b> shows the selected metric &mdash; toggle between growth outlook, average pay (EUR), job openings, education requirements, and AI exposure. <b>Growth outlook and AI exposure are LLM estimates</b>; the job-openings layer uses the official forecasts. This is not a report, a paper, or a serious economic publication &mdash; it is a development tool for exploring Cyprus employment data visually.</p>
-    <p><b>LLM-powered colouring:</b> The <a href="https://github.com/alezenonos/jobscy">source code</a> includes data pipelines, parsers, and a framework for writing custom LLM prompts to score and colour occupations by any criteria. You write a prompt, the LLM scores each occupation, and the treemap colours accordingly. The "Digital AI Exposure" option is one example &mdash; it estimates how much current AI (which is primarily digital) will reshape each occupation. But you could write a different prompt for any question &mdash; e.g. exposure to humanoid robotics, offshoring risk, climate impact &mdash; and re-run the pipeline to get a different colouring.</p>
-    <details>
-      <summary>View the Digital AI Exposure scoring prompt (example)</summary>
-      <div class="prompt-box">You are an expert labour market analyst evaluating how exposed different occupations are to AI. You will be given an occupation description based on the ISCO-08 international classification, in the context of the Cyprus and EU labour market.
+    <details class="about">
+      <summary>About the data, methods and caveats</summary>
+      <p><b>LLM-powered colouring:</b> The <a href="https://github.com/alezenonos/jobscy">source code</a> includes data pipelines, parsers, and a framework for writing custom LLM prompts to score and colour occupations by any criteria. You write a prompt, the LLM scores each occupation, and the treemap colours accordingly. The "Digital AI Exposure" option is one example &mdash; it estimates how much current AI (which is primarily digital) will reshape each occupation. But you could write a different prompt for any question &mdash; e.g. exposure to humanoid robotics, offshoring risk, climate impact &mdash; and re-run the pipeline to get a different colouring.</p>
+      <details>
+        <summary>View the Digital AI Exposure scoring prompt (example)</summary>
+        <div class="prompt-box">You are an expert labour market analyst evaluating how exposed different occupations are to AI. You will be given an occupation description based on the ISCO-08 international classification, in the context of the Cyprus and EU labour market.
 
 Rate the occupation's overall AI Exposure on a scale from 0 to 10.
 
@@ -250,11 +259,12 @@ Use these anchors to calibrate your score:
 
 Respond with ONLY a JSON object in this exact format, no other text:
 {"exposure": &lt;0-10&gt;, "rationale": "&lt;2-3 sentences explaining the key factors&gt;"}</div>
+      </details>
+      <p><b>Caveat on pay:</b> Eurostat's Structure of Earnings Survey (2022, enterprises with 10+ employees) only publishes Cyprus pay by ISCO-08 <i>major</i> group, so every occupation in a group shows the same figure. "Average pay" is mean gross annual earnings including the 13th salary and bonuses, <b>carried forward to 2025 as an estimate</b> using the growth in Cyprus's wage index (Eurostat labour cost index, wages and salaries, +15.5% from 2022 to 2025). The tooltip also shows the survey's own 2022 figure. The range shows the 10th to 90th percentile of hourly pay in that major group, annualised with the same ratio, so it is an approximation. Pay by sector comes from the same survey and leaves out sectors with fewer than 500 employees in the group. The next survey wave (2026) is expected to be published around 2028.</p>
+      <p><b>About job openings:</b> Openings count both new jobs (expansion demand) and jobs freed up by people retiring or leaving (replacement demand). The colour shows HRDA's projected openings a year as a share of the group's 2022 employment. HRDA's <a href="https://www.anad.org.cy/wps/wcm/connect/hrda/b6fbcbf8-14b0-4ee2-817b-ab97496d90a5/Provlepseis+2022-2032.pdf?MOD=AJPERES">Forecasts of Employment Needs in Cyprus 2022&ndash;2032</a> and Cedefop's Skills Forecast use different models and periods, so their numbers differ; both are shown in the tooltip.</p>
+      <p><b>Caveat on Growth Outlook:</b> The 10-year outlook is an LLM estimate. Where the tooltip shows historical growth, the model was given that Eurostat figure for Cyprus; otherwise it worked from the occupation group alone. It is not an official projection and should be read as a rough indication only. The tooltip shows HRDA's and Cedefop's official employment forecasts alongside it for comparison.</p>
+      <p><b>Caveat on Digital AI Exposure scores:</b> These are rough LLM estimates, not rigorous predictions. A high score does not predict the job will disappear. Software developers score 9/10 because AI is transforming their work &mdash; but demand for software could easily <em>grow</em> as each developer becomes more productive. The score does not account for demand elasticity, latent demand, regulatory barriers, or social preferences for human workers. Many high-exposure jobs will be reshaped, not replaced.</p>
     </details>
-    <p><b>Caveat on pay:</b> Eurostat's Structure of Earnings Survey (2022, enterprises with 10+ employees) only publishes Cyprus pay by ISCO-08 <i>major</i> group, so every occupation in a group shows the same figure. "Average pay" is mean gross annual earnings including the 13th salary and bonuses, <b>carried forward to 2025 as an estimate</b> using the growth in Cyprus's wage index (Eurostat labour cost index, wages and salaries, +15.5% from 2022 to 2025). The tooltip also shows the survey's own 2022 figure. The range shows the 10th to 90th percentile of hourly pay in that major group, annualised with the same ratio, so it is an approximation. Pay by sector comes from the same survey and leaves out sectors with fewer than 500 employees in the group. The next survey wave (2026) is expected to be published around 2028.</p>
-    <p><b>About job openings:</b> Openings count both new jobs (expansion demand) and jobs freed up by people retiring or leaving (replacement demand). The colour shows HRDA's projected openings a year as a share of the group's 2022 employment. HRDA's <a href="https://www.anad.org.cy/wps/wcm/connect/hrda/b6fbcbf8-14b0-4ee2-817b-ab97496d90a5/Provlepseis+2022-2032.pdf?MOD=AJPERES">Forecasts of Employment Needs in Cyprus 2022&ndash;2032</a> and Cedefop's Skills Forecast use different models and periods, so their numbers differ; both are shown in the tooltip.</p>
-    <p><b>Caveat on Growth Outlook:</b> The 10-year outlook is an LLM estimate. Where the tooltip shows historical growth, the model was given that Eurostat figure for Cyprus; otherwise it worked from the occupation group alone. It is not an official projection and should be read as a rough indication only. The tooltip shows HRDA's and Cedefop's official employment forecasts alongside it for comparison.</p>
-    <p><b>Caveat on Digital AI Exposure scores:</b> These are rough LLM estimates, not rigorous predictions. A high score does not predict the job will disappear. Software developers score 9/10 because AI is transforming their work &mdash; but demand for software could easily <em>grow</em> as each developer becomes more productive. The score does not account for demand elasticity, latent demand, regulatory barriers, or social preferences for human workers. Many high-exposure jobs will be reshaped, not replaced.</p>
   </div>
 
   <div class="controls-row">
@@ -614,10 +624,12 @@ function showTooltip(d, mx, my) {
   tt.querySelector(".tt-rationale").textContent =
     colorMode === "exposure" ? (d.exposure_rationale || "") :
     colorMode === "outlook" ? (d.outlook_rationale || "") : "";
+  const tw = tt.offsetWidth, th = tt.offsetHeight, pad = 10;
   let tx = mx + 16, ty = my - 16;
-  if (tx + 340 > window.innerWidth) tx = mx - 356;
-  if (ty < 10) ty = my + 16;
-  if (ty + 200 > window.innerHeight) ty = my - 200;
+  if (tx + tw > window.innerWidth - pad) tx = mx - tw - 16;
+  if (ty + th > window.innerHeight - pad) ty = window.innerHeight - th - pad;
+  tx = Math.max(pad, Math.min(tx, window.innerWidth - tw - pad));
+  ty = Math.max(pad, ty);
   tt.style.left = tx + "px"; tt.style.top = ty + "px";
   tt.classList.add("visible");
 }
@@ -658,7 +670,7 @@ function weightedAvgByGroups(groups, filterFn, metricFn) {
       if (v != null && d.jobs && filterFn(d, g)) { wS += v * d.jobs; wC += d.jobs; }
     }
     return { ...g, avg: wC > 0 ? wS / wC : 0, jobs: wC };
-  });
+  }).filter(g => g.jobs > 0);
 }
 
 // Render helpers
@@ -865,14 +877,14 @@ function updateEducationStats(totalJobs) {
     let jobs = 0;
     for (const d of data) { if (d.jobs && g.match.includes(d.education)) jobs += d.jobs; }
     return { ...g, jobs, idx: i };
-  });
+  }).filter(g => g.jobs > 0);
   const maxH = Math.max(...groups.map(g => g.jobs));
   document.getElementById("block3").innerHTML = `<h3>Jobs by education</h3>
-    <div class="histogram">${groups.map(g => `<div class="bar" style="height:${Math.max(2, maxH > 0 ? g.jobs / maxH * 100 : 0)}%;background:${eduColor(g.idx * 2, 0.7)}"></div>`).join("")}</div>
-    <div class="hist-labels"><span>HS</span><span>BS</span><span>PhD</span></div>`;
+    <div class="histogram">${groups.map(g => `<div class="bar" style="height:${Math.max(2, maxH > 0 ? g.jobs / maxH * 100 : 0)}%;background:${eduColor(g.idx, 0.7)}"></div>`).join("")}</div>
+    <div class="hist-labels"><span>Lower sec.</span><span>Bachelor's+</span></div>`;
 
   // Tier breakdown (same groups with counts)
-  const tiers = groups.map((g, i) => ({ label: g.label, jobs: g.jobs, color: eduColor(i * 2, 1) }));
+  const tiers = groups.map(g => ({ label: g.label, jobs: g.jobs, color: eduColor(g.idx, 1) }));
   document.getElementById("block4").innerHTML = `<h3>Education tiers</h3><div class="tier-bar">${renderTiers(tiers, totalJobs)}</div>`;
 
   // Cross: avg pay by education
@@ -955,13 +967,38 @@ function updateExposureStats(totalJobs) {
 
 // ── Events ─────────────────────────────────────────────────────────────
 
+// Remember whether the last input was a mouse or a touch/pen, so hover and tap don't fight.
+let lastPointer = "mouse";
+canvas.addEventListener("pointerdown", (e) => { lastPointer = e.pointerType; });
+canvas.addEventListener("pointermove", (e) => { if (e.pointerType === "mouse") lastPointer = "mouse"; });
+
 canvas.addEventListener("mousemove", (e) => {
+  if (lastPointer !== "mouse") return; // touch taps are handled by the click handler
   const hit = hitTest(e.clientX, e.clientY);
   if (hit !== hovered) { hovered = hit; draw(); }
   if (hovered) { showTooltip(hovered, e.clientX, e.clientY); }
   else { hideTooltip(); }
 });
-canvas.addEventListener("mouseleave", () => { hovered = null; hideTooltip(); draw(); });
+canvas.addEventListener("mouseleave", () => { if (lastPointer !== "mouse") return; hovered = null; hideTooltip(); draw(); });
+// Touch screens: tap a tile to see its details, tap it again or tap elsewhere to close.
+canvas.addEventListener("click", (e) => {
+  if (lastPointer === "mouse") return;
+  const hit = hitTest(e.clientX, e.clientY);
+  if (!hit || hit === hovered && document.getElementById("tooltip").classList.contains("visible")) {
+    hovered = null; hideTooltip();
+  } else {
+    hovered = hit; tapScrollY = window.scrollY; showTooltip(hit, e.clientX, e.clientY);
+  }
+  draw();
+});
+document.addEventListener("click", (e) => {
+  if (e.target !== canvas && hovered) { hovered = null; hideTooltip(); draw(); }
+});
+// The tooltip is fixed to the screen, so close it once a touch user scrolls the page away.
+let tapScrollY = 0;
+window.addEventListener("scroll", () => {
+  if (hovered && lastPointer !== "mouse" && Math.abs(window.scrollY - tapScrollY) > 40) { hovered = null; hideTooltip(); draw(); }
+}, { passive: true });
 function resize() { dpr = window.devicePixelRatio || 1; layout(); draw(); }
 
 // ── Legend gradient ────────────────────────────────────────────────────
@@ -971,7 +1008,7 @@ const LEGEND_CONFIG = {
   outlook:   { low: "Declining", high: "Growing" },
   pay:       { low: "\u20AC10K", high: "\u20AC80K" },
   openings:  { low: "1.5%/yr", high: "4.5%/yr" },
-  education: { low: "No degree", high: "Doctoral" },
+  education: { low: "Lower secondary", high: "Bachelor's+" },
 };
 
 function drawGradientLegend() {
@@ -1009,6 +1046,12 @@ fetch("data.json")
   .then(r => { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
   .then(d => {
     data = d;
+    const d0 = d[0] || {};
+    const v = [];
+    if (d0.year_employment) v.push(`Employment: Eurostat LFS ${d0.year_employment}`);
+    if (d0.pay_survey_year) v.push(`Pay: SES ${d0.pay_survey_year}${d0.pay_estimated ? `, estimated for ${d0.pay_year}` : ""}`);
+    v.push("Job openings: HRDA 2022\u201332, Cedefop 2022\u201335");
+    document.getElementById("vintage").textContent = "Data \u00b7 " + v.join(" \u00b7 ");
     document.getElementById("loading").style.display = "none";
     document.getElementById("wrapper").style.display = "";
     updateStats();
