@@ -13,7 +13,7 @@ Usage:
     uv run python score_outlook.py      # reads cagr.json by default
     uv run python score_outlook.py --cagr-file other.json
     uv run python score_outlook.py --no-cagr   # score without historical data (not recommended)
-    uv run python score_outlook.py --model google/gemini-3-flash-preview
+    uv run python score_outlook.py --model openai/gpt-6-luna
     uv run python score_outlook.py --start 0 --end 10
 """
 
@@ -27,7 +27,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-DEFAULT_MODEL = "google/gemini-3-flash-preview"
+DEFAULT_MODEL = "openai/gpt-6-luna"
 OUTPUT_FILE = "outlook_scores.json"
 API_URL = "https://openrouter.ai/api/v1/chat/completions"
 

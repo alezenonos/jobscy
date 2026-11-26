@@ -10,7 +10,7 @@ resumed if interrupted.
 Usage:
     uv run python score.py                                    # auto-detect input
     uv run python score.py --occupations occupations_cy.json  # Cyprus occupations
-    uv run python score.py --model google/gemini-3-flash-preview
+    uv run python score.py --model openai/gpt-6-luna
     uv run python score.py --start 0 --end 10                 # test on first 10
 """
 
@@ -24,7 +24,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-DEFAULT_MODEL = "google/gemini-3-flash-preview"
+DEFAULT_MODEL = "openai/gpt-6-luna"
 OUTPUT_FILE = "scores.json"
 API_URL = "https://openrouter.ai/api/v1/chat/completions"
 
