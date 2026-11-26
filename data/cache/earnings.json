@@ -6,8 +6,8 @@
     "median_hourly_eur": 27.3,
     "p10_hourly_eur": 12.97,
     "p90_hourly_eur": 54.31,
-    "annual_earnings_eur": 73564.0,
-    "year": "2022"
+    "year": "2022",
+    "annual_earnings_eur": 73564.0
   },
   {
     "isco_code": "OC2",
@@ -16,8 +16,8 @@
     "median_hourly_eur": 16.51,
     "p10_hourly_eur": 8.32,
     "p90_hourly_eur": 33.03,
-    "annual_earnings_eur": 41771.0,
-    "year": "2022"
+    "year": "2022",
+    "annual_earnings_eur": 41771.0
   },
   {
     "isco_code": "OC3",
@@ -26,8 +26,8 @@
     "median_hourly_eur": 11.49,
     "p10_hourly_eur": 6.88,
     "p90_hourly_eur": 22.47,
-    "annual_earnings_eur": 33063.0,
-    "year": "2022"
+    "year": "2022",
+    "annual_earnings_eur": 33063.0
   },
   {
     "isco_code": "OC4",
@@ -36,8 +36,8 @@
     "median_hourly_eur": 8.04,
     "p10_hourly_eur": 5.45,
     "p90_hourly_eur": 14.22,
-    "annual_earnings_eur": 20893.0,
-    "year": "2022"
+    "year": "2022",
+    "annual_earnings_eur": 20893.0
   },
   {
     "isco_code": "OC5",
@@ -46,8 +46,8 @@
     "median_hourly_eur": 6.75,
     "p10_hourly_eur": 4.95,
     "p90_hourly_eur": 10.49,
-    "annual_earnings_eur": 17476.0,
-    "year": "2022"
+    "year": "2022",
+    "annual_earnings_eur": 17476.0
   },
   {
     "isco_code": "OC6",
@@ -56,8 +56,8 @@
     "median_hourly_eur": 6.68,
     "p10_hourly_eur": 3.79,
     "p90_hourly_eur": 10.68,
-    "annual_earnings_eur": 16413.0,
-    "year": "2022"
+    "year": "2022",
+    "annual_earnings_eur": 16413.0
   },
   {
     "isco_code": "OC7",
@@ -66,8 +66,8 @@
     "median_hourly_eur": 8.37,
     "p10_hourly_eur": 5.32,
     "p90_hourly_eur": 13.13,
-    "annual_earnings_eur": 21235.0,
-    "year": "2022"
+    "year": "2022",
+    "annual_earnings_eur": 21235.0
   },
   {
     "isco_code": "OC8",
@@ -76,8 +76,8 @@
     "median_hourly_eur": 8.84,
     "p10_hourly_eur": 5.38,
     "p90_hourly_eur": 14.15,
-    "annual_earnings_eur": 23242.0,
-    "year": "2022"
+    "year": "2022",
+    "annual_earnings_eur": 23242.0
   },
   {
     "isco_code": "OC9",
@@ -86,7 +86,7 @@
     "median_hourly_eur": 6.24,
     "p10_hourly_eur": 4.57,
     "p90_hourly_eur": 10.48,
-    "annual_earnings_eur": 15989.0,
-    "year": "2022"
+    "year": "2022",
+    "annual_earnings_eur": 15989.0
   }
 ]
