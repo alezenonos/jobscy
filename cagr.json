@@ -1,0 +1,302 @@
+{
+  "OC0": {
+    "cagr": 2.94,
+    "start_year": "2011",
+    "end_year": "2025",
+    "n_obs": 15
+  },
+  "OC01": {
+    "cagr": -3.3,
+    "start_year": "2011",
+    "end_year": "2025",
+    "n_obs": 15
+  },
+  "OC02": {
+    "cagr": 3.72,
+    "start_year": "2011",
+    "end_year": "2025",
+    "n_obs": 15
+  },
+  "OC03": {
+    "cagr": 8.52,
+    "start_year": "2011",
+    "end_year": "2025",
+    "n_obs": 10
+  },
+  "OC1": {
+    "cagr": 2.62,
+    "start_year": "2011",
+    "end_year": "2025",
+    "n_obs": 15
+  },
+  "OC11": {
+    "cagr": 4.78,
+    "start_year": "2011",
+    "end_year": "2025",
+    "n_obs": 15
+  },
+  "OC12": {
+    "cagr": -0.93,
+    "start_year": "2011",
+    "end_year": "2025",
+    "n_obs": 15
+  },
+  "OC13": {
+    "cagr": 5.9,
+    "start_year": "2011",
+    "end_year": "2025",
+    "n_obs": 15
+  },
+  "OC14": {
+    "cagr": 1.97,
+    "start_year": "2011",
+    "end_year": "2025",
+    "n_obs": 15
+  },
+  "OC2": {
+    "cagr": 4.15,
+    "start_year": "2011",
+    "end_year": "2025",
+    "n_obs": 15
+  },
+  "OC21": {
+    "cagr": 5.23,
+    "start_year": "2011",
+    "end_year": "2025",
+    "n_obs": 15
+  },
+  "OC22": {
+    "cagr": 5.2,
+    "start_year": "2011",
+    "end_year": "2025",
+    "n_obs": 15
+  },
+  "OC23": {
+    "cagr": 0.92,
+    "start_year": "2011",
+    "end_year": "2025",
+    "n_obs": 15
+  },
+  "OC24": {
+    "cagr": 3.86,
+    "start_year": "2011",
+    "end_year": "2025",
+    "n_obs": 15
+  },
+  "OC25": {
+    "cagr": 10.69,
+    "start_year": "2011",
+    "end_year": "2025",
+    "n_obs": 15
+  },
+  "OC26": {
+    "cagr": 5.66,
+    "start_year": "2011",
+    "end_year": "2025",
+    "n_obs": 15
+  },
+  "OC3": {
+    "cagr": 2.85,
+    "start_year": "2011",
+    "end_year": "2025",
+    "n_obs": 15
+  },
+  "OC31": {
+    "cagr": 2.57,
+    "start_year": "2011",
+    "end_year": "2025",
+    "n_obs": 15
+  },
+  "OC32": {
+    "cagr": 2.71,
+    "start_year": "2011",
+    "end_year": "2025",
+    "n_obs": 15
+  },
+  "OC33": {
+    "cagr": 2.92,
+    "start_year": "2011",
+    "end_year": "2025",
+    "n_obs": 15
+  },
+  "OC34": {
+    "cagr": 1.78,
+    "start_year": "2011",
+    "end_year": "2025",
+    "n_obs": 15
+  },
+  "OC35": {
+    "cagr": 6.51,
+    "start_year": "2011",
+    "end_year": "2025",
+    "n_obs": 15
+  },
+  "OC4": {
+    "cagr": 0.37,
+    "start_year": "2011",
+    "end_year": "2025",
+    "n_obs": 15
+  },
+  "OC41": {
+    "cagr": 1.31,
+    "start_year": "2011",
+    "end_year": "2025",
+    "n_obs": 15
+  },
+  "OC42": {
+    "cagr": -1.77,
+    "start_year": "2011",
+    "end_year": "2025",
+    "n_obs": 15
+  },
+  "OC43": {
+    "cagr": 0.15,
+    "start_year": "2011",
+    "end_year": "2025",
+    "n_obs": 15
+  },
+  "OC44": {
+    "cagr": 6.24,
+    "start_year": "2011",
+    "end_year": "2025",
+    "n_obs": 14
+  },
+  "OC5": {
+    "cagr": 1.61,
+    "start_year": "2011",
+    "end_year": "2025",
+    "n_obs": 15
+  },
+  "OC51": {
+    "cagr": 3.36,
+    "start_year": "2011",
+    "end_year": "2025",
+    "n_obs": 15
+  },
+  "OC52": {
+    "cagr": -0.69,
+    "start_year": "2011",
+    "end_year": "2025",
+    "n_obs": 15
+  },
+  "OC53": {
+    "cagr": 7.71,
+    "start_year": "2011",
+    "end_year": "2025",
+    "n_obs": 15
+  },
+  "OC54": {
+    "cagr": 1.55,
+    "start_year": "2011",
+    "end_year": "2025",
+    "n_obs": 15
+  },
+  "OC6": {
+    "cagr": -1.29,
+    "start_year": "2011",
+    "end_year": "2025",
+    "n_obs": 15
+  },
+  "OC61": {
+    "cagr": -1.44,
+    "start_year": "2011",
+    "end_year": "2025",
+    "n_obs": 15
+  },
+  "OC7": {
+    "cagr": 0.51,
+    "start_year": "2011",
+    "end_year": "2025",
+    "n_obs": 15
+  },
+  "OC71": {
+    "cagr": 0.68,
+    "start_year": "2011",
+    "end_year": "2025",
+    "n_obs": 15
+  },
+  "OC72": {
+    "cagr": 1.16,
+    "start_year": "2011",
+    "end_year": "2025",
+    "n_obs": 15
+  },
+  "OC73": {
+    "cagr": -3.06,
+    "start_year": "2011",
+    "end_year": "2025",
+    "n_obs": 15
+  },
+  "OC74": {
+    "cagr": -0.26,
+    "start_year": "2011",
+    "end_year": "2025",
+    "n_obs": 15
+  },
+  "OC75": {
+    "cagr": 1.02,
+    "start_year": "2011",
+    "end_year": "2025",
+    "n_obs": 15
+  },
+  "OC8": {
+    "cagr": 1.4,
+    "start_year": "2011",
+    "end_year": "2025",
+    "n_obs": 15
+  },
+  "OC81": {
+    "cagr": 2.28,
+    "start_year": "2011",
+    "end_year": "2025",
+    "n_obs": 15
+  },
+  "OC83": {
+    "cagr": 1.22,
+    "start_year": "2011",
+    "end_year": "2025",
+    "n_obs": 15
+  },
+  "OC9": {
+    "cagr": -0.46,
+    "start_year": "2011",
+    "end_year": "2025",
+    "n_obs": 15
+  },
+  "OC91": {
+    "cagr": 0.09,
+    "start_year": "2011",
+    "end_year": "2025",
+    "n_obs": 15
+  },
+  "OC92": {
+    "cagr": -1.32,
+    "start_year": "2011",
+    "end_year": "2025",
+    "n_obs": 15
+  },
+  "OC93": {
+    "cagr": -3.23,
+    "start_year": "2011",
+    "end_year": "2025",
+    "n_obs": 15
+  },
+  "OC94": {
+    "cagr": 6.65,
+    "start_year": "2011",
+    "end_year": "2025",
+    "n_obs": 15
+  },
+  "OC96": {
+    "cagr": -2.91,
+    "start_year": "2011",
+    "end_year": "2025",
+    "n_obs": 15
+  },
+  "TOTAL": {
+    "cagr": 1.71,
+    "start_year": "2011",
+    "end_year": "2025",
+    "n_obs": 15
+  }
+}
