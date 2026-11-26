@@ -20,16 +20,17 @@ Usage:
 import argparse
 import json
 import os
-import time
+import sys
 
-import httpx
 from dotenv import load_dotenv
+
+import llm_scoring
+from llm_scoring import InvalidScoreError, parse_llm_response, require_rationale  # noqa: F401 - re-exported
 
 load_dotenv()
 
 DEFAULT_MODEL = "openai/gpt-6-luna"
 OUTPUT_FILE = "outlook_scores.json"
-API_URL = "https://openrouter.ai/api/v1/chat/completions"
 
 SYSTEM_PROMPT = """\
 You are an expert labour market analyst projecting 10-year employment growth \
@@ -86,37 +87,28 @@ Respond with ONLY a JSON object in this exact format, no other text:
 """
 
 
-def parse_llm_response(content):
-    """Parse LLM response, stripping markdown fences if present."""
-    content = content.strip()
-    if content.startswith("```"):
-        content = content.split("\n", 1)[1]
-        if content.endswith("```"):
-            content = content[:-3]
-        content = content.strip()
-    return json.loads(content)
+def make_to_entry(cagr_by_code):
+    """Return a validator that turns the model's answer into the fields to store."""
 
+    def to_entry(occ, result):
+        outlook = result.get("outlook")
+        if isinstance(outlook, str):
+            try:
+                outlook = float(outlook.strip().rstrip("%"))
+            except ValueError:
+                outlook = None
+        if not isinstance(outlook, (int, float)) or isinstance(outlook, bool) or not -60 <= outlook <= 100:
+            raise InvalidScoreError(f"outlook must be a % change between -60 and 100, got {result.get('outlook')!r}")
+        if isinstance(outlook, float) and outlook.is_integer():
+            outlook = int(outlook)
+        entry = {"outlook": outlook, "outlook_rationale": require_rationale(result)}
+        cagr_data = cagr_by_code.get(occ.get("isco_code"))
+        if cagr_data and cagr_data.get("cagr") is not None:
+            entry["historical_cagr"] = cagr_data["cagr"]
+            entry["historical_period"] = f"{cagr_data['start_year']}-{cagr_data['end_year']}"
+        return entry
 
-def score_outlook(client, text, model):
-    """Send one occupation to the LLM and parse the outlook response."""
-    response = client.post(
-        API_URL,
-        headers={
-            "Authorization": f"Bearer {os.environ['OPENROUTER_API_KEY']}",
-        },
-        json={
-            "model": model,
-            "messages": [
-                {"role": "system", "content": SYSTEM_PROMPT},
-                {"role": "user", "content": text},
-            ],
-            "temperature": 0.2,
-        },
-        timeout=60,
-    )
-    response.raise_for_status()
-    content = response.json()["choices"][0]["message"]["content"]
-    return parse_llm_response(content)
+    return to_entry
 
 
 def build_outlook_prompt(occ, cagr_data=None):
@@ -174,7 +166,9 @@ def main():
     parser.add_argument("--start", type=int, default=0)
     parser.add_argument("--end", type=int, default=None)
     parser.add_argument("--delay", type=float, default=0.5)
-    parser.add_argument("--force", action="store_true", help="Re-score even if already cached")
+    parser.add_argument(
+        "--force", action="store_true", help="Re-score the selected occupations even if cached (others are kept)"
+    )
     args = parser.parse_args()
 
     occ_path = args.occupations or "occupations_cy.json"
@@ -196,61 +190,17 @@ def main():
             cagr_by_code = json.load(f)
         print(f"Loaded CAGR data for {len(cagr_by_code)} ISCO codes")
 
-    subset = occupations[args.start : args.end]
-
-    # Load existing scores
-    scores = {}
-    if os.path.exists(OUTPUT_FILE) and not args.force:
-        with open(OUTPUT_FILE) as f:
-            for entry in json.load(f):
-                scores[entry["slug"]] = entry
-
-    print(f"Scoring outlook for {len(subset)} occupations with {args.model}")
-    print(f"Already cached: {len(scores)}")
-
-    errors = []
-    client = httpx.Client()
-
-    for i, occ in enumerate(subset):
-        slug = occ["slug"]
-
-        cagr_data = cagr_by_code.get(occ.get("isco_code"))
-
-        if slug in scores and not is_stale(scores[slug], cagr_data):
-            continue
-        text = build_outlook_prompt(occ, cagr_data)
-
-        print(f"  [{i + 1}/{len(subset)}] {occ['title']}...", end=" ", flush=True)
-
-        try:
-            result = score_outlook(client, text, args.model)
-            scores[slug] = {
-                "slug": slug,
-                "title": occ["title"],
-                "outlook": result["outlook"],
-                "outlook_rationale": result["rationale"],
-            }
-            if cagr_data and cagr_data.get("cagr") is not None:
-                scores[slug]["historical_cagr"] = cagr_data["cagr"]
-                scores[slug]["historical_period"] = f"{cagr_data['start_year']}-{cagr_data['end_year']}"
-            outlook = result["outlook"]
-            print(f"outlook={outlook:+.1f}%")
-        except Exception as e:
-            print(f"ERROR: {e}")
-            errors.append(slug)
-
-        # Save after each one (incremental checkpoint)
-        with open(OUTPUT_FILE, "w") as f:
-            json.dump(list(scores.values()), f, indent=2)
-
-        if i < len(subset) - 1:
-            time.sleep(args.delay)
-
-    client.close()
-
-    print(f"\nDone. Scored {len(scores)} occupations, {len(errors)} errors.")
-    if errors:
-        print(f"Errors: {errors}")
+    scores, errors = llm_scoring.run(
+        occupations[args.start : args.end],
+        output_file=OUTPUT_FILE,
+        model=args.model,
+        system_prompt=SYSTEM_PROMPT,
+        build_prompt=lambda occ: build_outlook_prompt(occ, cagr_by_code.get(occ.get("isco_code"))),
+        to_entry=make_to_entry(cagr_by_code),
+        needs_scoring=lambda occ, cached: is_stale(cached, cagr_by_code.get(occ.get("isco_code"))),
+        force=args.force,
+        delay=args.delay,
+    )
 
     # Summary stats
     vals = [s for s in scores.values() if "outlook" in s]
@@ -262,6 +212,8 @@ def main():
         print(f"\nAverage outlook across {len(vals)} occupations: {avg:+.1f}%")
         print(f"Growing: {growing}, Stable: {stable}, Declining: {declining}")
 
+    return 1 if errors else 0
+
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

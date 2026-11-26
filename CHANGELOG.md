@@ -5,16 +5,23 @@ All notable changes to JobsCY are listed here. The project follows [Semantic Ver
 ## [Unreleased]
 
 ### Fixed
+- **Scoring scripts no longer lose saved scores.** `--force` with `--start`/`--end` used to shrink `scores.json` to that range. Scoring now goes through `llm_scoring.py`, which validates each answer, retries rate limits and server errors, records the model and date, and exits non-zero when anything failed.
+- Education legend and labels matched the wrong levels ("No degree → Doctoral", "HS/BS/PhD"), and three education tiers shared one colour.
 - **Pay was understated.** The earnings fetch did not recognise Cyprus's headline SES aggregate (`B-S_X_O`) and fell back to an unweighted average of sector figures. It now uses the official aggregate: Professionals go from €36.9K to €41.8K, Managers from €65.8K to €73.6K.
 - `prompt.md` no longer claims data from HRDA, and its totals are regenerated on the corrected employment figures (was 572K jobs).
 - Docs named `earn_ses_pub1s` as the earnings dataset; it is `earn_ses_hourly` (plus `earn_ses22_28`).
 
 ### Changed
+- Removed unused `playwright` and `beautifulsoup4` dependencies; Dependabot now updates `uv.lock`; CI checks the lock file is in sync. The hard-coded coverage badge was removed and the CI coverage floor raised from 45% to 60%.
 - **Employment refreshed to LFS 2025** (499.0k across the 39 groups, was 480.2k for 2024).
 - **Average pay is SES mean annual earnings** (`earn_ses22_28`), which includes the 13th salary and bonuses, instead of hourly × 2,080.
 - CSV pay columns renamed to `mean_pay_annual_eur` and `mean_pay_hourly_eur`, since they were never medians.
 
 ### Added
+- **Keyboard access and a data table.** The treemap can be explored with Tab and the arrow keys, screen readers hear each tile, and a sortable table under the treemap lists all 39 occupations.
+- **Tap on phones and tablets** shows a tile's details. The page no longer scrolls sideways on phones, the header shows the data years, and the methods and caveats sit behind one "About the data" toggle so the treemap is near the top.
+- **Monthly data refresh.** A scheduled workflow fetches the latest Eurostat data, rebuilds the site data and opens a pull request listing what changed and which growth-outlook scores need re-scoring.
+- **Data integrity checks in CI** (`tests/test_data_integrity.py`): the CSV and site data rebuild from the cache, employment adds up to the Eurostat totals, values are in range, and the data is at most two years old.
 - **2025 pay estimate.** SES 2022 pay is carried forward to 2025 with Cyprus's wage growth (Eurostat labour cost index, +15.5%) and labelled as an estimate; the 2022 survey figure stays in the tooltip. Managers now show €84.9K, Professionals €48.2K.
 - **Pay by sector.** The pay tooltip lists the best- and worst-paying sectors for each major group (SES 2022 `earn_ses22_49`, cells under 500 employees dropped).
 - **Job Openings layer** from HRDA's *Forecasts of Employment Needs in Cyprus 2022-2032*: yearly openings, split into new jobs and replacement of leavers, per ISCO 2-digit group.

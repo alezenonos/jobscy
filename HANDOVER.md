@@ -1,26 +1,31 @@
 # Handover Document — JobsCY
 
-> **Last updated:** 2026-03-26 (PR 7: CI/CD Hardening + Vercel Deployment)
-> **Branch:** `claude/cyprus-job-market-adaptation-HX1xe`
+> **Last updated:** 2026-11-26 (keyboard access and data table, data integrity CI, safe LLM scoring, monthly data refresh)
+> **Default branch:** `master`
 > **Repo:** https://github.com/alezenonos/jobscy
-> **Status:** All 6 PRs complete. Project is functional end-to-end.
+> **Status:** Functional end-to-end, version 1.1.0 plus the changes in CHANGELOG.md "Unreleased". The sections under "Completed work" are the original build history.
 
 ---
 
 ## Project overview
 
-JobsCY adapts [karpathy/jobs](https://github.com/karpathy/jobs) (a US BLS occupational treemap) for the **Cyprus labour market** using EU/Cyprus data sources. The result is an interactive treemap of Cyprus occupations sized by employment and coloured by growth outlook, average pay (EUR), education level, or AI exposure score.
+JobsCY adapts [karpathy/jobs](https://github.com/karpathy/jobs) (a US BLS occupational treemap) for the **Cyprus labour market** using EU/Cyprus data sources. The result is an interactive treemap of Cyprus occupations sized by employment and coloured by growth outlook, average pay (EUR), job openings, education level, or AI exposure score.
 
 ## Architecture
 
 ```
-Cyprus pipeline:
   ISCO-08 data ──► generate_cy_occupations.py ──► occupations_cy.json
-  Eurostat API ──► make_cy_csv.py ─────────────► occupations_cy.csv
-                                                        │
-  LLM (OpenRouter) ──► score.py ──► scores.json ◄──────┘
-                                         │
-                     build_site_data.py ──┘──► site/data.json ──► site/index.html
+  Eurostat API ──► make_cy_csv.py ──► occupations_cy.csv ─────────────┐
+  Eurostat API ──► make_cagr.py ──► cagr.json                          │
+  LLM (OpenRouter) ──► score.py ──────────► scores.json ───────────────┤
+  LLM (OpenRouter) + cagr.json ──► score_outlook.py ──► outlook_scores.json
+                                                                       │
+  data/cache (wage index, sector pay, HRDA, Cedefop) ──► forecasts.py ─┤
+                                                                       ▼
+                                   build_site_data.py ──► site/data.json ──► site/index.html
+
+Monthly refresh (.github/workflows/refresh-data.yml):
+  make_cy_csv.py + make_cagr.py + refresh_data.py wage-index ──► build_site_data.py ──► pull request
 
 Utilities:
   make_prompt.py ──► prompt.md (single-file LLM analysis document)
@@ -36,6 +41,11 @@ Utilities:
 | `build_site_data.py` | Merge CSV + scores → `site/data.json` | **Done (PR 3)** |
 | `forecasts.py` | 2025 pay estimate, pay by sector, HRDA + Cedefop forecasts for the site | **Done (PR 27)** |
 | `score.py` | LLM-based AI exposure scoring via OpenRouter | **Done (PR 4)** |
+| `make_cagr.py` | Historical employment CAGR per ISCO code → `cagr.json` | Done |
+| `score_outlook.py` | LLM 10-year growth outlook, grounded with `cagr.json` | Done |
+| `llm_scoring.py` | Shared scoring loop: keeps cached scores, validates, retries, records model/date | Done |
+| `refresh_data.py` | Wage index fetch and change report for the monthly refresh | Done |
+| `tests/test_data_integrity.py` | Checks on the committed data (rebuilds, totals, ranges, freshness) | Done |
 | `make_prompt.py` | Generate single-file LLM prompt | **Done (PR 6)** |
 | `site/index.html` | Interactive treemap visualisation (EUR, ISCO-08) | **Done (PR 5)** |
 ## Data sources (Cyprus/EU)
@@ -158,7 +168,7 @@ These are optional improvements beyond the initial 6-PR scope:
 
 - **HRDA detail:** The 2-digit forecasts are integrated; the ~309 detailed occupations could add finer granularity
 - **Growth outlook:** Still an LLM estimate grounded with Eurostat historical CAGR (`make_cagr.py`). HRDA and Cedefop forecasts are now shown next to it and could be fed into the scoring prompt on the next re-score
-- **Refreshing the forecast caches:** `wage_index.json` and the sector pay file come from Eurostat (fetch in a browser if the API is blocked); HRDA and Cedefop values were transcribed by hand and need updating when new editions come out
+- **Refreshing the forecast caches:** employment, earnings, employment history and `wage_index.json` are refreshed monthly by the workflow. The sector pay file only changes with a new SES wave (expected ~2028). HRDA and Cedefop values were transcribed by hand and need updating when new editions come out
 - **EURES shortage data:** Add shortage/surplus indicators from EURES vacancy statistics
 - **3-digit ISCO:** Expand from 39 sub-major groups to ~130 minor groups if Eurostat provides sufficient Cyprus data
 - **Multilingual:** Greek language support for occupation titles (ISCO-08 has official Greek labels)
@@ -169,11 +179,13 @@ These are optional improvements beyond the initial 6-PR scope:
 The Eurostat API (`ec.europa.eu`) may be blocked in sandboxed environments (e.g. egress proxy returns `403 host_not_allowed`). Use the cache mechanism in `make_cy_csv.py`:
 ```bash
 # Save cached data (from an environment with API access)
-uv run python make_cy_csv.py --save-cache
+uv run python make_cy_csv.py --save-cache data/cache
 
 # Load from cache (in sandboxed environments)
-uv run python make_cy_csv.py --load-cache
+uv run python make_cy_csv.py --cached data/cache
 ```
+
+GitHub Actions runners can reach Eurostat, so the monthly refresh workflow (Actions tab → "Refresh data" → "Run workflow") is the easiest way to fetch new data. It needs "Allow GitHub Actions to create and approve pull requests" enabled under Settings → Actions → General.
 
 ### CI fails on push
 - Ensure branch name starts with `claude/` or is `master`
@@ -181,8 +193,9 @@ uv run python make_cy_csv.py --load-cache
 
 ### OpenRouter API errors
 - Ensure `OPENROUTER_API_KEY` is set in `.env`
-- The `score.py` script saves incrementally to `scores.json`, so it can be resumed after interruption
-- Use `--start` and `--end` flags to test on a subset first
+- `score.py` and `score_outlook.py` save after each occupation, so they can be resumed after interruption. Rate limits and server errors are retried with backoff
+- Use `--start` and `--end` flags to test on a subset first. `--force` re-scores only that range and keeps the rest
+- The scripts exit with status 1 when any occupation failed; re-run to retry just those
 
 ### Tests fail due to ISCO-08 count mismatch
 The `ISCO08_2DIGIT` dict in `eurostat.py` has 39 entries. Tests use `len(ISCO08_2DIGIT)` dynamically to avoid hardcoded count mismatches.
@@ -203,7 +216,7 @@ Requires `.env` with `OPENROUTER_API_KEY` for LLM scoring only.
 - **Default branch:** `master` (not `main`)
 - **Currency:** EUR (€), never USD
 - **Classification:** ISCO-08 for occupations, NACE Rev. 2 for sectors, ISCED 2011 for education
-- **Data period:** Eurostat latest available year (HRDA forecasts not yet integrated)
+- **Data period:** Eurostat LFS latest available year (employment), SES 2022 (earnings, carried forward with the wage index), HRDA 2022-2032 and Cedefop 2022-2035 forecasts
 - **Python:** 3.10+, formatted with ruff, tested with pytest
 - **CI:** GitHub Actions on push to `master` and `claude/*` branches, and on PRs to `master`
-- **Tests:** 110+ tests across 8 test files, all mocked (no external API calls)
+- **Tests:** 180+ tests, no external API calls. Unit tests are mocked; `tests/test_data_integrity.py` checks the committed data files

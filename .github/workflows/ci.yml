@@ -12,6 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v4
+      - run: uv lock --check
       - run: uv sync --extra dev
       - run: uv run ruff check .
       - run: uv run ruff format --check .
@@ -27,26 +28,15 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - run: uv sync --extra dev
-      - run: uv run pytest --cov=. --cov-report=term-missing --cov-fail-under=45 --cov-config=pyproject.toml -v
+      - run: uv run pytest --cov=. --cov-report=term-missing --cov-fail-under=60 --cov-config=pyproject.toml -v
 
   site-check:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Validate site/data.json
-        run: |
-          python << 'PYEOF'
-          import json
-          d = json.load(open("site/data.json"))
-          assert isinstance(d, list) and len(d) > 0, "data.json must be a non-empty list"
-          print(f"OK: {len(d)} occupations")
-          PYEOF
-      - name: Validate site/index.html exists
-        run: test -f site/index.html
+      - uses: astral-sh/setup-uv@v4
+      - run: uv sync --extra dev
+      - name: Check the published data (rebuilds, totals, ranges, freshness)
+        run: uv run pytest tests/test_data_integrity.py tests/test_site_data.py -v
       - name: Validate vercel.json
-        run: |
-          python << 'PYEOF'
-          import json
-          json.load(open("vercel.json"))
-          print("OK: vercel.json is valid JSON")
-          PYEOF
+        run: python -c "import json; json.load(open('vercel.json')); print('OK: vercel.json is valid JSON')"
