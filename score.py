@@ -5,7 +5,9 @@ Reads ISCO-08 occupation titles from occupations_cy.json and scores each
 for AI exposure in the Cyprus/EU labour market context.
 
 Results are cached incrementally to scores.json so the script can be
-resumed if interrupted.
+resumed if interrupted. See llm_scoring.py for validation, retries and how
+--force keeps the scores outside the selected range. Exits non-zero if any
+occupation failed.
 
 Usage:
     uv run python score.py                                    # auto-detect input
@@ -16,17 +18,17 @@ Usage:
 
 import argparse
 import json
-import os
-import time
+import sys
 
-import httpx
 from dotenv import load_dotenv
+
+import llm_scoring
+from llm_scoring import InvalidScoreError, parse_llm_response, require_rationale  # noqa: F401 - re-exported
 
 load_dotenv()
 
 DEFAULT_MODEL = "openai/gpt-6-luna"
 OUTPUT_FILE = "scores.json"
-API_URL = "https://openrouter.ai/api/v1/chat/completions"
 
 SYSTEM_PROMPT = """\
 You are an expert labour market analyst evaluating how exposed different \
@@ -97,45 +99,14 @@ Respond with ONLY a JSON object in this exact format, no other text:
 """
 
 
-def parse_llm_response(content):
-    """Parse LLM response, stripping markdown fences if present.
-
-    Args:
-        content: Raw text content from LLM response.
-
-    Returns:
-        Parsed dict with 'exposure' and 'rationale' keys.
-    """
-    content = content.strip()
-    if content.startswith("```"):
-        content = content.split("\n", 1)[1]
-        if content.endswith("```"):
-            content = content[:-3]
-        content = content.strip()
-
-    return json.loads(content)
-
-
-def score_occupation(client, text, model):
-    """Send one occupation to the LLM and parse the structured response."""
-    response = client.post(
-        API_URL,
-        headers={
-            "Authorization": f"Bearer {os.environ['OPENROUTER_API_KEY']}",
-        },
-        json={
-            "model": model,
-            "messages": [
-                {"role": "system", "content": SYSTEM_PROMPT},
-                {"role": "user", "content": text},
-            ],
-            "temperature": 0.2,
-        },
-        timeout=60,
-    )
-    response.raise_for_status()
-    content = response.json()["choices"][0]["message"]["content"]
-    return parse_llm_response(content)
+def to_entry(occ, result):
+    """Validate the model's answer and return the fields to store."""
+    exposure = result.get("exposure")
+    if isinstance(exposure, float) and exposure.is_integer():
+        exposure = int(exposure)
+    if not isinstance(exposure, int) or isinstance(exposure, bool) or not 0 <= exposure <= 10:
+        raise InvalidScoreError(f"exposure must be a whole number 0-10, got {exposure!r}")
+    return {"exposure": exposure, "rationale": require_rationale(result)}
 
 
 def build_isco_prompt(occ):
@@ -169,71 +140,32 @@ def build_isco_prompt(occ):
 
 
 def main():
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description="Score occupation AI exposure via LLM")
     parser.add_argument("--model", default=DEFAULT_MODEL)
     parser.add_argument("--occupations", default=None, help="Occupations JSON file (default: occupations_cy.json)")
     parser.add_argument("--start", type=int, default=0)
     parser.add_argument("--end", type=int, default=None)
     parser.add_argument("--delay", type=float, default=0.5)
-    parser.add_argument("--force", action="store_true", help="Re-score even if already cached")
+    parser.add_argument(
+        "--force", action="store_true", help="Re-score the selected occupations even if cached (others are kept)"
+    )
     args = parser.parse_args()
 
     occ_path = args.occupations or "occupations_cy.json"
-
     with open(occ_path) as f:
         occupations = json.load(f)
-
     print(f"Using {occ_path}")
 
-    subset = occupations[args.start : args.end]
-
-    # Load existing scores
-    scores = {}
-    if os.path.exists(OUTPUT_FILE) and not args.force:
-        with open(OUTPUT_FILE) as f:
-            for entry in json.load(f):
-                scores[entry["slug"]] = entry
-
-    print(f"Scoring {len(subset)} occupations with {args.model}")
-    print(f"Already cached: {len(scores)}")
-
-    errors = []
-    client = httpx.Client()
-
-    for i, occ in enumerate(subset):
-        slug = occ["slug"]
-
-        if slug in scores:
-            continue
-
-        text = build_isco_prompt(occ)
-
-        print(f"  [{i + 1}/{len(subset)}] {occ['title']}...", end=" ", flush=True)
-
-        try:
-            result = score_occupation(client, text, args.model)
-            scores[slug] = {
-                "slug": slug,
-                "title": occ["title"],
-                **result,
-            }
-            print(f"exposure={result['exposure']}")
-        except Exception as e:
-            print(f"ERROR: {e}")
-            errors.append(slug)
-
-        # Save after each one (incremental checkpoint)
-        with open(OUTPUT_FILE, "w") as f:
-            json.dump(list(scores.values()), f, indent=2)
-
-        if i < len(subset) - 1:
-            time.sleep(args.delay)
-
-    client.close()
-
-    print(f"\nDone. Scored {len(scores)} occupations, {len(errors)} errors.")
-    if errors:
-        print(f"Errors: {errors}")
+    scores, errors = llm_scoring.run(
+        occupations[args.start : args.end],
+        output_file=OUTPUT_FILE,
+        model=args.model,
+        system_prompt=SYSTEM_PROMPT,
+        build_prompt=build_isco_prompt,
+        to_entry=to_entry,
+        force=args.force,
+        delay=args.delay,
+    )
 
     # Summary stats
     vals = [s for s in scores.values() if "exposure" in s]
@@ -241,13 +173,14 @@ def main():
         avg = sum(s["exposure"] for s in vals) / len(vals)
         by_score = {}
         for s in vals:
-            bucket = s["exposure"]
-            by_score[bucket] = by_score.get(bucket, 0) + 1
+            by_score[s["exposure"]] = by_score.get(s["exposure"], 0) + 1
         print(f"\nAverage exposure across {len(vals)} occupations: {avg:.1f}")
         print("Distribution:")
         for k in sorted(by_score):
             print(f"  {k}: {'█' * by_score[k]} ({by_score[k]})")
 
+    return 1 if errors else 0
+
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
