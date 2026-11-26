@@ -2,6 +2,27 @@
 
 All notable changes to JobsCY are listed here. The project follows [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Fixed
+- **Pay was understated.** The earnings fetch did not recognise Cyprus's headline SES aggregate (`B-S_X_O`) and fell back to an unweighted average of sector figures. It now uses the official aggregate: Professionals go from €36.9K to €41.8K, Managers from €65.8K to €73.6K.
+- `prompt.md` no longer claims data from HRDA, and its totals are regenerated on the corrected employment figures (was 572K jobs).
+- Docs named `earn_ses_pub1s` as the earnings dataset; it is `earn_ses_hourly` (plus `earn_ses22_28`).
+
+### Changed
+- **Employment refreshed to LFS 2025** (499.0k across the 39 groups, was 480.2k for 2024).
+- **Average pay is SES mean annual earnings** (`earn_ses22_28`), which includes the 13th salary and bonuses, instead of hourly × 2,080.
+- CSV pay columns renamed to `mean_pay_annual_eur` and `mean_pay_hourly_eur`, since they were never medians.
+
+### Added
+- **2025 pay estimate.** SES 2022 pay is carried forward to 2025 with Cyprus's wage growth (Eurostat labour cost index, +15.5%) and labelled as an estimate; the 2022 survey figure stays in the tooltip. Managers now show €84.9K, Professionals €48.2K.
+- **Pay by sector.** The pay tooltip lists the best- and worst-paying sectors for each major group (SES 2022 `earn_ses22_49`, cells under 500 employees dropped).
+- **Job Openings layer** from HRDA's *Forecasts of Employment Needs in Cyprus 2022-2032*: yearly openings, split into new jobs and replacement of leavers, per ISCO 2-digit group.
+- **Cedefop Skills Forecast 2022-2035** job openings and employment growth in the tooltip.
+- The growth outlook tooltip shows HRDA's and Cedefop's official employment forecasts next to the LLM estimate.
+- New `forecasts.py` module and cached inputs in `data/cache/` (`wage_index.json`, `earnings_by_sector.json`, `hrda_2022_2032.csv`, `cedefop_2035.json`).
+- **Pay distribution.** Median, P10 and P90 earnings per major group (`earn_ses_hourly`), shown in the tooltip as the range the middle 80% earn, and in `site/data.json` as `pay_median`, `pay_p10`, `pay_p90`.
+
 ## [1.1.0] — 2026-11
 
 ### Fixed

@@ -5,7 +5,7 @@ Provides functions to retrieve employment counts by ISCO-08 occupation
 and earnings data, filtered to Cyprus (geo=CY).
 
 Eurostat SDMX 2.1 API docs:
-    https://wikis.ec.europa.eu/display/EUROSTATHELP/Transition+to+the+new+dissemination+chain
+    https://ec.europa.eu/eurostat/web/user-guides/data-browser/api-data-access/api-introduction
 
 Key datasets:
     LFSA_EGAI2D  — Employment by ISCO-08 2-digit occupation
@@ -208,36 +208,92 @@ def fetch_employment_by_occupation(geo="CY", sex="T", age="Y_GE15", last_n=1, cl
     return results
 
 
+# SES indicators fetched from earn_ses_hourly, mapped to output keys.
+SES_HOURLY_INDICATORS = {
+    "MEAN_E_EUR": "hourly_earnings_eur",
+    "MED_E_EUR": "median_hourly_eur",
+    "D1_E_EUR": "p10_hourly_eur",
+    "D9_E_EUR": "p90_hourly_eur",
+}
+
+# Preferred NACE aggregates, best first. Cyprus publishes B-S_X_O
+# (whole economy excluding public administration) as its headline
+# aggregate; B-N (business economy) omits education, health and arts.
+NACE_AGGREGATE_RANK = {"B-S_X_O": 0, "B-S": 1, "TOTAL": 2, "B-N": 3}
+
+
+def _select_ses_rows(basic_filtered, verbose=False):
+    """Pick one row per ISCO code: the best NACE aggregate for the latest year.
+
+    Falls back to an unweighted average across NACE sectors only when the
+    latest year has no aggregate row at all.
+    """
+    aggregates: dict[str, dict] = {}
+    for r in basic_filtered:
+        rank = NACE_AGGREGATE_RANK.get(r.get("nace_r2", ""))
+        if rank is None:
+            continue
+        code = r["isco08"]
+        prev = aggregates.get(code)
+        if (
+            prev is None
+            or r.get("TIME_PERIOD", "") > prev.get("TIME_PERIOD", "")
+            or (
+                r.get("TIME_PERIOD", "") == prev.get("TIME_PERIOD", "")
+                and rank < NACE_AGGREGATE_RANK[prev.get("nace_r2", "")]
+            )
+        ):
+            aggregates[code] = r
+
+    agg_years = {r.get("TIME_PERIOD") for r in aggregates.values()} - {None, ""}
+    all_years = {r.get("TIME_PERIOD") for r in basic_filtered} - {None, ""}
+    max_agg_year = max(agg_years) if agg_years else ""
+    max_all_year = max(all_years) if all_years else ""
+
+    if max_all_year > max_agg_year:
+        sector_rows = [r for r in basic_filtered if r.get("TIME_PERIOD") == max_all_year]
+        by_isco: dict[str, list[float]] = {}
+        for r in sector_rows:
+            by_isco.setdefault(r["isco08"], []).append(float(r["OBS_VALUE"]))
+        if verbose:
+            print(f"  Earnings: no NACE aggregate for {max_all_year}; using unweighted sectoral average")
+        return [
+            {
+                "isco08": code,
+                "OBS_VALUE": str(round(sum(vals) / len(vals), 2)),
+                "TIME_PERIOD": max_all_year,
+                "nace_r2": "AVG",
+            }
+            for code, vals in by_isco.items()
+        ]
+    return [r for r in aggregates.values() if r.get("TIME_PERIOD") == max_agg_year]
+
+
 def fetch_earnings_by_occupation(geo="CY", last_n=10, client=None, verbose=False):
-    """Fetch mean gross hourly earnings by ISCO-08 1-digit occupation.
+    """Fetch gross hourly earnings by ISCO-08 1-digit occupation.
 
-    Uses the earn_ses_hourly dataset (Structure of Earnings Survey).
-    SES data is published every 4 years (2002, 2006, 2010, 2014, 2018, 2022).
+    Uses the earn_ses_hourly dataset (Structure of Earnings Survey, published
+    every 4 years: 2002, 2006, ..., 2022). Returns the mean plus the median,
+    first decile (P10) and ninth decile (P90), so the site can show the spread
+    of pay within each group rather than one average.
 
-    When pre-aggregated rows (nace_r2 = B-S/B-N/TOTAL) are unavailable for
-    the most recent year, computes a simple (unweighted) average across
-    available NACE sectors for that year.
+    Rows are taken from the best available NACE aggregate (see
+    ``NACE_AGGREGATE_RANK``). Only if the latest year has no aggregate does it
+    fall back to an unweighted average across sectors.
 
     earn_ses_hourly dimensions (in order):
     ``freq.nace_r2.isco08.worktime.age.sex.indic_se.geo``
 
-    Args:
-        geo: Country code (default 'CY' for Cyprus).
-        last_n: Number of most recent periods to fetch (default 10 to
-            cover all SES waves).
-        client: Optional httpx.Client.
-        verbose: Print debug info.
-
     Returns:
-        List of dicts with keys: isco_code, isco_label, hourly_earnings_eur, year.
+        List of dicts with keys: isco_code, isco_label, hourly_earnings_eur,
+        median_hourly_eur, p10_hourly_eur, p90_hourly_eur, year. Distribution
+        keys are omitted when Eurostat does not publish them.
     """
-    # earn_ses_hourly dimensions: freq.nace_r2.isco08.worktime.age.sex.indic_se.geo
-    # Use a broad key (leave nace_r2, worktime, age, sex open) to avoid
-    # invalid dimension values, then post-filter for the rows we need.
     # OC0 (armed forces) is not available in earn_ses_hourly.
     isco_codes = [k for k in ISCO08_MAJOR_GROUPS if k != "OC0"]
     isco_list = "+".join(isco_codes)
-    key = f"A..{isco_list}....MEAN_E_EUR.{geo}"
+    indic_list = "+".join(SES_HOURLY_INDICATORS)
+    key = f"A..{isco_list}....{indic_list}.{geo}"
     params = {"lastNPeriods": str(last_n)}
 
     try:
@@ -246,9 +302,8 @@ def fetch_earnings_by_occupation(geo="CY", last_n=10, client=None, verbose=False
         print(f"WARNING: Earnings fetch failed: {exc}")
         all_rows = []
 
-    # Identify rows that pass basic filters (correct geo, ISCO, sex, worktime, age)
     valid_isco = set(isco_codes)
-    basic_filtered = []
+    by_indicator: dict[str, list[dict]] = {}
     for r in all_rows:
         if r.get("geo") != geo or r.get("isco08") not in valid_isco:
             continue
@@ -261,83 +316,72 @@ def fetch_earnings_by_occupation(geo="CY", last_n=10, client=None, verbose=False
         val = r.get("OBS_VALUE", "")
         if not val or val == ":":
             continue
-        basic_filtered.append(r)
+        indic = r.get("indic_se") or "MEAN_E_EUR"
+        if indic not in SES_HOURLY_INDICATORS:
+            continue
+        by_indicator.setdefault(indic, []).append(r)
 
-    # Pass 1: Try to find aggregate rows (B-S, B-N, or TOTAL nace_r2)
-    nace_rank = {"B-S": 0, "B-N": 1, "TOTAL": 2}
-    aggregates: dict[str, dict] = {}  # isco_code -> best aggregate row
-    for r in basic_filtered:
-        code = r["isco08"]
-        rank = nace_rank.get(r.get("nace_r2", ""), 99)
-        if rank > 2:
-            continue  # not an aggregate row
-        prev = aggregates.get(code)
-        if prev is None or rank < nace_rank.get(prev.get("nace_r2", ""), 99):
-            aggregates[code] = r
-
-    # Determine years available
-    agg_years = {r.get("TIME_PERIOD") for r in aggregates.values()} - {None, ""}
-    all_years = {r.get("TIME_PERIOD") for r in basic_filtered} - {None, ""}
-    max_agg_year = max(agg_years) if agg_years else ""
-    max_all_year = max(all_years) if all_years else ""
-
-    # Pass 2: If newer data exists only as sectoral breakdowns, average across sectors
-    if max_all_year > max_agg_year:
-        sector_rows = [r for r in basic_filtered if r.get("TIME_PERIOD") == max_all_year]
-
-        by_isco: dict[str, list[float]] = {}
-        for r in sector_rows:
-            by_isco.setdefault(r["isco08"], []).append(float(r["OBS_VALUE"]))
-
-        rows = [
-            {
-                "isco08": code,
-                "OBS_VALUE": str(round(sum(vals) / len(vals), 2)),
-                "TIME_PERIOD": max_all_year,
-                "nace_r2": "AVG",
-            }
-            for code, vals in by_isco.items()
-        ]
-
-        if verbose:
-            n_sectors = [len(v) for v in by_isco.values()]
-            avg_sectors = sum(n_sectors) / len(n_sectors) if n_sectors else 0
-            print(f"  Earnings: using sectoral average for {max_all_year} (~{avg_sectors:.0f} sectors per occupation)")
-    else:
-        rows = list(aggregates.values())
-
-    if verbose:
-        print(f"  Earnings post-filter: {len(rows)} rows selected")
-        for r in rows:
-            print(
-                f"    {r.get('isco08')}: nace={r.get('nace_r2')} year={r.get('TIME_PERIOD')} val={r.get('OBS_VALUE')}"
-            )
-
-    if not rows:
+    mean_rows = _select_ses_rows(by_indicator.get("MEAN_E_EUR", []), verbose=verbose)
+    if not mean_rows:
         print(f"WARNING: No earnings data returned for {geo}.")
         print("  Run 'uv run python diagnose_eurostat.py' for details.")
+        return []
+
+    year = mean_rows[0].get("TIME_PERIOD", "")
+    extras: dict[str, dict[str, float]] = {}
+    for indic, out_key in SES_HOURLY_INDICATORS.items():
+        if indic == "MEAN_E_EUR":
+            continue
+        for r in _select_ses_rows(by_indicator.get(indic, [])):
+            if r.get("TIME_PERIOD") == year:
+                extras.setdefault(r["isco08"], {})[out_key] = float(r["OBS_VALUE"])
+
+    if verbose:
+        for r in mean_rows:
+            print(f"    {r['isco08']}: nace={r.get('nace_r2')} year={r.get('TIME_PERIOD')} mean={r['OBS_VALUE']}")
 
     results = []
-    for row in rows:
-        isco_code = row.get("isco08", "")
-        value = row.get("OBS_VALUE", "")
-        time_period = row.get("TIME_PERIOD", "")
-
-        if not value or value == ":":
-            continue
-
-        label = ISCO08_MAJOR_GROUPS.get(isco_code, isco_code)
-
+    for row in mean_rows:
+        code = row["isco08"]
         results.append(
             {
-                "isco_code": isco_code,
-                "isco_label": label,
-                "hourly_earnings_eur": float(value),
-                "year": time_period,
+                "isco_code": code,
+                "isco_label": ISCO08_MAJOR_GROUPS.get(code, code),
+                "hourly_earnings_eur": float(row["OBS_VALUE"]),
+                **extras.get(code, {}),
+                "year": row.get("TIME_PERIOD", ""),
             }
         )
-
     return results
+
+
+def fetch_annual_earnings_by_occupation(geo="CY", wave="22", client=None, verbose=False):
+    """Fetch mean gross annual earnings by ISCO-08 1-digit occupation.
+
+    Uses earn_ses{wave}_28 (SES: mean annual earnings by sex, age and
+    occupation, enterprises with 10+ employees, NACE B-S excluding O). Annual
+    earnings include irregular payments such as the 13th salary and bonuses,
+    which hourly earnings x 2080 misses.
+
+    Dimensions: ``freq.sex.indic_se.isco08.age.sizeclas.unit.geo``
+
+    Returns:
+        Dict mapping isco_code -> annual earnings in EUR (empty on failure).
+    """
+    isco_list = "+".join(k for k in ISCO08_MAJOR_GROUPS if k != "OC0")
+    key = f"A.T.ERN.{isco_list}.TOTAL.GE10.EUR.{geo}"
+    try:
+        rows = fetch_sdmx_csv(f"earn_ses{wave}_28", key=key, client=client, verbose=verbose)
+    except Exception as exc:
+        print(f"WARNING: Annual earnings fetch failed: {exc}")
+        return {}
+    out = {}
+    for r in rows:
+        val = r.get("OBS_VALUE", "")
+        if r.get("geo", geo) != geo or not val or val == ":":
+            continue
+        out[r.get("isco08", "")] = float(val)
+    return out
 
 
 def fetch_employment_multi_year(geo="CY", sex="T", age="Y_GE15", last_n=10, client=None, verbose=False):

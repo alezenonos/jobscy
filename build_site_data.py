@@ -2,7 +2,8 @@
 Build a compact JSON for the website by merging CSV stats with AI exposure scores.
 
 Reads occupations_cy.csv (Cyprus ISCO-08 data) and scores.json (AI exposure
-ratings) and writes site/data.json for the treemap visualisation.
+ratings), adds the 2025 pay estimate, pay by sector and the HRDA and Cedefop
+forecasts (see forecasts.py), and writes site/data.json for the treemap.
 
 Usage:
     uv run python build_site_data.py
@@ -13,6 +14,12 @@ import argparse
 import csv
 import json
 import os
+
+from forecasts import enrich
+
+
+def _int(value):
+    return int(value) if value else None
 
 
 def merge_cyprus(rows, scores, outlook=None):
@@ -34,8 +41,11 @@ def merge_cyprus(rows, scores, outlook=None):
                 "slug": slug,
                 "category": row["category"],
                 "isco_code": row.get("isco_code", ""),
-                "pay": int(row["median_pay_annual_eur"]) if row.get("median_pay_annual_eur") else None,
-                "pay_hourly": float(row["median_pay_hourly_eur"]) if row.get("median_pay_hourly_eur") else None,
+                "pay": _int(row.get("mean_pay_annual_eur")),
+                "pay_hourly": float(row["mean_pay_hourly_eur"]) if row.get("mean_pay_hourly_eur") else None,
+                "pay_median": _int(row.get("median_pay_annual_eur")),
+                "pay_p10": _int(row.get("p10_pay_annual_eur")),
+                "pay_p90": _int(row.get("p90_pay_annual_eur")),
                 "jobs": jobs,
                 "jobs_estimated": row.get("employment_estimated") == "yes",
                 "education": row.get("entry_education", ""),
@@ -82,6 +92,7 @@ def main():
         rows = list(reader)
 
     data = merge_cyprus(rows, scores, outlook)
+    enrich(data)
 
     os.makedirs(os.path.dirname(args.output) or ".", exist_ok=True)
     with open(args.output, "w") as f:

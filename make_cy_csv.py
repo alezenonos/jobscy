@@ -19,6 +19,7 @@ import json
 import os
 
 from eurostat import (
+    fetch_annual_earnings_by_occupation,
     fetch_earnings_by_occupation,
     fetch_employment_by_occupation,
 )
@@ -28,8 +29,11 @@ FIELDNAMES = [
     "category",
     "slug",
     "isco_code",
+    "mean_pay_annual_eur",
+    "mean_pay_hourly_eur",
     "median_pay_annual_eur",
-    "median_pay_hourly_eur",
+    "p10_pay_annual_eur",
+    "p90_pay_annual_eur",
     "entry_education",
     "employment_thousands",
     "employment_estimated",
@@ -52,6 +56,10 @@ def fetch_eurostat_data(geo="CY", client=None, verbose=False):
     """
     employment = fetch_employment_by_occupation(geo=geo, client=client)
     earnings = fetch_earnings_by_occupation(geo=geo, client=client, verbose=verbose)
+    annual = fetch_annual_earnings_by_occupation(geo=geo, client=client, verbose=verbose)
+    for row in earnings:
+        if row["isco_code"] in annual:
+            row["annual_earnings_eur"] = annual[row["isco_code"]]
     return employment, earnings
 
 
@@ -100,6 +108,29 @@ def _residual_employment(code, parent, emp_by_code, occupations):
     missing = [c for c in siblings if c not in emp_by_code] or [code]
     residual = max(0.0, parent_row["employment_thousands"] - known) / len(missing)
     return {"employment_thousands": round(residual, 1), "year": parent_row.get("year", "")}
+
+
+HOURS_PER_YEAR = 2080  # fallback when SES annual earnings are unavailable
+
+
+def _annual_pay(earn):
+    """Annual mean, median, P10 and P90 pay for one ISCO 1-digit group.
+
+    The mean is SES mean annual earnings (includes 13th salary and bonuses)
+    when available, else hourly mean x 2080. The median and deciles are only
+    published as hourly figures, so they are annualised with the same
+    annual/hourly ratio as the mean for that group.
+    """
+    hourly = earn.get("hourly_earnings_eur")
+    if not hourly:
+        return {}
+    annual = earn.get("annual_earnings_eur") or hourly * HOURS_PER_YEAR
+    factor = annual / hourly
+    out = {"mean": round(annual)}
+    for key, src in (("median", "median_hourly_eur"), ("p10", "p10_hourly_eur"), ("p90", "p90_hourly_eur")):
+        if earn.get(src):
+            out[key] = round(earn[src] * factor)
+    return out
 
 
 def build_csv_rows(occupations, employment, earnings):
@@ -159,18 +190,18 @@ def build_csv_rows(occupations, employment, earnings):
         # Earnings: always from 1-digit (SES limitation)
         earn = earn_by_code.get(parent, {})
 
+        pay = _annual_pay(earn)
         rows.append(
             {
                 "title": occ["title"],
                 "category": occ["category"],
                 "slug": occ["slug"],
                 "isco_code": code,
-                "median_pay_annual_eur": round(earn["hourly_earnings_eur"] * 2080)
-                if earn.get("hourly_earnings_eur")
-                else "",
-                "median_pay_hourly_eur": f"{earn['hourly_earnings_eur']:.2f}"
-                if earn.get("hourly_earnings_eur")
-                else "",
+                "mean_pay_annual_eur": pay.get("mean", ""),
+                "mean_pay_hourly_eur": f"{earn['hourly_earnings_eur']:.2f}" if earn.get("hourly_earnings_eur") else "",
+                "median_pay_annual_eur": pay.get("median", ""),
+                "p10_pay_annual_eur": pay.get("p10", ""),
+                "p90_pay_annual_eur": pay.get("p90", ""),
                 "entry_education": isco_education.get(parent, ""),
                 "employment_thousands": emp.get("employment_thousands", ""),
                 "employment_estimated": "yes" if estimated else "",
@@ -226,7 +257,7 @@ def main():
     estimated = [r["isco_code"] for r in rows if r["employment_estimated"]]
     if estimated:
         print(f"  Employment estimated from 1-digit residual: {', '.join(estimated)}")
-    with_pay = sum(1 for r in rows if r["median_pay_annual_eur"])
+    with_pay = sum(1 for r in rows if r["mean_pay_annual_eur"])
     print(f"  With employment data: {with_emp}/{len(rows)}")
     print(f"  With earnings data: {with_pay}/{len(rows)}")
 
@@ -239,7 +270,7 @@ def main():
             if parent in seen_parents:
                 continue
             seen_parents.add(parent)
-            pay = f"€{r['median_pay_annual_eur']}" if r["median_pay_annual_eur"] else "—"
+            pay = f"€{r['mean_pay_annual_eur']}" if r["mean_pay_annual_eur"] else "—"
             emp = f"{r['employment_thousands']}K" if r["employment_thousands"] else "—"
             print(f"  {r['isco_code']} {r['title']}: {pay}/yr, {emp} employed")
 

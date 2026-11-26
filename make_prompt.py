@@ -41,7 +41,7 @@ def load_records_cyprus(occupations, csv_rows, scores, outlook=None):
         row = csv_rows.get(slug, {})
         score = scores.get(slug, {})
         outl = outlook.get(slug, {})
-        pay = int(row["median_pay_annual_eur"]) if row.get("median_pay_annual_eur") else None
+        pay = int(row["mean_pay_annual_eur"]) if row.get("mean_pay_annual_eur") else None
         emp_k = row.get("employment_thousands", "")
         jobs = round(float(emp_k) * 1000) if emp_k else None
         outlook_val = outl.get("outlook")
@@ -101,7 +101,7 @@ def main():
     lines.append("# AI Exposure of the Cyprus Labour Market")
     lines.append("")
     lines.append(
-        "This document contains structured data on Cyprus occupations sourced from HRDA, Eurostat, and other EU/Cyprus data providers, each scored for AI exposure on a 0-10 scale by an LLM. Use this data to analyse, question, and discuss how AI will reshape the Cyprus labour market."
+        "This document contains structured data on 39 Cyprus occupation groups (ISCO-08 2-digit). Employment comes from the Eurostat Labour Force Survey (LFSA_EGAI2D) and pay from the Eurostat Structure of Earnings Survey (1-digit level, so groups in the same major group share a pay figure). Each group is scored for AI exposure on a 0-10 scale and for 10-year growth outlook by an LLM; these scores are estimates, not official forecasts. Use this data to analyse, question, and discuss how AI will reshape the Cyprus labour market."
     )
     lines.append("")
     lines.append("GitHub: https://github.com/alezenonos/jobscy")
