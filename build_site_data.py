@@ -37,6 +37,7 @@ def merge_cyprus(rows, scores, outlook=None):
                 "pay": int(row["median_pay_annual_eur"]) if row.get("median_pay_annual_eur") else None,
                 "pay_hourly": float(row["median_pay_hourly_eur"]) if row.get("median_pay_hourly_eur") else None,
                 "jobs": jobs,
+                "jobs_estimated": row.get("employment_estimated") == "yes",
                 "education": row.get("entry_education", ""),
                 "outlook": outl.get("outlook"),
                 "outlook_rationale": outl.get("outlook_rationale", outl.get("rationale", "")),

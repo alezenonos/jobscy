@@ -32,6 +32,7 @@ FIELDNAMES = [
     "median_pay_hourly_eur",
     "entry_education",
     "employment_thousands",
+    "employment_estimated",
     "year_employment",
     "year_earnings",
 ]
@@ -84,6 +85,23 @@ def save_cached_data(employment, earnings, cache_dir):
         json.dump(earnings, f, indent=2)
 
 
+def _residual_employment(code, parent, emp_by_code, occupations):
+    """Estimate a suppressed 2-digit employment value from its 1-digit parent.
+
+    Returns ``parent total - sum of the known siblings`` (floored at 0), split
+    evenly if several siblings are missing. Returns {} when the parent total is
+    unavailable.
+    """
+    parent_row = emp_by_code.get(parent)
+    if not parent_row or parent_row.get("employment_thousands") in (None, ""):
+        return {}
+    siblings = [o["isco_code"] for o in occupations if o.get("isco_parent", o["isco_code"][:3]) == parent]
+    known = sum(emp_by_code[c]["employment_thousands"] for c in siblings if c in emp_by_code)
+    missing = [c for c in siblings if c not in emp_by_code] or [code]
+    residual = max(0.0, parent_row["employment_thousands"] - known) / len(missing)
+    return {"employment_thousands": round(residual, 1), "year": parent_row.get("year", "")}
+
+
 def build_csv_rows(occupations, employment, earnings):
     """Build CSV rows by merging occupation list with Eurostat data.
 
@@ -129,8 +147,14 @@ def build_csv_rows(occupations, employment, earnings):
         code = occ["isco_code"]
         parent = occ.get("isco_parent", code[:3])
 
-        # Employment: try exact 2-digit match, fall back to 1-digit
-        emp = emp_by_code.get(code, emp_by_code.get(parent, {}))
+        # Employment: exact 2-digit match. When Eurostat suppresses the
+        # 2-digit value, estimate it as the residual of the 1-digit total
+        # (never the whole parent total, which would double-count siblings).
+        emp = emp_by_code.get(code)
+        estimated = False
+        if emp is None:
+            emp = _residual_employment(code, parent, emp_by_code, occupations)
+            estimated = bool(emp)
 
         # Earnings: always from 1-digit (SES limitation)
         earn = earn_by_code.get(parent, {})
@@ -149,6 +173,7 @@ def build_csv_rows(occupations, employment, earnings):
                 else "",
                 "entry_education": isco_education.get(parent, ""),
                 "employment_thousands": emp.get("employment_thousands", ""),
+                "employment_estimated": "yes" if estimated else "",
                 "year_employment": emp.get("year", ""),
                 "year_earnings": earn.get("year", ""),
             }
@@ -198,6 +223,9 @@ def main():
 
     # Summary
     with_emp = sum(1 for r in rows if r["employment_thousands"])
+    estimated = [r["isco_code"] for r in rows if r["employment_estimated"]]
+    if estimated:
+        print(f"  Employment estimated from 1-digit residual: {', '.join(estimated)}")
     with_pay = sum(1 for r in rows if r["median_pay_annual_eur"])
     print(f"  With employment data: {with_emp}/{len(rows)}")
     print(f"  With earnings data: {with_pay}/{len(rows)}")

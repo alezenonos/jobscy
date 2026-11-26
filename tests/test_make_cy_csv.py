@@ -129,3 +129,42 @@ class TestCacheRoundtrip:
         assert len(loaded_earn) == len(earn)
         assert loaded_emp[0]["isco_code"] == emp[0]["isco_code"]
         assert loaded_earn[0]["hourly_earnings_eur"] == earn[0]["hourly_earnings_eur"]
+
+
+class TestSuppressedEmployment:
+    """A 2-digit code Eurostat suppresses must not inherit its whole 1-digit total."""
+
+    def _occs(self):
+        return [
+            {"title": "Cleaners", "category": "elementary", "slug": "cleaners", "isco_code": "OC91", "isco_parent": "OC9"},
+            {"title": "Street vendors", "category": "elementary", "slug": "street", "isco_code": "OC95", "isco_parent": "OC9"},
+        ]
+
+    def _emp(self):
+        return [
+            {"isco_code": "OC9", "isco_label": "Elementary", "employment_thousands": 20.0, "year": "2024"},
+            {"isco_code": "OC91", "isco_label": "Cleaners", "employment_thousands": 18.0, "year": "2024"},
+        ]
+
+    def test_uses_residual_not_parent_total(self):
+        rows = build_csv_rows(self._occs(), self._emp(), [])
+        street = next(r for r in rows if r["isco_code"] == "OC95")
+        assert street["employment_thousands"] == 2.0
+        assert street["employment_estimated"] == "yes"
+
+    def test_known_values_not_flagged(self):
+        rows = build_csv_rows(self._occs(), self._emp(), [])
+        cleaners = next(r for r in rows if r["isco_code"] == "OC91")
+        assert cleaners["employment_thousands"] == 18.0
+        assert cleaners["employment_estimated"] == ""
+
+    def test_children_sum_to_parent(self):
+        rows = build_csv_rows(self._occs(), self._emp(), [])
+        assert sum(r["employment_thousands"] for r in rows) == 20.0
+
+    def test_residual_floored_at_zero(self):
+        emp = [dict(r) for r in self._emp()]
+        emp[1]["employment_thousands"] = 25.0
+        rows = build_csv_rows(self._occs(), emp, [])
+        street = next(r for r in rows if r["isco_code"] == "OC95")
+        assert street["employment_thousands"] == 0.0
