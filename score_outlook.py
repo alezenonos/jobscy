@@ -9,8 +9,10 @@ Results are cached incrementally to outlook_scores.json so the script can be
 resumed if interrupted.
 
 Usage:
-    uv run python score_outlook.py
-    uv run python score_outlook.py --cagr-file cagr.json
+    uv run python make_cagr.py          # build cagr.json first (historical Eurostat growth)
+    uv run python score_outlook.py      # reads cagr.json by default
+    uv run python score_outlook.py --cagr-file other.json
+    uv run python score_outlook.py --no-cagr   # score without historical data (not recommended)
     uv run python score_outlook.py --model google/gemini-3-flash-preview
     uv run python score_outlook.py --start 0 --end 10
 """
@@ -158,7 +160,10 @@ def main():
     parser = argparse.ArgumentParser(description="Score occupation growth outlook via LLM")
     parser.add_argument("--model", default=DEFAULT_MODEL)
     parser.add_argument("--occupations", default=None, help="Occupations JSON file (default: occupations_cy.json)")
-    parser.add_argument("--cagr-file", default=None, help="JSON file with historical CAGR data per ISCO code")
+    parser.add_argument(
+        "--cagr-file", default="cagr.json", help="JSON file with historical CAGR per ISCO code (from make_cagr.py)"
+    )
+    parser.add_argument("--no-cagr", action="store_true", help="Score without historical growth data")
     parser.add_argument("--start", type=int, default=0)
     parser.add_argument("--end", type=int, default=None)
     parser.add_argument("--delay", type=float, default=0.5)
@@ -174,7 +179,12 @@ def main():
 
     # Load historical CAGR data if available
     cagr_by_code = {}
-    if args.cagr_file and os.path.exists(args.cagr_file):
+    if not args.no_cagr:
+        if not os.path.exists(args.cagr_file):
+            parser.error(
+                f"{args.cagr_file} not found. Run 'uv run python make_cagr.py' first, "
+                "or pass --no-cagr to score without historical data."
+            )
         with open(args.cagr_file) as f:
             cagr_by_code = json.load(f)
         print(f"Loaded CAGR data for {len(cagr_by_code)} ISCO codes")
@@ -213,6 +223,9 @@ def main():
                 "outlook": result["outlook"],
                 "outlook_rationale": result["rationale"],
             }
+            if cagr_data and cagr_data.get("cagr") is not None:
+                scores[slug]["historical_cagr"] = cagr_data["cagr"]
+                scores[slug]["historical_period"] = f"{cagr_data['start_year']}-{cagr_data['end_year']}"
             outlook = result["outlook"]
             print(f"outlook={outlook:+.1f}%")
         except Exception as e:

@@ -41,6 +41,8 @@ def merge_cyprus(rows, scores, outlook=None):
                 "education": row.get("entry_education", ""),
                 "outlook": outl.get("outlook"),
                 "outlook_rationale": outl.get("outlook_rationale", outl.get("rationale", "")),
+                "historical_cagr": outl.get("historical_cagr"),
+                "historical_period": outl.get("historical_period", ""),
                 "exposure": score.get("exposure"),
                 "exposure_rationale": score.get("rationale"),
                 "year_employment": row.get("year_employment", ""),

@@ -7,7 +7,7 @@
 [![Licence MIT](https://img.shields.io/badge/licence-MIT-green.svg)](#)
 [![Deployed on Vercel](https://img.shields.io/badge/deployed-Vercel-black.svg)](https://vercel.com)
 
-An interactive treemap visualisation of the Cyprus labour market, with AI exposure scoring for occupations. Built on data from EU/Cyprus sources including [HRDA/AnAD](https://www.anad.org.cy), [Eurostat](https://ec.europa.eu/eurostat), and [EURES Cyprus](https://eures.europa.eu).
+An interactive treemap visualisation of the Cyprus labour market, with AI exposure scoring for occupations. Built on [Eurostat](https://ec.europa.eu/eurostat) employment and earnings data for Cyprus, with LLM-estimated growth outlook and AI exposure.
 
 **Created and maintained by [Alexandros Zenonos](https://github.com/alezenonos)**, adapted from [karpathy/jobs](https://github.com/karpathy/jobs) for the Cyprus labour market using EU data sources and international classifications (ISCO-08, NACE, ISCED).
 
@@ -15,7 +15,7 @@ An interactive treemap visualisation of the Cyprus labour market, with AI exposu
 
 An interactive treemap of **39 ISCO-08 occupation groups** covering the Cyprus labour market. Each rectangle's **area** is proportional to employment and **colour** shows the selected metric — toggle between growth outlook, median pay (EUR), education level, and AI exposure.
 
-Data is sourced from the Eurostat SDMX REST API (employment by ISCO-08 2-digit, earnings by ISCO-08 1-digit, filtered to `geo=CY`) and enriched with HRDA 2022-2032 occupation forecasts.
+Data is sourced from the Eurostat SDMX REST API (employment by ISCO-08 2-digit, earnings by ISCO-08 1-digit, filtered to `geo=CY`). Growth outlook and AI exposure are **LLM estimates** (see below), not official forecasts. HRDA occupational forecasts are not yet integrated.
 
 ## Data sources
 
@@ -23,10 +23,24 @@ Data is sourced from the Eurostat SDMX REST API (employment by ISCO-08 2-digit, 
 |--------|---------|-----------------|------|
 | **Eurostat** | [`LFSA_EGAI2D`](https://ec.europa.eu/eurostat/databrowser/view/lfsa_egai2d/default/table?lang=en) | Employment by ISCO-08 2-digit, filtered to Cyprus (2024) | [SDMX API docs](https://wikis.ec.europa.eu/display/EUROSTATHELP/Transition+to+the+new+dissemination+chain) |
 | **Eurostat** | [`earn_ses_hourly`](https://ec.europa.eu/eurostat/databrowser/view/earn_ses_hourly/default/table?lang=en) | Mean gross hourly earnings by ISCO-08 1-digit, Cyprus (SES 2022) | [Dataset explorer](https://ec.europa.eu/eurostat/databrowser/view/earn_ses_hourly/default/table?lang=en) |
-| **HRDA/AnAD** | — | 309 occupation forecasts (2022-2032), expansion + replacement demand | [anad.org.cy](https://www.anad.org.cy) |
-| **EURES** | — | Shortage/surplus occupations, vacancy statistics by ESCO occupation | [eures.europa.eu](https://eures.europa.eu) |
-| **CEDEFOP** | — | Skills forecasts to 2035 by sector and occupation group | [cedefop.europa.eu](https://www.cedefop.europa.eu/en/tools/skills-intelligence) |
-| **CYSTAT** | — | Aggregate employment, unemployment, labour costs | [cystat.gov.cy](https://www.cystat.gov.cy) |
+| **Eurostat** | [`LFSA_EGAI2D`](https://ec.europa.eu/eurostat/databrowser/view/lfsa_egai2d/default/table?lang=en) (multi-year) | Historical employment growth (CAGR) per ISCO-08 2-digit, used to ground the growth outlook | — |
+
+**Not yet used** (candidates for future integration):
+
+| Source | What it would provide | Link |
+|--------|-----------------|------|
+| **HRDA/AnAD** | 309 occupation forecasts (2022-2032), expansion + replacement demand | [anad.org.cy](https://www.anad.org.cy) |
+| **EURES** | Shortage/surplus occupations, vacancy statistics by ESCO occupation | [eures.europa.eu](https://eures.europa.eu) |
+| **CEDEFOP** | Skills forecasts to 2035 by sector and occupation group | [cedefop.europa.eu](https://www.cedefop.europa.eu/en/tools/skills-intelligence) |
+| **CYSTAT** | Aggregate employment, unemployment, labour costs | [cystat.gov.cy](https://www.cystat.gov.cy) |
+
+### Employment methodology
+
+Employment comes from the Eurostat LFS at ISCO 2-digit level. Eurostat suppresses some Cyprus 2-digit values as unreliable (currently OC62, OC82 and OC95). For those, employment is **estimated as the residual** of the 1-digit major group total minus the known sub-groups, and flagged as an estimate in the CSV (`employment_estimated`), `site/data.json` (`jobs_estimated`) and the tooltip.
+
+### Growth outlook methodology
+
+The 10-year growth outlook is produced by `score_outlook.py`, which asks an LLM to project employment change per occupation group. To ground the estimate, `make_cagr.py` computes each group's historical employment CAGR from the multi-year Eurostat LFS series and writes `cagr.json`, which `score_outlook.py` reads by default and includes in the prompt. The historical CAGR and period are shown in the tooltip when used. Note that the LFS has a break in series in 2021, so historical growth across that year should be read with care.
 
 ### Earnings methodology
 
@@ -71,6 +85,8 @@ Fork `score.py` to write your own scoring criteria — e.g. green economy releva
 | `generate_cy_occupations.py` | Generate `occupations_cy.json` from ISCO-08 classification |
 | `make_cy_csv.py` | Build `occupations_cy.csv` from Eurostat data (EUR, ISCO-08) |
 | `score.py` | LLM-based AI exposure scoring via OpenRouter (ISCO-08 / Cyprus context) |
+| `make_cagr.py` | Historical employment CAGR per ISCO-08 code from Eurostat → `cagr.json` |
+| `score_outlook.py` | LLM-based 10-year growth outlook, grounded with `cagr.json` |
 | `build_site_data.py` | Merge CSV + scores → `site/data.json` |
 | `make_prompt.py` | Generate single-file LLM prompt from all data |
 | `site/index.html` | Interactive treemap visualisation (EUR, ISCO-08, Cyprus) |
@@ -101,6 +117,10 @@ uv run python make_cy_csv.py
 
 # Score AI exposure (uses OpenRouter API)
 uv run python score.py
+
+# Build historical growth (Eurostat) and score growth outlook (uses OpenRouter API)
+uv run python make_cagr.py --save-cache data/cache
+uv run python score_outlook.py
 
 # Build website data
 uv run python build_site_data.py
@@ -137,7 +157,7 @@ The site is deployed as a static site on [Vercel](https://vercel.com). Configura
 - **Occupations:** ISCO-08 (International Standard Classification of Occupations)
 - **Sectors:** NACE Rev. 2 (Statistical Classification of Economic Activities)
 - **Education:** ISCED 2011 (International Standard Classification of Education)
-- **Data period:** Eurostat latest available year, HRDA 2022-2032 forecasts
+- **Data period:** Eurostat LFS latest available year (employment), SES 2022 (earnings)
 
 ## Acknowledgements
 

@@ -136,8 +136,20 @@ class TestSuppressedEmployment:
 
     def _occs(self):
         return [
-            {"title": "Cleaners", "category": "elementary", "slug": "cleaners", "isco_code": "OC91", "isco_parent": "OC9"},
-            {"title": "Street vendors", "category": "elementary", "slug": "street", "isco_code": "OC95", "isco_parent": "OC9"},
+            {
+                "title": "Cleaners",
+                "category": "elementary",
+                "slug": "cleaners",
+                "isco_code": "OC91",
+                "isco_parent": "OC9",
+            },
+            {
+                "title": "Street vendors",
+                "category": "elementary",
+                "slug": "street",
+                "isco_code": "OC95",
+                "isco_parent": "OC9",
+            },
         ]
 
     def _emp(self):

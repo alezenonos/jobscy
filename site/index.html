@@ -220,7 +220,7 @@ canvas#canvas {
 <header id="header">
   <div class="intro">
     <h1>Cyprus Job Market Visualiser <a href="https://github.com/alezenonos/jobscy">GitHub</a></h1>
-    <p>This is a research tool that visualizes <b>39 ISCO-08 occupation groups</b> from <a href="https://ec.europa.eu/eurostat">Eurostat</a> and <a href="https://www.anad.org.cy">HRDA/AnAD</a> data, covering the <b>Cyprus labour market</b>. Each rectangle's <b>area</b> is proportional to total employment. <b>Colour</b> shows the selected metric &mdash; toggle between projected growth outlook, median pay (EUR), education requirements, and AI exposure. This is not a report, a paper, or a serious economic publication &mdash; it is a development tool for exploring Cyprus employment data visually.</p>
+    <p>This is a research tool that visualises <b>39 ISCO-08 occupation groups</b> in the <b>Cyprus labour market</b>, using <a href="https://ec.europa.eu/eurostat">Eurostat</a> employment (Labour Force Survey) and earnings (Structure of Earnings Survey) data. Each rectangle's <b>area</b> is proportional to total employment. <b>Colour</b> shows the selected metric &mdash; toggle between growth outlook, median pay (EUR), education requirements, and AI exposure. <b>Growth outlook and AI exposure are LLM estimates</b>, not official forecasts. This is not a report, a paper, or a serious economic publication &mdash; it is a development tool for exploring Cyprus employment data visually.</p>
     <p><b>LLM-powered colouring:</b> The <a href="https://github.com/alezenonos/jobscy">source code</a> includes data pipelines, parsers, and a framework for writing custom LLM prompts to score and colour occupations by any criteria. You write a prompt, the LLM scores each occupation, and the treemap colours accordingly. The "Digital AI Exposure" option is one example &mdash; it estimates how much current AI (which is primarily digital) will reshape each occupation. But you could write a different prompt for any question &mdash; e.g. exposure to humanoid robotics, offshoring risk, climate impact &mdash; and re-run the pipeline to get a different colouring.</p>
     <details>
       <summary>View the Digital AI Exposure scoring prompt (example)</summary>
@@ -251,6 +251,7 @@ Use these anchors to calibrate your score:
 Respond with ONLY a JSON object in this exact format, no other text:
 {"exposure": &lt;0-10&gt;, "rationale": "&lt;2-3 sentences explaining the key factors&gt;"}</div>
     </details>
+    <p><b>Caveat on Growth Outlook:</b> The 10-year outlook is an LLM estimate. Where the tooltip shows historical growth, the model was given that Eurostat figure for Cyprus; otherwise it worked from the occupation group alone. It is not an official projection (such as HRDA's occupational forecasts) and should be read as a rough indication only.</p>
     <p><b>Caveat on Digital AI Exposure scores:</b> These are rough LLM estimates, not rigorous predictions. A high score does not predict the job will disappear. Software developers score 9/10 because AI is transforming their work &mdash; but demand for software could easily <em>grow</em> as each developer becomes more productive. The score does not account for demand elasticity, latent demand, regulatory barriers, or social preferences for human workers. Many high-exposure jobs will be reshaped, not replaced.</p>
   </div>
 
@@ -258,7 +259,7 @@ Respond with ONLY a JSON object in this exact format, no other text:
     <div class="stat-section">
       <h3>Layer</h3>
       <div class="color-toggle" id="colorToggle" role="group" aria-label="Colour metric">
-        <button data-mode="outlook" class="active" aria-pressed="true">Growth Outlook</button>
+        <button data-mode="outlook" class="active" aria-pressed="true" title="10-year projected employment change (LLM estimate)">Growth Outlook (est.)</button>
         <button data-mode="pay" aria-pressed="false">Median Pay</button>
         <button data-mode="education" aria-pressed="false">Education</button>
         <button data-mode="exposure" aria-pressed="false">Digital AI Exposure</button>
@@ -533,7 +534,8 @@ function tooltipHighlight(d) {
     const v = d.outlook;
     if (v == null) return "";
     const color = outlookColor(v, 1);
-    return `<span style="color:${color};font-weight:600;">Outlook: ${v > 0 ? '+' : ''}${v}%</span>` +
+    return `<span style="color:${color};font-weight:600;">10-yr outlook: ${v > 0 ? '+' : ''}${v}%</span> <span style="color:var(--fg2);">LLM estimate</span>` +
+      (d.historical_cagr != null ? `<div style="color:var(--fg2);font-size:11px;">Historical: ${d.historical_cagr > 0 ? '+' : ''}${d.historical_cagr}%/yr (${d.historical_period}, Eurostat)</div>` : '') +
       (d.outlook_desc ? ` <span style="color:var(--fg2);">(${d.outlook_desc})</span>` : '') +
       `<div style="margin-top:3px;height:4px;background:rgba(255,255,255,0.08);border-radius:2px;">` +
       `<div style="height:100%;width:${Math.min(100, Math.max(0, (v + 10) / 30 * 100))}%;background:${color};border-radius:2px;"></div></div>`;
@@ -560,9 +562,11 @@ function showTooltip(d, mx, my) {
   tt.querySelector(".tt-stats").innerHTML = `
     <span class="label">Median pay</span><span class="value">${formatPay(d.pay)}</span>
     <span class="label">Employment</span><span class="value">${d.jobs_estimated ? '~' : ''}${formatNumber(d.jobs)}${d.jobs_estimated ? ' (estimate)' : ''}</span>
-    <span class="label">Outlook</span><span class="value">${d.outlook != null ? d.outlook + '%' : '\u2014'} ${d.outlook_desc ? '(' + d.outlook_desc + ')' : ''}</span>
+    <span class="label">10-yr outlook (est.)</span><span class="value">${d.outlook != null ? (d.outlook > 0 ? '+' : '') + d.outlook + '%' : '\u2014'} ${d.outlook_desc ? '(' + d.outlook_desc + ')' : ''}</span>
     <span class="label">Education</span><span class="value">${d.education || '\u2014'}</span>`;
-  tt.querySelector(".tt-rationale").textContent = colorMode === "exposure" ? (d.exposure_rationale || "") : "";
+  tt.querySelector(".tt-rationale").textContent =
+    colorMode === "exposure" ? (d.exposure_rationale || "") :
+    colorMode === "outlook" ? (d.outlook_rationale || "") : "";
   let tx = mx + 16, ty = my - 16;
   if (tx + 340 > window.innerWidth) tx = mx - 356;
   if (ty < 10) ty = my + 16;
@@ -645,7 +649,7 @@ function updateOutlookStats(totalJobs) {
   let wS = 0, wC = 0;
   for (const d of data) { if (d.outlook != null && d.jobs) { wS += d.outlook * d.jobs; wC += d.jobs; } }
   const avg = wC > 0 ? wS / wC : 0;
-  document.getElementById("block2").innerHTML = `<h3>Avg. outlook</h3>
+  document.getElementById("block2").innerHTML = `<h3>Avg. 10-yr outlook (est.)</h3>
     <div class="stat-big"><span style="color:${outlookColor(avg, 1)}">${avg > 0 ? "+" : ""}${avg.toFixed(1)}%</span></div>
     <div class="stat-label">job-weighted</div>`;
 
