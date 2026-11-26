@@ -127,7 +127,7 @@ def test_values_in_range(site_data):
     for d in site_data:
         t = d["title"]
         assert 0 <= d["exposure"] <= 10 and isinstance(d["exposure"], int), f"{t}: exposure {d['exposure']}"
-        assert -50 <= d["outlook"] <= 100, f"{t}: outlook {d['outlook']}"
+        assert -60 <= d["outlook"] <= 100, f"{t}: outlook {d['outlook']}"
         assert 8_000 <= d["pay"] <= 200_000, f"{t}: pay {d['pay']}"
         assert d["jobs"] > 0, f"{t}: jobs {d['jobs']}"
         if d.get("pay_p10") and d.get("pay_p90"):

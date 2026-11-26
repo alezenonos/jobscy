@@ -83,7 +83,7 @@ These are **statistical averages, not market salaries.** Actual compensation for
                                    build_site_data.py ──► site/data.json ──► site/index.html
 ```
 
-The data is refreshed automatically: `.github/workflows/refresh-data.yml` runs on the 1st of each month (or by hand from the Actions tab), fetches the latest Eurostat data, rebuilds `site/data.json` and opens a pull request when anything changed. It never re-runs the LLM; the pull request lists any growth-outlook scores that should be re-scored because the historical growth changed.
+The data is refreshed automatically: `.github/workflows/refresh-data.yml` runs once a year on 1 June, after Eurostat usually publishes the previous year's annual LFS data (or by hand from the Actions tab), fetches the latest Eurostat data, rebuilds `site/data.json` and opens a pull request when anything changed. It never re-runs the LLM; the pull request lists any growth-outlook scores that should be re-scored because the historical growth changed.
 
 ## LLM-powered colouring
 
@@ -110,7 +110,7 @@ Fork `score.py` to write your own scoring criteria — e.g. green economy releva
 | `build_site_data.py` | Merge CSV + scores → `site/data.json` |
 | `forecasts.py` | Add 2025 pay estimate, pay by sector, HRDA and Cedefop forecasts to the site data |
 | `make_prompt.py` | Generate single-file LLM prompt from all data |
-| `refresh_data.py` | Wage index fetch and change report used by the monthly refresh workflow |
+| `refresh_data.py` | Wage index fetch and change report used by the yearly refresh workflow |
 | `site/index.html` | Interactive treemap visualisation (EUR, ISCO-08, Cyprus) |
 | `occupations_cy.json` | Master list of 39 ISCO-08 occupation groups |
 | `occupations_cy.csv` | Summary stats: pay (EUR), employment, education, ISCO codes |

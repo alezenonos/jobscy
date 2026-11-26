@@ -1,6 +1,6 @@
 # Handover Document — JobsCY
 
-> **Last updated:** 2026-11-26 (keyboard access and data table, data integrity CI, safe LLM scoring, monthly data refresh)
+> **Last updated:** 2026-11-26 (keyboard access and data table, data integrity CI, safe LLM scoring, yearly data refresh)
 > **Default branch:** `master`
 > **Repo:** https://github.com/alezenonos/jobscy
 > **Status:** Functional end-to-end, version 1.1.0 plus the changes in CHANGELOG.md "Unreleased". The sections under "Completed work" are the original build history.
@@ -24,7 +24,7 @@ JobsCY adapts [karpathy/jobs](https://github.com/karpathy/jobs) (a US BLS occupa
                                                                        ▼
                                    build_site_data.py ──► site/data.json ──► site/index.html
 
-Monthly refresh (.github/workflows/refresh-data.yml):
+Yearly refresh on 1 June (.github/workflows/refresh-data.yml):
   make_cy_csv.py + make_cagr.py + refresh_data.py wage-index ──► build_site_data.py ──► pull request
 
 Utilities:
@@ -44,7 +44,7 @@ Utilities:
 | `make_cagr.py` | Historical employment CAGR per ISCO code → `cagr.json` | Done |
 | `score_outlook.py` | LLM 10-year growth outlook, grounded with `cagr.json` | Done |
 | `llm_scoring.py` | Shared scoring loop: keeps cached scores, validates, retries, records model/date | Done |
-| `refresh_data.py` | Wage index fetch and change report for the monthly refresh | Done |
+| `refresh_data.py` | Wage index fetch and change report for the yearly refresh | Done |
 | `tests/test_data_integrity.py` | Checks on the committed data (rebuilds, totals, ranges, freshness) | Done |
 | `make_prompt.py` | Generate single-file LLM prompt | **Done (PR 6)** |
 | `site/index.html` | Interactive treemap visualisation (EUR, ISCO-08) | **Done (PR 5)** |
@@ -168,7 +168,7 @@ These are optional improvements beyond the initial 6-PR scope:
 
 - **HRDA detail:** The 2-digit forecasts are integrated; the ~309 detailed occupations could add finer granularity
 - **Growth outlook:** Still an LLM estimate grounded with Eurostat historical CAGR (`make_cagr.py`). HRDA and Cedefop forecasts are now shown next to it and could be fed into the scoring prompt on the next re-score
-- **Refreshing the forecast caches:** employment, earnings, employment history and `wage_index.json` are refreshed monthly by the workflow. The sector pay file only changes with a new SES wave (expected ~2028). HRDA and Cedefop values were transcribed by hand and need updating when new editions come out
+- **Refreshing the forecast caches:** employment, earnings, employment history and `wage_index.json` are refreshed yearly (1 June) by the workflow. The sector pay file only changes with a new SES wave (expected ~2028). HRDA and Cedefop values were transcribed by hand and need updating when new editions come out
 - **EURES shortage data:** Add shortage/surplus indicators from EURES vacancy statistics
 - **3-digit ISCO:** Expand from 39 sub-major groups to ~130 minor groups if Eurostat provides sufficient Cyprus data
 - **Multilingual:** Greek language support for occupation titles (ISCO-08 has official Greek labels)
@@ -185,7 +185,7 @@ uv run python make_cy_csv.py --save-cache data/cache
 uv run python make_cy_csv.py --cached data/cache
 ```
 
-GitHub Actions runners can reach Eurostat, so the monthly refresh workflow (Actions tab → "Refresh data" → "Run workflow") is the easiest way to fetch new data. It needs "Allow GitHub Actions to create and approve pull requests" enabled under Settings → Actions → General.
+GitHub Actions runners can reach Eurostat, so the refresh workflow (Actions tab → "Refresh data" → "Run workflow") is the easiest way to fetch new data. It needs "Allow GitHub Actions to create and approve pull requests" enabled under Settings → Actions → General.
 
 ### CI fails on push
 - Ensure branch name starts with `claude/` or is `master`
