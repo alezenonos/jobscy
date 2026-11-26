@@ -9,7 +9,7 @@
 
 ## Project overview
 
-JobsCY adapts [karpathy/jobs](https://github.com/karpathy/jobs) (a US BLS occupational treemap) for the **Cyprus labour market** using EU/Cyprus data sources. The result is an interactive treemap of Cyprus occupations sized by employment and coloured by growth outlook, median pay (EUR), education level, or AI exposure score.
+JobsCY adapts [karpathy/jobs](https://github.com/karpathy/jobs) (a US BLS occupational treemap) for the **Cyprus labour market** using EU/Cyprus data sources. The result is an interactive treemap of Cyprus occupations sized by employment and coloured by growth outlook, average pay (EUR), education level, or AI exposure score.
 
 ## Architecture
 
@@ -53,7 +53,8 @@ Utilities:
 |---|---|---|
 | `LFSA_EGAI2D` | Employment by occupation | ISCO-08 2-digit, by country, sex, age |
 | `lfsa_eisn2` | Employment by occupation × economic activity | ISCO 1-digit × NACE |
-| `earn_ses_pub1s` | Median gross hourly earnings | By ISCO 1-digit, NACE, country |
+| `earn_ses_hourly` | Mean, median and decile gross hourly earnings (SES) | ISCO 1-digit × NACE aggregates, by country |
+| `earn_ses22_28` | Mean gross annual earnings (SES 2022) | ISCO 1-digit, by country, sex, age |
 
 ### Eurostat API format
 

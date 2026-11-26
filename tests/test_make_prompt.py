@@ -40,7 +40,7 @@ class TestLoadRecordsCyprus:
         csv_rows = {
             "managers": {
                 "category": "managers",
-                "median_pay_annual_eur": "45000",
+                "mean_pay_annual_eur": "45000",
                 "employment_thousands": "12.5",
                 "entry_education": "Bachelor's degree or higher",
             }

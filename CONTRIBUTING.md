@@ -59,7 +59,7 @@ When adding new functionality:
 - **ISCO-08** for occupations (10 major groups, 39 sub-major groups at 2-digit level)
 - **NACE Rev. 2** for economic sectors
 - **ISCED 2011** for education levels
-- **Eurostat dataset codes:** `LFSA_EGAI2D` (employment), `earn_ses_pub1s` (earnings)
+- **Eurostat dataset codes:** `LFSA_EGAI2D` (employment), `earn_ses_hourly` and `earn_ses22_28` (earnings)
 
 ### Data pipeline
 The Cyprus pipeline flows: `generate_cy_occupations.py` → `make_cy_csv.py` → `score.py` → `build_site_data.py` → `site/index.html`. Each step can be run independently if its inputs exist.

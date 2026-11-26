@@ -21,9 +21,10 @@ Data is sourced from the Eurostat SDMX REST API (employment by ISCO-08 2-digit, 
 
 | Source | Dataset | What it provides | Link |
 |--------|---------|-----------------|------|
-| **Eurostat** | [`LFSA_EGAI2D`](https://ec.europa.eu/eurostat/databrowser/view/lfsa_egai2d/default/table?lang=en) | Employment by ISCO-08 2-digit, filtered to Cyprus (2024) | [SDMX API docs](https://wikis.ec.europa.eu/display/EUROSTATHELP/Transition+to+the+new+dissemination+chain) |
-| **Eurostat** | [`earn_ses_hourly`](https://ec.europa.eu/eurostat/databrowser/view/earn_ses_hourly/default/table?lang=en) | Mean gross hourly earnings by ISCO-08 1-digit, Cyprus (SES 2022) | [Dataset explorer](https://ec.europa.eu/eurostat/databrowser/view/earn_ses_hourly/default/table?lang=en) |
-| **Eurostat** | [`LFSA_EGAI2D`](https://ec.europa.eu/eurostat/databrowser/view/lfsa_egai2d/default/table?lang=en) (multi-year) | Historical employment growth (CAGR) per ISCO-08 2-digit, used to ground the growth outlook | — |
+| **Eurostat** | [`LFSA_EGAI2D`](https://ec.europa.eu/eurostat/databrowser/view/lfsa_egai2d/default/table?lang=en) | Employment by ISCO-08 2-digit, filtered to Cyprus (2025) | [Eurostat API docs](https://ec.europa.eu/eurostat/web/user-guides/data-browser/api-data-access/api-introduction) |
+| **Eurostat** | [`earn_ses_hourly`](https://ec.europa.eu/eurostat/databrowser/view/earn_ses_hourly/default/table?lang=en) | Mean, median, P10 and P90 gross hourly earnings by ISCO-08 1-digit, Cyprus (SES 2022) | [Dataset explorer](https://ec.europa.eu/eurostat/databrowser/view/earn_ses_hourly/default/table?lang=en) |
+| **Eurostat** | [`LFSA_EGAI2D`](https://ec.europa.eu/eurostat/databrowser/view/lfsa_egai2d/default/table?lang=en) (multi-year) | Historical employment growth (CAGR) per ISCO-08 2-digit, 2011-2025, used to ground the growth outlook | — |
+| **Eurostat** | [`earn_ses22_28`](https://ec.europa.eu/eurostat/databrowser/view/earn_ses22_28/default/table?lang=en) | Mean gross **annual** earnings by ISCO-08 1-digit (includes 13th salary and bonuses), Cyprus (SES 2022) | — |
 
 **Not yet used** (candidates for future integration):
 
@@ -44,13 +45,14 @@ The 10-year growth outlook is produced by `score_outlook.py`, which asks an LLM 
 
 ### Earnings methodology
 
-Salary figures are derived from the Eurostat **Structure of Earnings Survey** ([`earn_ses_hourly`](https://ec.europa.eu/eurostat/databrowser/view/earn_ses_hourly/default/table?lang=en)), the official EU-wide enterprise survey on wages:
+Salary figures are derived from the Eurostat **Structure of Earnings Survey** (SES), the official EU-wide enterprise survey on wages:
 
-- **Granularity:** SES provides earnings at **ISCO 1-digit** (major group) level only — all 2-digit occupations under the same group share the same figure (e.g. all Professionals = €36,878/year)
-- **Conversion:** Hourly earnings × 2,080 hours (40 h/week × 52 weeks) = annual pay
-- **Coverage:** Enterprises with **10+ employees** — excludes self-employed, micro-firms, and the informal economy
-- **Survey year:** 2022 (SES is published every 4 years; next wave: 2026)
-- **Metric:** Mean gross hourly earnings in EUR (`MEAN_E_EUR`)
+- **Granularity:** SES provides Cyprus earnings at **ISCO 1-digit** (major group) level only — all 2-digit occupations under the same group share the same figure (e.g. all Professionals = €41,771/year)
+- **Average pay:** mean gross annual earnings ([`earn_ses22_28`](https://ec.europa.eu/eurostat/databrowser/view/earn_ses22_28/default/table?lang=en)), which include the 13th salary and annual bonuses. If unavailable, the pipeline falls back to hourly mean × 2,080 hours.
+- **Pay range:** median, 10th percentile (P10) and 90th percentile (P90) of gross hourly earnings ([`earn_ses_hourly`](https://ec.europa.eu/eurostat/databrowser/view/earn_ses_hourly/default/table?lang=en), `MED_E_EUR`, `D1_E_EUR`, `D9_E_EUR`), annualised with the same annual/hourly ratio as the group's mean. This is an approximation; it shows, for example, that the top 10% of managers earn above roughly €124K.
+- **Sector aggregate:** `B-S_X_O` (whole economy excluding public administration). Earlier versions accidentally averaged the per-sector figures without weights, which understated pay (e.g. Professionals €36.9K instead of €41.8K).
+- **Coverage:** Enterprises with **10+ employees** — excludes self-employed, micro-firms, the public administration sector and the informal economy
+- **Survey year:** 2022 (SES is published every 4 years; the 2026 wave is expected around 2028)
 
 These are **statistical averages, not market salaries.** Actual compensation for specific roles in Cyprus may differ significantly due to sector, firm size, seniority, and private-sector premiums not captured by SES.
 

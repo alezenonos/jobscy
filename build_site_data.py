@@ -15,6 +15,10 @@ import json
 import os
 
 
+def _int(value):
+    return int(value) if value else None
+
+
 def merge_cyprus(rows, scores, outlook=None):
     """Merge Cyprus-format CSV rows with scores and outlook data."""
     outlook = outlook or {}
@@ -34,8 +38,11 @@ def merge_cyprus(rows, scores, outlook=None):
                 "slug": slug,
                 "category": row["category"],
                 "isco_code": row.get("isco_code", ""),
-                "pay": int(row["median_pay_annual_eur"]) if row.get("median_pay_annual_eur") else None,
-                "pay_hourly": float(row["median_pay_hourly_eur"]) if row.get("median_pay_hourly_eur") else None,
+                "pay": _int(row.get("mean_pay_annual_eur")),
+                "pay_hourly": float(row["mean_pay_hourly_eur"]) if row.get("mean_pay_hourly_eur") else None,
+                "pay_median": _int(row.get("median_pay_annual_eur")),
+                "pay_p10": _int(row.get("p10_pay_annual_eur")),
+                "pay_p90": _int(row.get("p90_pay_annual_eur")),
                 "jobs": jobs,
                 "jobs_estimated": row.get("employment_estimated") == "yes",
                 "education": row.get("entry_education", ""),

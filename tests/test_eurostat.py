@@ -43,6 +43,18 @@ ESTAT:EARN_SES_HOURLY(1.0),2024-03-01,A,B-S,OC5,TOTAL,TOTAL,T,MEAN_E_EUR,CY,2022
 ESTAT:EARN_SES_HOURLY(1.0),2024-03-01,A,B-S,OC9,TOTAL,TOTAL,T,MEAN_E_EUR,CY,2022,7.20,
 """
 
+# Cyprus-style: B-S_X_O headline aggregate alongside B-N, with distribution indicators
+SAMPLE_EARNINGS_CY_CSV = """\
+DATAFLOW,LAST UPDATE,freq,nace_r2,isco08,worktime,age,sex,indic_se,geo,TIME_PERIOD,OBS_VALUE,OBS_FLAG
+ESTAT:EARN_SES_HOURLY(1.0),2025-02-11,A,B-N,OC2,TOTAL,TOTAL,T,MEAN_E_EUR,CY,2022,16.95,
+ESTAT:EARN_SES_HOURLY(1.0),2025-02-11,A,B-S_X_O,OC2,TOTAL,TOTAL,T,MEAN_E_EUR,CY,2022,18.90,
+ESTAT:EARN_SES_HOURLY(1.0),2025-02-11,A,P-S,OC2,TOTAL,TOTAL,T,MEAN_E_EUR,CY,2022,21.00,
+ESTAT:EARN_SES_HOURLY(1.0),2025-02-11,A,B-S_X_O,OC2,TOTAL,TOTAL,T,MED_E_EUR,CY,2022,16.51,
+ESTAT:EARN_SES_HOURLY(1.0),2025-02-11,A,B-S_X_O,OC2,TOTAL,TOTAL,T,D1_E_EUR,CY,2022,8.32,
+ESTAT:EARN_SES_HOURLY(1.0),2025-02-11,A,B-S_X_O,OC2,TOTAL,TOTAL,T,D9_E_EUR,CY,2022,33.03,
+ESTAT:EARN_SES_HOURLY(1.0),2025-02-11,A,B-S_X_O,OC2,TOTAL,TOTAL,T,D9_E_EUR,CY,2018,30.00,
+"""
+
 # Sectoral-only data: no B-S/B-N/TOTAL aggregate rows
 SAMPLE_EARNINGS_SECTORAL_CSV = """\
 DATAFLOW,LAST UPDATE,freq,nace_r2,isco08,worktime,age,sex,indic_se,geo,TIME_PERIOD,OBS_VALUE,OBS_FLAG
@@ -273,6 +285,29 @@ class TestFetchEarnings:
         # Should use the B-S aggregate value, not compute an average
         assert oc1["hourly_earnings_eur"] == 22.50
         assert oc1["year"] == "2022"
+
+    def test_prefers_whole_economy_aggregate_over_business_economy(self):
+        """B-S_X_O (incl. education/health) beats B-N and is not averaged with sectors."""
+        client = _mock_client(SAMPLE_EARNINGS_CY_CSV)
+        results = fetch_earnings_by_occupation(geo="CY", client=client)
+
+        assert len(results) == 1
+        oc2 = results[0]
+        assert oc2["hourly_earnings_eur"] == 18.90
+        assert oc2["year"] == "2022"
+
+    def test_returns_distribution_for_latest_year(self):
+        client = _mock_client(SAMPLE_EARNINGS_CY_CSV)
+        oc2 = fetch_earnings_by_occupation(geo="CY", client=client)[0]
+
+        assert oc2["median_hourly_eur"] == 16.51
+        assert oc2["p10_hourly_eur"] == 8.32
+        assert oc2["p90_hourly_eur"] == 33.03  # 2022, not the 2018 row
+
+    def test_distribution_keys_absent_when_not_published(self):
+        client = _mock_client(SAMPLE_EARNINGS_CSV)
+        oc1 = fetch_earnings_by_occupation(geo="CY", client=client)[0]
+        assert "median_hourly_eur" not in oc1
 
 
 # --- build_occupation_summary tests ---

@@ -251,6 +251,7 @@ Use these anchors to calibrate your score:
 Respond with ONLY a JSON object in this exact format, no other text:
 {"exposure": &lt;0-10&gt;, "rationale": "&lt;2-3 sentences explaining the key factors&gt;"}</div>
     </details>
+    <p><b>Caveat on pay:</b> Eurostat's Structure of Earnings Survey (2022, enterprises with 10+ employees, excluding public administration) only publishes Cyprus pay by ISCO-08 <i>major</i> group, so every occupation in a group shows the same figure. "Average pay" is mean gross annual earnings including the 13th salary and bonuses. The tooltip's range shows the 10th to 90th percentile of hourly pay in that major group, annualised with the same ratio, so it is an approximation. The next survey wave (2026) is expected to be published around 2028.</p>
     <p><b>Caveat on Growth Outlook:</b> The 10-year outlook is an LLM estimate. Where the tooltip shows historical growth, the model was given that Eurostat figure for Cyprus; otherwise it worked from the occupation group alone. It is not an official projection (such as HRDA's occupational forecasts) and should be read as a rough indication only.</p>
     <p><b>Caveat on Digital AI Exposure scores:</b> These are rough LLM estimates, not rigorous predictions. A high score does not predict the job will disappear. Software developers score 9/10 because AI is transforming their work &mdash; but demand for software could easily <em>grow</em> as each developer becomes more productive. The score does not account for demand elasticity, latent demand, regulatory barriers, or social preferences for human workers. Many high-exposure jobs will be reshaped, not replaced.</p>
   </div>
@@ -521,6 +522,7 @@ function formatNumber(n) {
   return n.toLocaleString();
 }
 function formatPay(n) { return n == null ? "\u2014" : "\u20AC" + n.toLocaleString(); }
+function formatPayK(n) { return n == null ? "\u2014" : "\u20AC" + Math.round(n / 1000) + "K"; }
 
 function tooltipHighlight(d) {
   if (colorMode === "exposure") {
@@ -544,6 +546,7 @@ function tooltipHighlight(d) {
     if (v == null) return "";
     const color = payColor(v, 1);
     return `<span style="color:${color};font-weight:600;">Average Pay: ${formatPay(v)}</span>` +
+      (d.pay_p10 != null && d.pay_p90 != null ? `<div style="color:var(--fg2);font-size:11px;">Middle 80% earn ${formatPayK(d.pay_p10)}–${formatPayK(d.pay_p90)}${d.pay_median != null ? `, median ${formatPayK(d.pay_median)}` : ''} (major group, SES ${d.year_earnings || ''})</div>` : '') +
       `<div style="margin-top:3px;height:4px;background:rgba(255,255,255,0.08);border-radius:2px;">` +
       `<div style="height:100%;width:${Math.min(100, v / 80000 * 100)}%;background:${color};border-radius:2px;"></div></div>`;
   } else if (colorMode === "education") {
@@ -561,6 +564,7 @@ function showTooltip(d, mx, my) {
   tt.querySelector(".tt-exposure").innerHTML = tooltipHighlight(d);
   tt.querySelector(".tt-stats").innerHTML = `
     <span class="label">Average pay</span><span class="value">${formatPay(d.pay)}</span>
+    <span class="label">Pay range (P10–P90)</span><span class="value">${d.pay_p10 != null && d.pay_p90 != null ? formatPayK(d.pay_p10) + '–' + formatPayK(d.pay_p90) : '—'}</span>
     <span class="label">Employment</span><span class="value">${d.jobs_estimated ? '~' : ''}${formatNumber(d.jobs)}${d.jobs_estimated ? ' (estimate)' : ''}</span>
     <span class="label">10-yr outlook (est.)</span><span class="value">${d.outlook != null ? (d.outlook > 0 ? '+' : '') + d.outlook + '%' : '\u2014'} ${d.outlook_desc ? '(' + d.outlook_desc + ')' : ''}</span>
     <span class="label">Education</span><span class="value">${d.education || '\u2014'}</span>`;

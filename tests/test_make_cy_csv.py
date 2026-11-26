@@ -63,12 +63,12 @@ class TestBuildCsvRows:
         rows = build_csv_rows(_sample_occupations(), _sample_employment(), _sample_earnings())
         # OC11 parent is OC1 → 22.50 * 2080 = 46800
         oc11 = next(r for r in rows if r["isco_code"] == "OC11")
-        assert oc11["median_pay_annual_eur"] == round(22.50 * 2080)
+        assert oc11["mean_pay_annual_eur"] == round(22.50 * 2080)
 
     def test_hourly_pay_preserved(self):
         rows = build_csv_rows(_sample_occupations(), _sample_employment(), _sample_earnings())
         oc25 = next(r for r in rows if r["isco_code"] == "OC25")
-        assert oc25["median_pay_hourly_eur"] == "18.30"
+        assert oc25["mean_pay_hourly_eur"] == "18.30"
 
     def test_employment_data_mapped(self):
         rows = build_csv_rows(_sample_occupations(), _sample_employment(), _sample_earnings())
@@ -108,8 +108,8 @@ class TestBuildCsvRows:
             }
         ]
         rows = build_csv_rows(occs, _sample_employment(), [])
-        assert rows[0]["median_pay_annual_eur"] == ""
-        assert rows[0]["median_pay_hourly_eur"] == ""
+        assert rows[0]["mean_pay_annual_eur"] == ""
+        assert rows[0]["mean_pay_hourly_eur"] == ""
 
 
 class TestCacheRoundtrip:
@@ -180,3 +180,28 @@ class TestSuppressedEmployment:
         rows = build_csv_rows(self._occs(), emp, [])
         street = next(r for r in rows if r["isco_code"] == "OC95")
         assert street["employment_thousands"] == 0.0
+
+
+class TestAnnualPay:
+    def test_uses_ses_annual_and_annualises_deciles_with_same_ratio(self):
+        from make_cy_csv import _annual_pay
+
+        earn = {
+            "hourly_earnings_eur": 20.0,
+            "median_hourly_eur": 15.0,
+            "p10_hourly_eur": 8.0,
+            "p90_hourly_eur": 40.0,
+            "annual_earnings_eur": 44000.0,
+        }
+        pay = _annual_pay(earn)
+        assert pay == {"mean": 44000, "median": 33000, "p10": 17600, "p90": 88000}
+
+    def test_falls_back_to_2080_hours(self):
+        from make_cy_csv import _annual_pay
+
+        assert _annual_pay({"hourly_earnings_eur": 10.0}) == {"mean": 20800}
+
+    def test_empty_without_earnings(self):
+        from make_cy_csv import _annual_pay
+
+        assert _annual_pay({}) == {}

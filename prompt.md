@@ -1,6 +1,6 @@
 # AI Exposure of the Cyprus Labour Market
 
-This document contains structured data on Cyprus occupations sourced from HRDA, Eurostat, and other EU/Cyprus data providers, each scored for AI exposure on a 0-10 scale by an LLM. Use this data to analyse, question, and discuss how AI will reshape the Cyprus labour market.
+This document contains structured data on 39 Cyprus occupation groups (ISCO-08 2-digit). Employment comes from the Eurostat Labour Force Survey (LFSA_EGAI2D) and pay from the Eurostat Structure of Earnings Survey (1-digit level, so groups in the same major group share a pay figure). Each group is scored for AI exposure on a 0-10 scale and for 10-year growth outlook by an LLM; these scores are estimates, not official forecasts. Use this data to analyse, question, and discuss how AI will reshape the Cyprus labour market.
 
 GitHub: https://github.com/alezenonos/jobscy
 
@@ -21,150 +21,150 @@ Calibration anchors:
 ## Aggregate statistics
 
 - Total occupations: 39
-- Total jobs: 572,100 (572K)
-- Total annual wages: €13.8B
-- Job-weighted average AI exposure: 4.8/10
+- Total jobs: 499,000 (499K)
+- Total annual wages: €14.5B
+- Job-weighted average AI exposure: 5.1/10
 
 ### Breakdown by exposure tier
 
 | Tier | Occupations | Jobs | % of jobs | Wages | % of wages | Avg pay |
 |------|-------------|------|-----------|-------|------------|---------|
-| Minimal (0-1) | 5 | 117K | 20.5% | €1.7B | 12.4% | €14,581 |
-| Low (2-3) | 10 | 143K | 25.0% | €2.7B | 19.4% | €18,676 |
-| Moderate (4-5) | 7 | 77K | 13.5% | €1.7B | 12.0% | €21,332 |
-| High (6-7) | 6 | 59K | 10.2% | €2.7B | 19.7% | €46,453 |
-| Very high (8-10) | 11 | 176K | 30.7% | €5.0B | 36.6% | €28,711 |
+| Minimal (0-1) | 3 | 52K | 10.3% | €0.8B | 5.7% | €15,989 |
+| Low (2-3) | 13 | 136K | 27.2% | €2.6B | 18.2% | €19,445 |
+| Moderate (4-5) | 7 | 76K | 15.3% | €2.0B | 13.8% | €26,175 |
+| High (6-7) | 10 | 97K | 19.5% | €4.6B | 32.1% | €47,813 |
+| Very high (8-10) | 6 | 138K | 27.8% | €4.4B | 30.2% | €31,509 |
 
 ### Average exposure by pay band (job-weighted)
 
 | Pay band | Avg exposure | Jobs |
 |----------|-------------|------|
-| <€20K | 3.4 | 272K |
-| €20-35K | 5.2 | 167K |
-| €35-50K | 7.4 | 110K |
-| €50-75K | 6.8 | 22K |
+| <€20K | 2.7 | 158K |
+| €20-35K | 5.9 | 198K |
+| €35-50K | 6.9 | 120K |
+| €50-75K | 6.4 | 22K |
 
 ### Average exposure by education level (job-weighted)
 
 | Education | Avg exposure | Jobs |
 |-----------|-------------|------|
-| Lower secondary | 1.6 | 170K |
-| Vocational | 4.6 | 196K |
-| Associate / Short-cycle | 8.4 | 74K |
-| Bachelor's+ | 7.3 | 132K |
+| Lower secondary | 1.8 | 91K |
+| Vocational | 4.6 | 190K |
+| Associate / Short-cycle | 7.2 | 76K |
+| Bachelor's+ | 6.8 | 143K |
 
 ### Projected declining occupations
 
 | Occupation | Exposure | Outlook | Jobs |
 |-----------|----------|---------|------|
-| General and keyboard clerks | 10/10 | -8% | 22K |
-| Other clerical support workers | 9/10 | -7% | 2K |
-| Numerical and material recording clerks | 9/10 | -6% | 14K |
-| Customer services clerks | 9/10 | -5% | 9K |
-| Handicraft and printing workers | 4/10 | -4% | 1K |
-| Agricultural, forestry and fishery labourers | 1/10 | -4% | 5K |
-| Assemblers | 3/10 | -3% | 23K |
-| Market-oriented skilled agricultural workers | 2/10 | -3% | 7K |
-| Business and administration associate professionals | 9/10 | -2% | 52K |
-| Stationary plant and machine operators | 4/10 | -2% | 3K |
-| Market-oriented skilled forestry, fishery and hunting workers | 2/10 | -2% | 7K |
-| Food processing, wood working, garment and other craft and related trades workers | 2/10 | -1% | 5K |
+| Handicraft and printing workers | 4/10 | -17% | 1K |
+| Market-oriented skilled agricultural workers | 2/10 | -11% | 8K |
+| Agricultural, forestry and fishery labourers | 1/10 | -10% | 4K |
+| Customer services clerks | 8/10 | -7% | 10K |
+| Refuse workers and other elementary workers | 2/10 | -7% | 4K |
+| General and keyboard clerks | 9/10 | -6% | 22K |
+| Numerical and material recording clerks | 9/10 | -6% | 15K |
+| Labourers in mining, construction, manufacturing and transport | 2/10 | -6% | 10K |
+| Assemblers | 3/10 | -5% | 200 |
+| Sales workers | 5/10 | -4% | 32K |
+| Other clerical support workers | 7/10 | -3% | 2K |
+| Market-oriented skilled forestry, fishery and hunting workers | 2/10 | -3% | 500 |
+| Street and related sales and service workers | 2/10 | -3% | 100 |
 
 ### Fastest-growing occupations (10%+ projected growth)
 
 | Occupation | Exposure | Outlook | Jobs |
 |-----------|----------|---------|------|
-| Information and communications technology professionals | 9/10 | +10% | 14K |
+| Information and communications technology professionals | 9/10 | +25% | 14K |
+| Business and administration professionals | 8/10 | +18% | 25K |
+| Health professionals | 5/10 | +10% | 18K |
+| Health associate professionals | 5/10 | +10% | 3K |
+| Personal care workers | 4/10 | +10% | 8K |
 
 ## All 39 occupations
 
 Sorted by AI exposure (descending), then by number of jobs (descending).
 
-### Exposure 10/10 (1 occupations, 22K jobs)
+### Exposure 9/10 (3 occupations, 51K jobs)
 
 | # | Occupation | Pay | Jobs | Outlook | Education | Rationale |
 |---|-----------|-----|------|---------|-----------|-----------|
-| 1 | General and keyboard clerks | €18,678 | 22K | -8% | Vocational | This occupation group consists of routine information processing, data entry, and document preparation that is entirely digital and structured. Current AI and RPA technologies can already automate the vast majority of these tasks, making this group highly susceptible to total displacement or radical restructuring in the Cyprus and EU administrative sectors. |
+| 1 | General and keyboard clerks | €20,893 | 22K | -6% | Vocational | Most duties involve digital, routine information processing—such as entering data, preparing documents, maintaining records, and handling correspondence—where AI and workflow automation can both perform tasks and reduce staffing needs. Some roles include coordination or in-person service that still requires human judgment, but this is unlikely to offset the substantial potential for restructuring. |
+| 2 | Numerical and material recording clerks | €20,893 | 15K | -6% | Vocational | Most core duties—entering and checking figures, maintaining stock or production records, processing documents, and updating databases—are routine information-processing tasks that AI and automated systems can increasingly handle. Some roles still involve physical stock checks or coordination with workers and suppliers, but these tasks are a limited barrier to substantial automation and productivity gains. |
+| 3 | Information and communications technology professionals | €41,771 | 14K | +25% | Bachelor's+ | ICT professionals do most of their core work digitally, including software development, systems analysis, database design, testing, and technical documentation—areas where AI is advancing rapidly and can automate or accelerate substantial tasks. Human expertise remains important for architecture, security, complex requirements, and accountability, but AI-driven productivity is likely to significantly reshape staffing and workflows across Cyprus and the EU. |
 
-### Exposure 9/10 (6 occupations, 95K jobs)
-
-| # | Occupation | Pay | Jobs | Outlook | Education | Rationale |
-|---|-----------|-----|------|---------|-----------|-----------|
-| 1 | Business and administration associate professionals | €27,706 | 52K | -2% | Associate | This group performs tasks that are almost entirely digital and information-based, such as financial record-keeping, sales support, and administrative coordination. Because their work product is fundamentally digital and involves routine data processing and communication, it is highly susceptible to both automation and significant productivity shifts driven by generative AI and LLMs. |
-| 2 | Information and communications technology professionals | €36,878 | 14K | +10% | Bachelor's+ | The work product of ICT professionals is entirely digital, consisting of code, architecture, and data analysis, which are domains where AI capabilities are advancing most rapidly. While these professionals are the primary adopters and creators of AI, the technology significantly automates core tasks like debugging, documentation, and routine coding, leading to massive productivity gains and structural shifts in the occupation. |
-| 3 | Numerical and material recording clerks | €18,678 | 14K | -6% | Vocational | This group performs routine information processing, data entry, and record-keeping tasks that are almost entirely digital and rule-based. In the Cyprus and EU context, these functions are being rapidly automated by AI-driven accounting software, automated inventory systems, and OCR technologies, leading to significant workforce restructuring. |
-| 4 | Customer services clerks | €18,678 | 9K | -5% | Vocational | The work product of customer service clerks is almost entirely digital or communication-based, making it highly susceptible to automation via Large Language Models and AI agents. In the Cyprus and EU markets, routine inquiries, booking services, and information provision are rapidly being transitioned to AI-driven interfaces, significantly reducing the need for human intervention in these clerical roles. |
-| 5 | Information and communications technicians | €27,706 | 3K | +6% | Associate | This group performs almost entirely digital work, including system support, network administration, and web development, which are core domains for AI automation and augmentation. While some hardware-related tasks require physical presence, the vast majority of their output is code or digital configuration, making them highly susceptible to massive productivity gains and role restructuring as AI tools take over routine technical tasks. |
-| 6 | Other clerical support workers | €18,678 | 2K | -7% | Vocational | This group consists of routine digital and paper-based tasks such as filing, mail processing, and personnel record maintenance, which are highly susceptible to automation through LLMs and RPA. In the Cyprus and EU context, the push for e-government and digital transformation is rapidly replacing these manual clerical functions with automated workflows and AI-driven document management systems. |
-
-### Exposure 8/10 (4 occupations, 58K jobs)
+### Exposure 8/10 (3 occupations, 88K jobs)
 
 | # | Occupation | Pay | Jobs | Outlook | Education | Rationale |
 |---|-----------|-----|------|---------|-----------|-----------|
-| 1 | Business and administration professionals | €36,878 | 22K | +4% | Bachelor's+ | This group performs predominantly digital knowledge work involving data analysis, strategic planning, and complex communication, all of which are core strengths of generative AI. While high-level human judgment and stakeholder management in sectors like Cyprus's financial and shipping hubs provide some protection, the vast majority of their tasks are susceptible to significant automation and productivity restructuring. |
-| 2 | Science and engineering professionals | €36,878 | 18K | +5% | Bachelor's+ | This group performs predominantly digital knowledge work involving complex data analysis, design, and technical documentation, all of which are highly susceptible to AI-driven productivity gains and automation. While some roles require physical site visits or labouratory work (especially in Cyprus's construction and shipping sectors), the core output is digital, placing it on a steep trajectory for AI integration and restructuring. |
-| 3 | Legal, social and cultural professionals | €36,878 | 13K | +3% | Bachelor's+ | This group consists of highly digital and knowledge-intensive roles such as lawyers, social scientists, and writers, whose core tasks involve processing, analyzing, and generating complex text and data. While high-level human judgment and cultural nuance remain critical, AI is rapidly automating legal research, document drafting, and content creation, significantly increasing productivity and restructuring traditional workflows. |
-| 4 | Legal, social, cultural and related associate professionals | €27,706 | 6K | +2% | Associate | The work product of this group is almost entirely digital and information-based, involving legal research, social assistance documentation, and cultural content creation. While some roles require interpersonal empathy, the core tasks of drafting, analyzing, and organizing information are highly susceptible to AI-driven automation and productivity gains. |
+| 1 | Business and administration associate professionals | €33,063 | 53K | +5% | Associate | Much of the group’s work involves processing information, preparing documents, analysing data, coordinating transactions, and communicating digitally—tasks where AI can automate substantial work or increase worker productivity. Client-facing duties, negotiation, regulatory judgment, and local context provide some resilience, but are unlikely to prevent major restructuring across the group. |
+| 2 | Business and administration professionals | €41,771 | 25K | +18% | Bachelor's+ | Most business and administration professionals do knowledge work using digital information, so AI can automate or accelerate substantial tasks such as analysis, reporting, document preparation, and forecasting. Human judgment, accountability, regulatory requirements, and client or stakeholder relationships remain important, but are unlikely to prevent major restructuring across these roles. |
+| 3 | Customer services clerks | €20,893 | 10K | -7% | Vocational | Much of the work involves handling inquiries, processing requests, and updating records through digital systems—tasks increasingly supported or automated by chatbots, voice AI, and customer-service software. Human judgment and empathy remain important for complex or sensitive cases, and some roles involve in-person contact, but AI is likely to substantially reshape staffing and daily workflows. |
 
-### Exposure 7/10 (5 occupations, 53K jobs)
-
-| # | Occupation | Pay | Jobs | Outlook | Education | Rationale |
-|---|-----------|-----|------|---------|-----------|-----------|
-| 1 | Teaching professionals | €36,878 | 26K | +3% | Bachelor's+ | Teaching professionals are highly exposed because their core tasks—lesson planning, content creation, and assessment—are increasingly automated by generative AI. While the physical presence and social-emotional guidance required in Cyprus/EU classrooms provide a buffer, the digital nature of educational materials and administrative duties makes the profession ripe for significant AI-driven restructuring and productivity gains. |
-| 2 | Science and engineering associate professionals | €27,706 | 10K | +4% | Associate | These roles involve a high degree of technical data analysis, CAD design, and labouratory reporting which are increasingly being automated or enhanced by AI-driven simulation and diagnostic tools. While some tasks require physical presence in labs or on-site inspections in sectors like Cyprus's construction and shipping industries, the core work product is digital and highly susceptible to AI-driven productivity gains. |
-| 3 | Production and specialised services managers | €65,770 | 8K | +2% | Bachelor's+ | These roles involve high-level knowledge work, strategic planning, and resource allocation, which are increasingly augmented by AI-driven analytics and forecasting tools. While the need for human leadership, physical site oversight, and complex stakeholder negotiation in sectors like Cyprus's shipping and construction provides a buffer, the core administrative and analytical functions are highly susceptible to AI-driven productivity gains. |
-| 4 | Administrative and commercial managers | €65,770 | 6K | +3% | Bachelor's+ | These roles involve high-level knowledge work, strategic planning, and digital communication, all of which are highly susceptible to AI-driven productivity gains and data-driven decision-making. While the need for human leadership, negotiation, and complex stakeholder management in the Cyprus/EU corporate and public sectors provides a buffer, the core tasks of reporting, resource allocation, and administrative oversight are increasingly being automated or augmented by AI. |
-| 5 | Chief executives, senior officials and legislators | €65,770 | 3K | +2% | Bachelor's+ | This group performs high-level knowledge work involving strategic analysis, policy formulation, and complex communication, all of which are increasingly augmented by AI-driven data insights. While the core functions of leadership, ethical judgment, and political negotiation require human presence and accountability, the digital nature of their information processing and decision-support systems makes them highly exposed to AI restructuring. |
-
-### Exposure 6/10 (1 occupations, 6K jobs)
+### Exposure 7/10 (5 occupations, 46K jobs)
 
 | # | Occupation | Pay | Jobs | Outlook | Education | Rationale |
 |---|-----------|-----|------|---------|-----------|-----------|
-| 1 | Hospitality, retail and other services managers | €65,770 | 6K | +4% | Bachelor's+ | This role involves a significant amount of administrative and strategic knowledge work—such as inventory management, financial planning, and marketing—which is highly susceptible to AI optimisation. However, the requirement for physical presence, real-time staff supervision, and high-touch customer service in the Cyprus tourism and retail sectors provides a buffer against full automation. |
+| 1 | Science and engineering professionals | €41,771 | 20K | +8% | Bachelor's+ | Many core tasks—modelling, analysis, research synthesis, technical documentation, and design—are digital and increasingly AI-assisted, potentially raising productivity and reducing demand for some routine analytical work. However, experiments, fieldwork, site inspections, physical prototyping, and safety-critical engineering judgment still require human expertise and presence, so exposure varies substantially across the group. |
+| 2 | Legal, social and cultural professionals | €41,771 | 16K | +4% | Bachelor's+ | Much of the work involves digital research, writing, analysis, documentation, and communication, where AI can automate tasks and substantially increase productivity—especially in legal and policy-related roles. However, the group also includes occupations requiring human judgment, trust, direct social interaction, or creative and cultural work, which limits how much of the core job can be automated. |
+| 3 | Administrative and commercial managers | €73,564 | 6K | +2% | Bachelor's+ | Administrative and commercial managers spend substantial time on digital work such as planning, reporting, analysis, communications, and coordinating business processes, where AI can automate tasks and increase the productivity of teams. Their roles also depend on leadership, negotiation, accountability, and context-sensitive decisions, which limits full automation but is likely to reshape how the work is done. |
+| 4 | Chief executives, senior officials and legislators | €73,564 | 2K | +5% | Bachelor's+ | AI can substantially assist with analysis, briefing, communications, planning and routine decision support, making senior leaders more productive and potentially changing staffing needs. However, the role still depends heavily on accountable judgment, negotiation, political or organisational relationships, and leadership in real-world settings, which limits direct automation. |
+| 5 | Other clerical support workers | €20,893 | 2K | -3% | Vocational | Many duties in this group involve routine information processing—such as filing, coding, proofreading, personnel records and copying—that AI and digital systems can automate or speed up substantially. Mail handling and other in-person or physical tasks are less directly exposed, so the group’s overall exposure is below that of fully digital clerical occupations. |
 
-### Exposure 5/10 (1 occupations, 17K jobs)
-
-| # | Occupation | Pay | Jobs | Outlook | Education | Rationale |
-|---|-----------|-----|------|---------|-----------|-----------|
-| 1 | Health professionals | €36,878 | 17K | +8% | Bachelor's+ | Health professionals perform a mix of high-level cognitive tasks, such as diagnostics and treatment planning, which are highly exposed to AI assistance, and physical, hands-on clinical care that requires human presence. While AI will significantly enhance medical imaging, data analysis, and administrative efficiency in the EU/Cyprus healthcare systems, the legal responsibility and the necessity for physical patient interaction provide a substantial buffer against full automation. |
-
-### Exposure 4/10 (6 occupations, 61K jobs)
+### Exposure 6/10 (5 occupations, 51K jobs)
 
 | # | Occupation | Pay | Jobs | Outlook | Education | Rationale |
 |---|-----------|-----|------|---------|-----------|-----------|
-| 1 | Sales workers | €16,037 | 35K | +0% | Vocational | While AI is rapidly automating digital sales, e-commerce, and customer analytics, a large portion of this group in Cyprus and the EU involves physical retail and face-to-face interaction. The core tasks of stocking shelves, handling physical goods, and providing in-person customer service in tourism-heavy economies provide a significant buffer against full AI displacement. |
-| 2 | Protective services workers | €16,037 | 11K | +1% | Vocational | While core duties like firefighting, policing, and physical security require real-time human presence and physical intervention, AI is increasingly used for surveillance, risk assessment, and report generation. In the Cyprus/EU context, the integration of smart city technologies and AI-driven monitoring enhances productivity but cannot replace the essential physical response and human judgment required in unpredictable public safety situations. |
-| 3 | Personal care workers | €16,037 | 7K | +9% | Vocational | The core duties involve physical assistance, emotional support, and real-time human interaction in healthcare and domestic settings, which are highly resistant to AI. However, exposure is moderate because AI is increasingly used for monitoring patient health, managing medication schedules, and automating the significant administrative and reporting requirements prevalent in the EU healthcare sector. |
-| 4 | Health associate professionals | €27,706 | 3K | +7% | Associate | This group involves a significant amount of physical interaction, clinical procedures, and patient care that cannot be digitised. While AI will heavily assist in diagnostic support, medical imaging analysis, and administrative record-keeping, the core requirement for human presence and manual dexterity in a clinical setting provides a substantial buffer against full automation. |
-| 5 | Stationary plant and machine operators | €20,384 | 3K | -2% | Lower sec. | While these roles involve physical machinery, the work is increasingly centered on monitoring digital control systems and optimizing processes, which are highly susceptible to AI-driven predictive maintenance and automated adjustments. However, the requirement for physical presence to handle mechanical failures, perform manual overrides, and conduct onsite inspections in industrial environments provides a significant buffer against full automation. |
-| 6 | Handicraft and printing workers | €20,946 | 1K | -4% | Vocational | This group combines physical craftsmanship with digital printing processes; while traditional handicraft remains low-exposure due to manual dexterity and physical materials, the printing sector is highly digitised and susceptible to AI-driven automation in layout and prepress. In the Cyprus/EU context, the shift toward digital manufacturing and automated printing offsets the more resilient, artisanal nature of traditional craft work. |
+| 1 | Teaching professionals | €41,771 | 27K | +5% | Bachelor's+ | AI can substantially assist teaching professionals with lesson preparation, learning materials, routine assessment, feedback, and administrative tasks, potentially increasing productivity and changing staffing needs. However, teaching still depends heavily on in-person interaction, classroom management, adapting to learners, and professional judgment, which limits direct automation. |
+| 2 | Production and specialised services managers | €73,564 | 10K | +6% | Bachelor's+ | AI can substantially assist with planning, forecasting, reporting, and resource allocation, making managers more productive and potentially reducing some administrative workload. However, this broad group includes roles overseeing physical production and specialised services that require on-site judgment, staff coordination, and accountability, limiting direct automation. |
+| 3 | Legal, social, cultural and related associate professionals | €33,063 | 6K | +6% | Associate | AI can substantially assist with research, drafting, documentation, and routine administrative work across this group, particularly in legal support and cultural-content tasks. However, many roles depend on direct human interaction, practical activities, performance, or contextual judgment, limiting automation of their core work. |
+| 4 | Hospitality, retail and other services managers | €73,564 | 5K | +6% | Bachelor's+ | AI can substantially assist with forecasting, pricing, scheduling, inventory, reporting, and customer communications, making managers more productive and potentially reducing administrative staffing needs. However, hospitality and retail managers still coordinate on-site operations, handle staff and customer issues, and make context-dependent decisions in physical workplaces, limiting automation of the core role. |
+| 5 | Information and communications technicians | €33,063 | 3K | +9% | Associate | AI can substantially automate or accelerate routine help-desk responses, monitoring, documentation, and basic network or system diagnostics, reducing time needed for many information-processing tasks. However, the group also includes hands-on installation, equipment maintenance, and contextual troubleshooting that often require physical presence and human interaction, limiting overall exposure. |
 
-### Exposure 3/10 (4 occupations, 84K jobs)
-
-| # | Occupation | Pay | Jobs | Outlook | Education | Rationale |
-|---|-----------|-----|------|---------|-----------|-----------|
-| 1 | Personal service workers | €16,037 | 33K | +5% | Vocational | This group includes travel attendants, cooks, and hairdressers, whose core duties require physical presence, manual dexterity, and real-time human interaction. While AI may streamline peripheral tasks like booking, inventory management, or menu planning, the fundamental service delivery remains resistant to automation due to the physical and sensory nature of the work. |
-| 2 | Assemblers | €20,384 | 23K | -3% | Lower sec. | Assemblers perform physical tasks in manufacturing environments that require manual dexterity and the handling of physical components, which provides a natural barrier to current AI capabilities. While AI-driven robotics and computer vision are advancing in factory settings, the core work remains physical; AI exposure is primarily limited to peripheral tasks like inventory tracking, quality control monitoring, and workflow optimisation. |
-| 3 | Drivers and mobile plant operators | €20,384 | 20K | +0% | Lower sec. | The core tasks involve physical operation of vehicles and machinery in unpredictable real-world environments, which provides a natural barrier to current AI capabilities. While autonomous driving technology and AI-driven logistics optimisation are advancing, the need for human oversight, manual loading/unloading, and navigating complex Mediterranean urban infrastructure keeps exposure low to moderate. |
-| 4 | Metal, machinery and related trades workers | €20,946 | 9K | +1% | Vocational | The core tasks of this group involve physical manipulation of materials, machinery maintenance, and manual precision in non-standardized environments, which are highly resistant to AI. While AI can optimise predictive maintenance and diagnostic software used by these workers, the physical execution of repairs and metalwork remains a human-centric requirement in the Cyprus and EU industrial sectors. |
-
-### Exposure 2/10 (6 occupations, 59K jobs)
+### Exposure 5/10 (4 occupations, 62K jobs)
 
 | # | Occupation | Pay | Jobs | Outlook | Education | Rationale |
 |---|-----------|-----|------|---------|-----------|-----------|
-| 1 | Building and related trades workers, excluding electricians | €20,946 | 25K | +3% | Vocational | The core tasks of building trades workers involve physical labour, manual dexterity, and the use of tools in unpredictable, non-routine physical environments. While AI may optimise project management, logistics, or architectural planning at a higher level, the actual execution of construction and maintenance remains insulated from digital automation. |
-| 2 | Electrical and electronic trades workers | €20,946 | 8K | +4% | Vocational | The core duties involve physical installation, maintenance, and repair of electrical systems and electronic equipment in diverse, unpredictable physical environments. While AI may assist with diagnostic software or administrative scheduling, the manual dexterity and on-site presence required for wiring and hardware manipulation provide a strong barrier to automation. |
-| 3 | Market-oriented skilled forestry, fishery and hunting workers | €14,290 | 7K | -2% | Vocational | The core tasks of this occupation group involve physical labour, manual dexterity, and real-time navigation of unpredictable natural environments like forests and seas. While AI may assist in peripheral areas such as satellite-based resource monitoring or administrative record-keeping, the fundamental work of harvesting, planting, and catching remains resistant to digital automation. |
-| 4 | Market-oriented skilled agricultural workers | €14,290 | 7K | -3% | Vocational | The core tasks involve physical labour, manual dexterity, and real-time management of biological systems in unpredictable outdoor environments, which are highly resistant to AI. While AI can optimise irrigation, pest control, and yield forecasting via precision agriculture, the fundamental work remains hands-on and requires a physical presence on the land. |
-| 5 | Food preparation assistants | €14,581 | 7K | +4% | Lower sec. | The core tasks of food preparation assistants involve physical manual labour, such as cleaning, peeling, and chopping ingredients in a fast-paced kitchen environment. While AI might optimise inventory management or scheduling at a managerial level, the physical nature of the work and the need for real-time sensory feedback provide a strong barrier against AI automation. |
-| 6 | Food processing, wood working, garment and other craft and related trades workers | €20,946 | 5K | -1% | Vocational | The core tasks of these trades involve physical manipulation of materials, manual dexterity, and sensory judgment in physical environments like kitchens, workshops, and factories. While AI may optimise supply chains or provide recipe/design suggestions, the fundamental work of cutting, sewing, baking, and crafting remains resistant to digital automation. |
+| 1 | Sales workers | €17,476 | 32K | -4% | Vocational | AI can automate or streamline product recommendations, routine customer enquiries, transaction processing, and some sales administration, while digital tools may let fewer workers handle more sales activity. However, many sales workers in Cyprus and the EU serve customers in person, demonstrate products, handle goods, and respond to unpredictable needs, limiting automation of the core work. |
+| 2 | Health professionals | €41,771 | 18K | +10% | Bachelor's+ | AI can significantly assist health professionals with documentation, image interpretation, clinical decision support, and treatment planning, potentially increasing productivity and changing workflows. However, much of the work involves physical examination, procedures, and direct patient interaction that require human presence and judgment, limiting automation of core duties. |
+| 3 | Science and engineering associate professionals | €33,063 | 10K | +7% | Associate | AI can significantly assist with technical documentation, data analysis, design support, and monitoring, especially in engineering and laboratory roles. However, many duties involve operating or calibrating equipment, conducting tests and inspections, and responding to physical-world conditions, which limits automation across this diverse group. |
+| 4 | Health associate professionals | €33,063 | 3K | +10% | Associate | Health associate professionals may use AI for documentation, triage support, image or laboratory analysis, and treatment planning, making parts of their information-processing work more efficient. However, many core duties involve hands-on procedures, patient care, and real-time interaction that require physical presence and human judgment, limiting direct automation. |
 
-### Exposure 1/10 (5 occupations, 117K jobs)
+### Exposure 4/10 (3 occupations, 14K jobs)
 
 | # | Occupation | Pay | Jobs | Outlook | Education | Rationale |
 |---|-----------|-----|------|---------|-----------|-----------|
-| 1 | Street and related sales and service workers | €14,581 | 62K | +1% | Lower sec. | This occupation group involves physical presence in public spaces for tasks like street vending, door-to-door sales, and providing services like shoe shining or car window cleaning. The work is fundamentally manual, interpersonal, and takes place in unpredictable outdoor environments where AI and robotics currently have negligible impact. |
-| 2 | Cleaners and helpers | €14,581 | 37K | +3% | Lower sec. | The core tasks of cleaners and helpers are entirely physical, requiring manual dexterity and movement within unpredictable physical environments like hotels, offices, and private homes. While AI might marginally improve scheduling or inventory management at a supervisory level, the fundamental work product cannot be digitised or automated without advanced robotics that are currently cost-prohibitive and technically immature for these settings. |
-| 3 | Labourers in mining, construction, manufacturing and transport | €14,581 | 9K | +1% | Lower sec. | The core tasks of these occupations involve manual labour, physical strength, and the use of hand tools in unpredictable physical environments like construction sites and mines. AI has virtually no direct impact on these physical activities, and the work cannot be digitised or performed remotely. |
-| 4 | Agricultural, forestry and fishery labourers | €14,581 | 5K | -4% | Lower sec. | The core tasks of this group involve manual physical labour in unpredictable outdoor environments, such as harvesting, digging, and hauling, which are highly resistant to AI. While automation and robotics may impact large-scale industrial farming, the specific tasks of 'labourers' in the Cyprus and EU context remain fundamentally physical and non-digital. |
-| 5 | Refuse workers and other elementary workers | €14,581 | 4K | +0% | Lower sec. | The core tasks of refuse collection and elementary labour are almost entirely physical, manual, and conducted in unpredictable outdoor environments. While AI might optimise collection routes at a management level, it has virtually no impact on the physical labour required for these roles in the current Cyprus and EU infrastructure. |
+| 1 | Personal care workers | €17,476 | 8K | +10% | Vocational | Personal care workers rely on hands-on assistance, physical presence, and real-time human interaction, which are difficult for AI to replace. AI may help with care documentation, scheduling, or monitoring, but these are peripheral to the core work. |
+| 2 | Stationary plant and machine operators | €23,242 | 5K | +2% | Lower sec. | The work is anchored in operating and monitoring physical plant, responding to equipment conditions, and following safety procedures, so it cannot be done entirely on a computer. AI can improve process control, fault detection, and predictive maintenance, potentially reducing staffing needs, but workers remain important for on-site oversight and intervention. |
+| 3 | Handicraft and printing workers | €21,235 | 1K | -17% | Vocational | Most work involves hands-on craft production, operating or tending printing equipment, and handling physical materials, which limits direct AI substitution. AI can still reshape digital design, prepress, job planning, and routine production workflows, making exposure meaningful but uneven across the group. |
+
+### Exposure 3/10 (7 occupations, 86K jobs)
+
+| # | Occupation | Pay | Jobs | Outlook | Education | Rationale |
+|---|-----------|-----|------|---------|-----------|-----------|
+| 1 | Personal service workers | €17,476 | 35K | +8% | Vocational | Personal service workers typically provide hands-on services and interact directly with customers in settings such as restaurants, hotels, salons, and tourist attractions. AI may help with bookings, translation, recommendations, and routine administration, but the core work generally requires physical presence, practical skill, and real-time human interaction. |
+| 2 | Drivers and mobile plant operators | €23,242 | 20K | +4% | Lower sec. | The core work involves physically operating vehicles or mobile machinery in changing real-world conditions, where safety, practical judgment, and human presence limit near-term automation. AI can improve routing, monitoring, and scheduling, while autonomous systems may reshape some roles over time, but adoption is constrained by infrastructure, regulation, and the diversity of operating environments. |
+| 3 | Protective services workers | €17,476 | 9K | +2% | Vocational | Protective services work is primarily performed in person and often involves physical intervention, unpredictable situations, and real-time judgment, which limits direct automation. AI may assist with surveillance, dispatch, risk assessment, and report writing, but these are supporting tasks rather than the core duties. |
+| 4 | Metal, machinery and related trades workers | €21,235 | 9K | +4% | Vocational | The core work involves hands-on fabrication, machining, installation, and repair in physical environments, where variable conditions and skilled manual tasks limit direct AI automation. AI may assist with diagnostics, planning, and automated machinery, but these tools are more likely to change workflows than replace most workers. |
+| 5 | Electrical and electronic trades workers | €21,235 | 8K | +5% | Vocational | The core work involves installing, maintaining, and repairing electrical or electronic equipment in physical environments, requiring hands-on skill, safety judgment, and often on-site presence. AI can assist with diagnostics, technical documentation, and work planning, but is unlikely to replace much of the practical work in the near term. |
+| 6 | Food processing, wood working, garment and other craft and related trades workers | €21,235 | 5K | +1% | Vocational | Most work involves hands-on processing, machine operation, finishing, or craft skills in physical workplaces, which limits direct automation by AI. AI may improve production planning, pattern design, quality inspection, and machine control, but these tools are more likely to support workers than replace the core manual tasks. |
+| 7 | Assemblers | €23,242 | 200 | -5% | Lower sec. | Assemblers mainly perform hands-on work with parts, tools, and machinery in physical production settings, which limits the direct impact of software-based AI. AI-enabled robotics and inspection systems may automate or support repetitive, standardized assembly tasks, but deployment depends on the production process and does not remove the need for physical operations and oversight. |
+
+### Exposure 2/10 (6 occupations, 50K jobs)
+
+| # | Occupation | Pay | Jobs | Outlook | Education | Rationale |
+|---|-----------|-----|------|---------|-----------|-----------|
+| 1 | Building and related trades workers, excluding electricians | €21,235 | 26K | +5% | Vocational | The core work involves hands-on construction, repair, and finishing in changing physical environments, requiring manual skill and on-site judgment that AI cannot readily replace. AI may assist with plans, measurements, scheduling, and documentation, but these are peripheral to the work and are unlikely to greatly reduce the need for workers. |
+| 2 | Labourers in mining, construction, manufacturing and transport | €15,989 | 10K | -6% | Lower sec. | The core work is physical and location-bound, involving carrying, loading, cleaning, and assisting with construction, manufacturing, or transport tasks that require human presence and handling in changing environments. AI may affect scheduling and coordination, while robotics and automated equipment could reduce demand for some routine tasks over time, but these are indirect or uneven effects rather than widespread automation of the group’s core work. |
+| 3 | Market-oriented skilled agricultural workers | €16,413 | 8K | -11% | Vocational | The core work involves hands-on crop or livestock production, operating equipment, and responding to changing physical conditions, which limits direct AI automation. AI may assist with planning, monitoring, and farm records, but these are supporting tasks and are unlikely to displace the need for workers in the field. |
+| 4 | Refuse workers and other elementary workers | €15,989 | 4K | -7% | Lower sec. | The work is primarily physical and takes place in real-world settings, involving tasks such as collecting refuse, street cleaning, and other manual duties that require human presence. AI may assist with route planning, scheduling, or monitoring, but these are peripheral to the core work and automation faces practical challenges in varied environments. |
+| 5 | Market-oriented skilled forestry, fishery and hunting workers | €16,413 | 500 | -3% | Vocational | The core work is physical and takes place outdoors or aboard vessels, involving hands-on forestry, fishing, or hunting tasks in variable environments. AI may assist with planning, monitoring, navigation, and paperwork, but is unlikely to automate much of the work itself. |
+| 6 | Street and related sales and service workers | €15,989 | 100 | -3% | Lower sec. | The work is mainly performed in person and involves selling or providing services in public settings, often with hands-on tasks and real-time customer interaction. AI may assist with payments, stock management, or promotion, but these are peripheral to the core work. |
+
+### Exposure 1/10 (3 occupations, 52K jobs)
+
+| # | Occupation | Pay | Jobs | Outlook | Education | Rationale |
+|---|-----------|-----|------|---------|-----------|-----------|
+| 1 | Cleaners and helpers | €15,989 | 41K | +3% | Lower sec. | The core work involves physical cleaning in varied homes, offices, hotels, and other settings, requiring on-site presence and hands-on effort. AI may assist with scheduling or coordination, while cleaning robots could automate some repetitive tasks, but these are limited substitutes for the broader duties of cleaners and helpers. |
+| 2 | Food preparation assistants | €15,989 | 7K | +6% | Lower sec. | Food preparation assistants mainly perform hands-on tasks such as washing, peeling, portioning, and assembling food in busy kitchens. AI may assist with ordering or scheduling, but the core work requires physical presence and dexterity, and kitchen automation is limited. |
+| 3 | Agricultural, forestry and fishery labourers | €15,989 | 4K | -10% | Lower sec. | The core work is physical and typically performed outdoors or in other hands-on settings, such as planting, harvesting, tending animals, and maintaining forests or fishing operations. AI may assist indirectly through planning, monitoring, or machinery, but it is unlikely to replace much of the labourers’ on-site manual work in the near term. |
