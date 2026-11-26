@@ -5,29 +5,56 @@ import json
 from refresh_data import build_report, main, parse_wage_index, stale_outlook, update_wage_index
 
 
+def _json_stat(values):
+    return {
+        "dimension": {"time": {"category": {"index": {"2022": 0, "2023": 1, "2024": 2, "2025": 3}}}},
+        "value": values,
+    }
+
+
 def test_parse_wage_index_skips_missing_values():
-    rows = [
-        {"TIME_PERIOD": "2024", "OBS_VALUE": "120.63"},
-        {"TIME_PERIOD": "2025", "OBS_VALUE": ""},
-        {"TIME_PERIOD": "2023", "OBS_VALUE": "115.4"},
-        {"TIME_PERIOD": "", "OBS_VALUE": "1"},
-    ]
-    assert parse_wage_index(rows) == {"2023": 115.4, "2024": 120.6}
+    # JSON-stat sends sparse values as {position: value}; 2025 (position 3) is missing
+    assert parse_wage_index(_json_stat({"0": 108.04, "1": 115.4, "2": 120.63})) == {
+        "2022": 108.0,
+        "2023": 115.4,
+        "2024": 120.6,
+    }
+
+
+def test_parse_wage_index_accepts_a_value_list():
+    assert parse_wage_index(_json_stat([108.0, None, 120.6, 124.7])) == {"2022": 108.0, "2024": 120.6, "2025": 124.7}
 
 
 def test_update_wage_index_merges_into_cache(tmp_path):
     (tmp_path / "wage_index.json").write_text(json.dumps({"index": {"2020": 100.0, "2025": 124.7}}))
     seen = {}
 
-    def fake_fetch(dataset, key):
-        seen["dataset"], seen["key"] = dataset, key
-        return [{"TIME_PERIOD": "2025", "OBS_VALUE": "125.0"}, {"TIME_PERIOD": "2026", "OBS_VALUE": "129.9"}]
+    def fake_fetch(dataset, params):
+        seen["dataset"], seen["params"] = dataset, params
+        return {
+            "dimension": {"time": {"category": {"index": {"2025": 0, "2026": 1}}}},
+            "value": {"0": 125.0, "1": 129.9},
+        }
 
     index = update_wage_index(str(tmp_path), fetch=fake_fetch)
-    assert seen == {"dataset": "lc_lci_r2_a", "key": "A.I20.D11.B-S.CY"}
+    assert seen == {
+        "dataset": "lc_lci_r2_a",
+        "params": {"freq": "A", "unit": "I20", "lcstruct": "D11", "nace_r2": "B-S", "geo": "CY"},
+    }
     assert index == {"2020": 100.0, "2025": 125.0, "2026": 129.9}
     saved = json.loads((tmp_path / "wage_index.json").read_text())
     assert saved["dataset"] == "lc_lci_r2_a" and saved["geo"] == "CY" and saved["index"] == index
+
+
+def test_wage_index_command_keeps_cache_when_eurostat_fails(tmp_path, monkeypatch, capsys):
+    import refresh_data
+
+    def broken(*args, **kwargs):
+        raise RuntimeError("400 Bad Request")
+
+    monkeypatch.setattr(refresh_data, "fetch_json_stat", broken)
+    assert main(["wage-index", "--cache-dir", str(tmp_path)]) == 0
+    assert "::warning::Wage index not updated" in capsys.readouterr().out
 
 
 def _rec(slug, jobs, pay, year="2025"):

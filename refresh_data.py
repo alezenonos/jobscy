@@ -16,33 +16,41 @@ import json
 import os
 import sys
 
-from eurostat import fetch_sdmx_csv
+from eurostat import fetch_json_stat
 from forecasts import CACHE_DIR
 
 WAGE_INDEX_FILE = "wage_index.json"
-# lc_lci_r2_a dimensions: freq.unit.lcstruct.nace_r2.geo
+# Filters are passed by name to the JSON-stat API, so they don't depend on the
+# dataset's dimension order (a positional SDMX key got 400 Bad Request).
 WAGE_INDEX_KEY = {"unit": "I20", "lcstruct": "D11", "nace_r2": "B-S"}
 
 
-def parse_wage_index(rows):
-    """Turn Eurostat SDMX-CSV rows into {year: index}, skipping missing values."""
+def parse_wage_index(data):
+    """Turn a Eurostat JSON-stat response into {year: index}, skipping missing values.
+
+    Every filter except time selects a single value, so an observation's flat
+    position is its position on the time dimension.
+    """
+    years = data.get("dimension", {}).get("time", {}).get("category", {}).get("index", {})
+    values = data.get("value", {})
+    if isinstance(values, list):
+        values = dict(enumerate(values))
     index = {}
-    for row in rows:
-        year = (row.get("TIME_PERIOD") or "").strip()
-        value = (row.get("OBS_VALUE") or "").strip()
-        if not year or not value:
+    for year, pos in years.items():
+        value = values.get(str(pos), values.get(pos))
+        if value is None:
             continue
         try:
-            index[year] = round(float(value), 1)
-        except ValueError:
+            index[str(year)] = round(float(value), 1)
+        except (TypeError, ValueError):
             continue
     return dict(sorted(index.items()))
 
 
-def update_wage_index(cache_dir=CACHE_DIR, geo="CY", fetch=fetch_sdmx_csv):
+def update_wage_index(cache_dir=CACHE_DIR, geo="CY", fetch=fetch_json_stat):
     """Fetch the labour cost index and merge it into the cached file. Returns the new index."""
-    key = f"A.{WAGE_INDEX_KEY['unit']}.{WAGE_INDEX_KEY['lcstruct']}.{WAGE_INDEX_KEY['nace_r2']}.{geo}"
-    fetched = parse_wage_index(fetch("lc_lci_r2_a", key=key))
+    params = {"freq": "A", **WAGE_INDEX_KEY, "geo": geo}
+    fetched = parse_wage_index(fetch("lc_lci_r2_a", params=params))
     if not fetched:
         raise RuntimeError("Eurostat returned no wage index values")
     path = os.path.join(cache_dir, WAGE_INDEX_FILE)
@@ -130,7 +138,11 @@ def main(argv=None):
     args = parser.parse_args(argv)
 
     if args.cmd == "wage-index":
-        index = update_wage_index(args.cache_dir)
+        try:
+            index = update_wage_index(args.cache_dir, fetch=fetch_json_stat)
+        except Exception as e:  # noqa: BLE001 - keep the cached index so the rest of the refresh still runs
+            print(f"::warning::Wage index not updated, keeping the cached values: {e}")
+            return 0
         latest = max(index)
         print(f"Wage index: {len(index)} years, latest {latest} = {index[latest]}")
         return 0
