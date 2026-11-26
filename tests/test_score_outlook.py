@@ -99,3 +99,13 @@ def test_system_prompt_contains_outlook_anchors():
 def test_system_prompt_requests_json_format():
     assert '"outlook"' in SYSTEM_PROMPT
     assert '"rationale"' in SYSTEM_PROMPT
+
+
+def test_is_stale_when_cagr_newly_available():
+    from score_outlook import is_stale
+
+    cagr = {"cagr": 1.5, "start_year": "2014", "end_year": "2024"}
+    assert is_stale({"outlook": 2}, cagr)
+    assert is_stale({"outlook": 2, "historical_cagr": 0.9}, cagr)
+    assert not is_stale({"outlook": 2, "historical_cagr": 1.5}, cagr)
+    assert not is_stale({"outlook": 2}, None)

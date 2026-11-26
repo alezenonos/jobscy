@@ -86,3 +86,24 @@ class TestSiteIndexHtml:
         with open(INDEX_PATH) as f:
             content = f.read()
         assert ".catch(" in content, "index.html must have error handling on fetch"
+
+
+def test_no_occupation_inherits_its_major_group_total():
+    """Regression: suppressed 2-digit codes used to get the whole 1-digit total."""
+    cache = os.path.join(os.path.dirname(__file__), "..", "data", "cache", "employment.json")
+    with open(cache) as f:
+        emp = json.load(f)
+    parent_totals = {r["isco_code"]: r["employment_thousands"] for r in emp if len(r["isco_code"]) == 3}
+    with open(DATA_PATH) as f:
+        data = json.load(f)
+    by_parent = {}
+    for d in data:
+        by_parent.setdefault(d["isco_code"][:3], []).append(d)
+    for parent, children in by_parent.items():
+        total_k = sum(c["jobs"] or 0 for c in children) / 1000
+        assert abs(total_k - parent_totals[parent]) <= max(0.5, 0.02 * parent_totals[parent]), (
+            f"{parent}: children sum to {total_k}k but major group total is {parent_totals[parent]}k"
+        )
+        if len(children) > 1:
+            for c in children:
+                assert c["jobs"] != round(parent_totals[parent] * 1000), f"{c['title']} equals its major group total"

@@ -153,7 +153,7 @@ https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/{DATASET}?ge
 These are optional improvements beyond the initial 6-PR scope:
 
 - **HRDA data integration:** Extract 309 individual occupation forecasts from HRDA PDFs for finer granularity than ISCO-08 2-digit
-- **Growth outlook:** Currently `None` for Cyprus occupations — integrate HRDA/Eurostat employment trend data
+- **Growth outlook:** Currently an LLM estimate grounded with Eurostat historical CAGR (`make_cagr.py`); replace with HRDA forecasts where available
 - **EURES shortage data:** Add shortage/surplus indicators from EURES vacancy statistics
 - **3-digit ISCO:** Expand from 39 sub-major groups to ~130 minor groups if Eurostat provides sufficient Cyprus data
 - **Multilingual:** Greek language support for occupation titles (ISCO-08 has official Greek labels)
@@ -198,7 +198,7 @@ Requires `.env` with `OPENROUTER_API_KEY` for LLM scoring only.
 - **Default branch:** `master` (not `main`)
 - **Currency:** EUR (€), never USD
 - **Classification:** ISCO-08 for occupations, NACE Rev. 2 for sectors, ISCED 2011 for education
-- **Data period:** HRDA 2022-2032 forecasts, Eurostat latest available year
+- **Data period:** Eurostat latest available year (HRDA forecasts not yet integrated)
 - **Python:** 3.10+, formatted with ruff, tested with pytest
 - **CI:** GitHub Actions on push to `master` and `claude/*` branches, and on PRs to `master`
 - **Tests:** 110+ tests across 8 test files, all mocked (no external API calls)
