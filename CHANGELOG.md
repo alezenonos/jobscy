@@ -12,6 +12,10 @@ All notable changes to JobsCY are listed here. The project follows [Semantic Ver
 - **Growth Outlook is grounded in Eurostat history.** `make_cagr.py` computes each group's historical employment CAGR from the multi-year LFS series (`cagr.json`), and `score_outlook.py` includes it in the prompt. The tooltip shows the historical CAGR and period. The outlook is labelled as an LLM estimate and no longer implies it comes from HRDA forecasts.
 - Cached outlook scores made without the current historical data are re-scored automatically.
 - Default scoring model is now `openai/gpt-6-luna` (was `google/gemini-3-flash-preview`).
+- **All scores regenerated** with `openai/gpt-6-luna` on the corrected data (#25). AI exposure: 20 of 39 scores changed, average 5.3 → 4.7. Growth Outlook: 36 of 39 groups now use their historical Eurostat growth, average +1.2% → +2.3%.
+
+### Removed
+- 342 unused US occupation entries left over in `scores.json` from the original project.
 
 ### Added
 - `LICENSE` (MIT) and this changelog.
