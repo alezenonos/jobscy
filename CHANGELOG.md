@@ -20,7 +20,7 @@ All notable changes to JobsCY are listed here. The project follows [Semantic Ver
 ### Added
 - **Keyboard access and a data table.** The treemap can be explored with Tab and the arrow keys, screen readers hear each tile, and a sortable table under the treemap lists all 39 occupations.
 - **Tap on phones and tablets** shows a tile's details. The page no longer scrolls sideways on phones, the header shows the data years, and the methods and caveats sit behind one "About the data" toggle so the treemap is near the top.
-- **Monthly data refresh.** A scheduled workflow fetches the latest Eurostat data, rebuilds the site data and opens a pull request listing what changed and which growth-outlook scores need re-scoring.
+- **Yearly data refresh.** A workflow scheduled for 1 June each year fetches the latest Eurostat data, rebuilds the site data and opens a pull request listing what changed and which growth-outlook scores need re-scoring.
 - **Data integrity checks in CI** (`tests/test_data_integrity.py`): the CSV and site data rebuild from the cache, employment adds up to the Eurostat totals, values are in range, and the data is at most two years old.
 - **2025 pay estimate.** SES 2022 pay is carried forward to 2025 with Cyprus's wage growth (Eurostat labour cost index, +15.5%) and labelled as an estimate; the 2022 survey figure stays in the tooltip. Managers now show €84.9K, Professionals €48.2K.
 - **Pay by sector.** The pay tooltip lists the best- and worst-paying sectors for each major group (SES 2022 `earn_ses22_49`, cells under 500 employees dropped).

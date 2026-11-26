@@ -6,7 +6,9 @@ name: Refresh data
 
 on:
   schedule:
-    - cron: "0 6 1 * *" # 06:00 UTC on the 1st of every month
+    # Yearly, 06:00 UTC on 1 June: Eurostat usually publishes the previous
+    # year's annual LFS data by late spring.
+    - cron: "0 6 1 6 *"
   workflow_dispatch:
 
 permissions:
@@ -45,7 +47,7 @@ jobs:
       - name: Summarise changes
         run: |
           {
-            echo "Automated monthly refresh from Eurostat. LLM scores were not re-run."
+            echo "Automated yearly refresh from Eurostat. LLM scores were not re-run."
             echo
             uv run python refresh_data.py report --old "$RUNNER_TEMP/data.old.json"
           } > "$RUNNER_TEMP/report.md"
