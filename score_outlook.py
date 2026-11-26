@@ -11,7 +11,7 @@ resumed if interrupted.
 Usage:
     uv run python score_outlook.py
     uv run python score_outlook.py --cagr-file cagr.json
-    uv run python score_outlook.py --model google/gemini-3-flash-preview
+    uv run python score_outlook.py --model openai/gpt-6-luna
     uv run python score_outlook.py --start 0 --end 10
 """
 
@@ -25,7 +25,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-DEFAULT_MODEL = "google/gemini-3-flash-preview"
+DEFAULT_MODEL = "openai/gpt-6-luna"
 OUTPUT_FILE = "outlook_scores.json"
 API_URL = "https://openrouter.ai/api/v1/chat/completions"
 
