@@ -2,6 +2,13 @@
 
 All notable changes to JobsCY are listed here. The project follows [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Added
+- **"Distinctly Cypriot" layer.** Colours each occupation by how much more (or less) common it is in Cyprus than across the EU27: its share of Cyprus jobs divided by its share of EU jobs (a location quotient, Eurostat LFS `lfsa_egai2d`). Cleaners and helpers are 2.5× as common, business and administration associate professionals 1.6×.
+- **"Pay vs EU" layer.** Cyprus mean annual pay per major group as a % of the EU27 average, in euros and adjusted for prices (PPS), and compared with Greece, from the same SES 2022 table (`earn_ses22_28`).
+- `refresh_data.py eu-compare` fetches both into `data/cache/eu_compare.json`; the yearly refresh workflow runs it.
+
 ## [1.2.0] — 2026-11-26
 
 ### Fixed

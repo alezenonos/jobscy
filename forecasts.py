@@ -14,6 +14,10 @@ All inputs are small cached files under data/cache/, refreshed by hand
 - hrda_2022_2032.csv     HRDA "Forecasts of Employment Needs in Cyprus
                          2022-2032", chapter 6 (one row per ISCO 2-digit group).
 - cedefop_2035.json      Cedefop Skills Forecast, Cyprus, 2022-2035.
+- eu_compare.json        Eurostat lfsa_egai2d for EU27 (jobs by 2-digit group)
+                         and earn_ses22_28 for CY, EU27 and Greece (mean annual
+                         pay by major group, in EUR and PPS). Refreshed by
+                         `refresh_data.py eu-compare`.
 """
 
 import csv
@@ -180,4 +184,70 @@ def enrich(records, cache_dir=None):
             d["cedefop_openings_2035"] = c["job_openings"]
             d["cedefop_growth_pct"] = c["growth_pct"]
             d["cedefop_replacement_2035"] = c["replacement"]
+    add_eu_compare(records, cache_dir)
+    return records
+
+
+def load_eu_compare(cache_dir=None):
+    """Return the cached EU comparison data (eu_compare.json), or {} when missing.
+
+    Layout: {"employment": {"year", "thousands": {isco: EU27 jobs in thousands}},
+             "earnings": {"year", "EUR": {geo: {isco: pay}}, "PPS": {geo: {isco: pay}}}}
+    """
+    path = _path("eu_compare.json", cache_dir)
+    if not os.path.exists(path):
+        return {}
+    with open(path) as f:
+        return json.load(f)
+
+
+def _ratio_pct(a, b):
+    return round(a / b * 100) if a and b else None
+
+
+def add_eu_compare(records, cache_dir=None):
+    """Add the "Distinctly Cypriot" location quotient and Cyprus pay vs EU and Greece, in place.
+
+    - jobs_lq: the group's share of Cyprus jobs divided by its share of EU27 jobs
+      (1 = same as the EU, 2 = twice as common in Cyprus). Both shares are taken
+      over the 2-digit groups in records, so suppressed or residual groups don't
+      skew the totals.
+    - pay_vs_eu_pct / pay_vs_eu_pps_pct / pay_vs_el_pct: Cyprus mean annual pay
+      for the major group as a % of the EU27 (in euros and in purchasing power
+      standards) and of Greece, all from the same SES 2022 table.
+    """
+    eu = load_eu_compare(cache_dir)
+    if not eu:
+        return records
+
+    emp = eu.get("employment", {})
+    eu_jobs = emp.get("thousands", {})
+    cy_total = sum(d.get("jobs") or 0 for d in records if eu_jobs.get(d.get("isco_code")))
+    eu_total = sum(eu_jobs[d["isco_code"]] for d in records if d.get("jobs") and eu_jobs.get(d.get("isco_code")))
+
+    earn = eu.get("earnings", {})
+    eur, pps = earn.get("EUR", {}), earn.get("PPS", {})
+
+    for d in records:
+        code = d.get("isco_code", "")
+        e = eu_jobs.get(code)
+        if e and d.get("jobs") and cy_total and eu_total:
+            cy_share = d["jobs"] / cy_total
+            eu_share = e / eu_total
+            d["jobs_cy_share_pct"] = round(cy_share * 100, 2)
+            d["jobs_eu_share_pct"] = round(eu_share * 100, 2)
+            d["jobs_lq"] = round(cy_share / eu_share, 2)
+            d["jobs_eu_year"] = emp.get("year")
+
+        major = code[:3]
+        cy_pay = eur.get("CY", {}).get(major)
+        eu_pay = eur.get("EU27_2020", {}).get(major)
+        el_pay = eur.get("EL", {}).get(major)
+        if cy_pay and eu_pay:
+            d["pay_eu"] = round(eu_pay)
+            d["pay_el"] = round(el_pay) if el_pay else None
+            d["pay_vs_eu_pct"] = _ratio_pct(cy_pay, eu_pay)
+            d["pay_vs_el_pct"] = _ratio_pct(cy_pay, el_pay)
+            d["pay_vs_eu_pps_pct"] = _ratio_pct(pps.get("CY", {}).get(major), pps.get("EU27_2020", {}).get(major))
+            d["pay_compare_year"] = earn.get("year")
     return records

@@ -67,6 +67,7 @@ Utilities:
 | `earn_ses_hourly` | Mean, median and decile gross hourly earnings (SES) | ISCO 1-digit × NACE aggregates, by country |
 | `earn_ses22_28` | Mean gross annual earnings (SES 2022) | ISCO 1-digit, by country, sex, age |
 | `earn_ses22_49` / `earn_ses22_54` | Mean annual earnings / employees by occupation × sector (SES 2022) | ISCO 1-digit × NACE section → `data/cache/earnings_by_sector.json` |
+| `lfsa_egai2d` (EU27), `earn_ses22_28` (CY, EU27, EL; EUR and PPS) | EU jobs by 2-digit group and pay by major group, for the Cyprus vs EU layers | yearly → `data/cache/eu_compare.json` (`refresh_data.py eu-compare`) |
 | `lc_lci_r2_a` | Labour cost index, wages and salaries (D11), 2020=100 | NACE aggregates, yearly → `data/cache/wage_index.json` |
 
 ### Eurostat API format
@@ -168,7 +169,7 @@ These are optional improvements beyond the initial 6-PR scope:
 
 - **HRDA detail:** The 2-digit forecasts are integrated; the ~309 detailed occupations could add finer granularity
 - **Growth outlook:** Still an LLM estimate grounded with Eurostat historical CAGR (`make_cagr.py`). HRDA and Cedefop forecasts are now shown next to it and could be fed into the scoring prompt on the next re-score
-- **Refreshing the forecast caches:** employment, earnings, employment history and `wage_index.json` are refreshed yearly (1 June) by the workflow. The sector pay file only changes with a new SES wave (expected ~2028). HRDA and Cedefop values were transcribed by hand and need updating when new editions come out
+- **Refreshing the forecast caches:** employment, earnings, employment history, `wage_index.json` and `eu_compare.json` are refreshed yearly (1 June) by the workflow. The sector pay file only changes with a new SES wave (expected ~2028). HRDA and Cedefop values were transcribed by hand and need updating when new editions come out
 - **EURES shortage data:** Add shortage/surplus indicators from EURES vacancy statistics
 - **3-digit ISCO:** Expand from 39 sub-major groups to ~130 minor groups if Eurostat provides sufficient Cyprus data
 - **Multilingual:** Greek language support for occupation titles (ISCO-08 has official Greek labels)
