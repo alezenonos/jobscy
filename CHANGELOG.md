@@ -2,6 +2,12 @@
 
 All notable changes to JobsCY are listed here. The project follows [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Fixed
+- **"Jobs by pay" showed nobody earning €50–75K.** The pay histogram, pay tiers and the "by pay" breakdowns put each occupation group's whole workforce at its single average, so no one could fall between Professionals (€48K) and Managers (€85K). Each group's jobs are now spread across pay bands using a log-normal fitted to its SES median, P10 and P90: about 46K people (9%) are in €50–75K and 30K (6%) above €75K.
+- The refresh workflow's wage index fetch used a positional SDMX key that Eurostat rejected; it now uses the JSON-stat API with named filters.
+
 ## [1.2.0] — 2026-11-26
 
 ### Fixed
