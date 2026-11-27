@@ -60,7 +60,7 @@ HRDA's 2022 employment can differ from the Eurostat LFS 2025 figure used for til
 
 `forecasts.py` (`add_eu_compare`) adds two comparisons from `data/cache/eu_compare.json`, which `refresh_data.py eu-compare` fetches:
 
-- **Distinctly Cypriot** (`jobs_lq`): the group's share of Cyprus jobs divided by its share of EU27 jobs, both from the same LFS year and both taken over the same 39 groups. 1× means as common as in the EU, 2× twice as common. For the three groups whose Cyprus figure is a residual estimate (OC62, OC82, OC95) the ratio is rough.
+- **Distinctly Cypriot** (`jobs_lq`): the group's share of Cyprus jobs divided by its share of EU27 jobs, both from the same LFS year and both taken over the same 39 groups. 1× means as common as in the EU, 2× twice as common. For the three groups whose Cyprus figure is a residual estimate (OC62, OC82, OC95) the ratio is rough. If the EU cache is from a different LFS year than the Cyprus data (for example when the EU fetch failed during a refresh), the ratio is left out rather than mixing years.
 - **Pay vs EU** (`pay_vs_eu_pct`, `pay_vs_eu_pps_pct`, `pay_vs_el_pct`): Cyprus mean annual earnings for the major group as a % of the EU27 and of Greece, from SES 2022 (`earn_ses22_28`, enterprises with 10+ employees, B-S excluding O). PPS adjusts for price levels. All three use the 2022 survey figures, not the 2025 estimate.
 
 ### Earnings methodology

@@ -211,7 +211,7 @@ def add_eu_compare(records, cache_dir=None):
     - jobs_lq: the group's share of Cyprus jobs divided by its share of EU27 jobs
       (1 = same as the EU, 2 = twice as common in Cyprus). Both shares are taken
       over the 2-digit groups in records, so suppressed or residual groups don't
-      skew the totals.
+      skew the totals. Left out when the Cyprus and EU employment years differ.
     - pay_vs_eu_pct / pay_vs_eu_pps_pct / pay_vs_el_pct: Cyprus mean annual pay
       for the major group as a % of the EU27 (in euros and in purchasing power
       standards) and of Greece, all from the same SES 2022 table.
@@ -222,6 +222,10 @@ def add_eu_compare(records, cache_dir=None):
 
     emp = eu.get("employment", {})
     eu_jobs = emp.get("thousands", {})
+    # Only compare shares from the same LFS year: if the EU fetch failed during a
+    # refresh, the cache can lag behind the Cyprus data.
+    cy_years = {str(d["year_employment"]) for d in records if d.get("year_employment")}
+    same_year = not cy_years or cy_years == {str(emp.get("year"))}
     cy_total = sum(d.get("jobs") or 0 for d in records if eu_jobs.get(d.get("isco_code")))
     eu_total = sum(eu_jobs[d["isco_code"]] for d in records if d.get("jobs") and eu_jobs.get(d.get("isco_code")))
 
@@ -231,7 +235,7 @@ def add_eu_compare(records, cache_dir=None):
     for d in records:
         code = d.get("isco_code", "")
         e = eu_jobs.get(code)
-        if e and d.get("jobs") and cy_total and eu_total:
+        if e and d.get("jobs") and cy_total and eu_total and same_year:
             cy_share = d["jobs"] / cy_total
             eu_share = e / eu_total
             d["jobs_cy_share_pct"] = round(cy_share * 100, 2)

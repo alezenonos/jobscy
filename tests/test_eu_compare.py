@@ -118,6 +118,19 @@ def test_location_quotient(cache):
     assert "jobs_lq" not in records[2]
 
 
+def test_location_quotient_skipped_when_years_differ(cache):
+    # EU cache is 2025; Cyprus data from a newer year must not be compared with it
+    records = [{"isco_code": "OC21", "jobs": 3000, "year_employment": "2026"}]
+    add_eu_compare(records, cache)
+    assert "jobs_lq" not in records[0]
+
+
+def test_location_quotient_kept_when_years_match(cache):
+    records = [{"isco_code": "OC21", "jobs": 3000, "year_employment": "2025"}]
+    add_eu_compare(records, cache)
+    assert records[0]["jobs_lq"] == 1.0
+
+
 def test_pay_vs_eu_and_greece(cache):
     (d,) = add_eu_compare([{"isco_code": "OC21", "jobs": 1000}], cache)
     assert d["pay_vs_eu_pct"] == 80
