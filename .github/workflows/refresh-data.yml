@@ -36,6 +36,8 @@ jobs:
         run: uv run python make_cagr.py --save-cache data/cache
       - name: Fetch the wage index used for the pay estimate
         run: uv run python refresh_data.py wage-index
+      - name: Fetch EU27 jobs and EU/Greece pay for the Cyprus vs EU layers
+        run: uv run python refresh_data.py eu-compare
       - name: Rebuild site data
         run: uv run python build_site_data.py
       - name: Regenerate prompt.md

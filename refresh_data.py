@@ -2,6 +2,7 @@
 Helpers for the scheduled data refresh (.github/workflows/refresh-data.yml).
 
     uv run python refresh_data.py wage-index            # update data/cache/wage_index.json from Eurostat
+    uv run python refresh_data.py eu-compare            # update data/cache/eu_compare.json (EU27 jobs, EU/Greece pay)
     uv run python refresh_data.py report --old old.json # Markdown summary of what changed in site/data.json
 
 The refresh workflow fetches Eurostat employment, earnings, employment history
@@ -63,6 +64,102 @@ def update_wage_index(cache_dir=CACHE_DIR, geo="CY", fetch=fetch_json_stat):
     with open(path, "w") as f:
         json.dump(out, f, indent=2)
     return out["index"]
+
+
+EU_COMPARE_FILE = "eu_compare.json"
+EU_GEO = "EU27_2020"
+PAY_GEOS = ("CY", EU_GEO, "EL")
+EU_EMPLOYMENT_KEY = {"unit": "THS_PER", "sex": "T", "age": "Y_GE15"}
+EU_EARNINGS_KEY = {"sex": "T", "indic_se": "ERN", "age": "TOTAL", "sizeclas": "GE10"}
+# Each SES wave has its own annual-earnings table (earn_ses22_28 for 2022).
+EU_EARNINGS_DATASET = "earn_ses22_28"
+
+
+def flatten_json_stat(data):
+    """Turn a Eurostat JSON-stat response into a list of {dimension: code, ..., "value": v}."""
+    dims = data.get("id", [])
+    sizes = data.get("size", [])
+    cats = []
+    for d in dims:
+        index = data["dimension"][d]["category"]["index"]
+        if isinstance(index, list):
+            cats.append(index)
+        else:
+            codes = [None] * len(index)
+            for code, pos in index.items():
+                codes[pos] = code
+            cats.append(codes)
+    values = data.get("value", {})
+    if isinstance(values, list):
+        values = {i: v for i, v in enumerate(values) if v is not None}
+    rows = []
+    for pos, value in values.items():
+        n = int(pos)
+        row = {}
+        for i in range(len(dims) - 1, -1, -1):
+            row[dims[i]] = cats[i][n % sizes[i]]
+            n //= sizes[i]
+        row["value"] = value
+        rows.append(row)
+    return rows
+
+
+def _keep_isco(code):
+    # Keep single groups (OC1, OC21) and the total; drop ranges such as OC1-5.
+    return code == "TOTAL" or (code.startswith("OC") and "-" not in code)
+
+
+def fetch_eu_compare(fetch=fetch_json_stat):
+    """Fetch EU27 employment by 2-digit group and CY/EU27/Greece pay by major group."""
+    emp_rows = flatten_json_stat(
+        fetch("lfsa_egai2d", params={"freq": "A", **EU_EMPLOYMENT_KEY, "geo": EU_GEO, "lastTimePeriod": 1})
+    )
+    if not emp_rows:
+        raise RuntimeError("Eurostat returned no EU employment values")
+    emp_year = max(r["time"] for r in emp_rows)
+    thousands = {
+        r["isco08"]: round(float(r["value"]), 1) for r in emp_rows if r["time"] == emp_year and _keep_isco(r["isco08"])
+    }
+
+    earnings = {}
+    pay_year = None
+    for unit in ("EUR", "PPS"):
+        rows = flatten_json_stat(
+            fetch(EU_EARNINGS_DATASET, params={"freq": "A", **EU_EARNINGS_KEY, "unit": unit, "geo": list(PAY_GEOS)})
+        )
+        if not rows:
+            raise RuntimeError(f"Eurostat returned no {unit} earnings values")
+        pay_year = max(r["time"] for r in rows)
+        by_geo = {}
+        for r in rows:
+            if r["time"] == pay_year and _keep_isco(r["isco08"]):
+                by_geo.setdefault(r["geo"], {})[r["isco08"]] = float(r["value"])
+        earnings[unit] = {g: dict(sorted(by_geo.get(g, {}).items())) for g in PAY_GEOS}
+
+    return {
+        "employment": {
+            "dataset": "lfsa_egai2d",
+            "geo": EU_GEO,
+            "year": emp_year,
+            **EU_EMPLOYMENT_KEY,
+            "thousands": dict(sorted(thousands.items())),
+        },
+        "earnings": {
+            "dataset": EU_EARNINGS_DATASET,
+            "year": pay_year,
+            "indic_se": "ERN",
+            "sizeclas": "GE10",
+            **earnings,
+        },
+    }
+
+
+def update_eu_compare(cache_dir=CACHE_DIR, fetch=fetch_json_stat):
+    """Fetch the EU comparison data and write it to the cache. Returns the new data."""
+    out = fetch_eu_compare(fetch)
+    with open(os.path.join(cache_dir, EU_COMPARE_FILE), "w") as f:
+        json.dump(out, f, indent=2)
+    return out
 
 
 def _fmt_jobs(n):
@@ -129,6 +226,8 @@ def main(argv=None):
     sub = parser.add_subparsers(dest="cmd", required=True)
     w = sub.add_parser("wage-index", help="Update data/cache/wage_index.json from Eurostat")
     w.add_argument("--cache-dir", default=CACHE_DIR)
+    e = sub.add_parser("eu-compare", help="Update data/cache/eu_compare.json from Eurostat")
+    e.add_argument("--cache-dir", default=CACHE_DIR)
     r = sub.add_parser("report", help="Summarise changes in site/data.json")
     r.add_argument("--old", required=True, help="site/data.json before the refresh")
     r.add_argument("--new", default="site/data.json")
@@ -145,6 +244,15 @@ def main(argv=None):
             return 0
         latest = max(index)
         print(f"Wage index: {len(index)} years, latest {latest} = {index[latest]}")
+        return 0
+
+    if args.cmd == "eu-compare":
+        try:
+            out = update_eu_compare(args.cache_dir, fetch=fetch_json_stat)
+        except Exception as e:  # noqa: BLE001 - keep the cached file so the rest of the refresh still runs
+            print(f"::warning::EU comparison not updated, keeping the cached values: {e}")
+            return 0
+        print(f"EU comparison: jobs {out['employment']['year']}, pay {out['earnings']['year']}")
         return 0
 
     with open(args.old) as f:

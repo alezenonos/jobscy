@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Cyprus Job Market Visualiser</title>
-<meta name="description" content="Interactive treemap of 39 ISCO-08 occupation groups in the Cyprus labour market — explore growth outlook, average pay, job openings, education, and AI exposure.">
+<meta name="description" content="Interactive treemap of 39 ISCO-08 occupation groups in the Cyprus labour market — explore growth outlook, average pay, job openings, education, AI exposure, and how Cyprus compares with the EU.">
 <meta property="og:title" content="Cyprus Job Market Visualiser">
 <meta property="og:description" content="Interactive treemap visualising the Cyprus labour market — 39 occupations sized by employment, coloured by growth outlook, pay, job openings, education, or AI exposure.">
 <meta property="og:type" content="website">
@@ -245,7 +245,7 @@ canvas#canvas:focus-visible { outline: 2px solid var(--fg); outline-offset: -2px
   <div class="intro">
     <h1>Cyprus Job Market Visualiser <a href="https://github.com/alezenonos/jobscy">GitHub</a></h1>
     <p class="vintage" id="vintage"></p>
-    <p>This is a research tool that visualises <b>39 ISCO-08 occupation groups</b> in the <b>Cyprus labour market</b>, using <a href="https://ec.europa.eu/eurostat">Eurostat</a> employment (Labour Force Survey) and earnings (Structure of Earnings Survey) data, plus the official job-openings forecasts of the <a href="https://www.anad.org.cy/">HRDA</a> (2022&ndash;2032) and <a href="https://www.cedefop.europa.eu/en/tools/skills-intelligence">Cedefop</a> (2022&ndash;2035). Each rectangle's <b>area</b> is proportional to total employment. <b>Colour</b> shows the selected metric &mdash; toggle between growth outlook, average pay (EUR), job openings, education requirements, and AI exposure. <b>Growth outlook and AI exposure are LLM estimates</b>; the job-openings layer uses the official forecasts. This is not a report, a paper, or a serious economic publication &mdash; it is a development tool for exploring Cyprus employment data visually.</p>
+    <p>This is a research tool that visualises <b>39 ISCO-08 occupation groups</b> in the <b>Cyprus labour market</b>, using <a href="https://ec.europa.eu/eurostat">Eurostat</a> employment (Labour Force Survey) and earnings (Structure of Earnings Survey) data, plus the official job-openings forecasts of the <a href="https://www.anad.org.cy/">HRDA</a> (2022&ndash;2032) and <a href="https://www.cedefop.europa.eu/en/tools/skills-intelligence">Cedefop</a> (2022&ndash;2035). Each rectangle's <b>area</b> is proportional to total employment. <b>Colour</b> shows the selected metric &mdash; toggle between growth outlook, average pay (EUR), job openings, education requirements, AI exposure, how distinctly Cypriot each job is, and pay compared with the EU and Greece. <b>Growth outlook and AI exposure are LLM estimates</b>; the job-openings layer uses the official forecasts. This is not a report, a paper, or a serious economic publication &mdash; it is a development tool for exploring Cyprus employment data visually.</p>
     <details class="about">
       <summary>About the data, methods and caveats</summary>
       <p><b>LLM-powered colouring:</b> The <a href="https://github.com/alezenonos/jobscy">source code</a> includes data pipelines, parsers, and a framework for writing custom LLM prompts to score and colour occupations by any criteria. You write a prompt, the LLM scores each occupation, and the treemap colours accordingly. The "Digital AI Exposure" option is one example &mdash; it estimates how much current AI (which is primarily digital) will reshape each occupation. But you could write a different prompt for any question &mdash; e.g. exposure to humanoid robotics, offshoring risk, climate impact &mdash; and re-run the pipeline to get a different colouring.</p>
@@ -280,6 +280,7 @@ Respond with ONLY a JSON object in this exact format, no other text:
       </details>
       <p><b>Caveat on pay:</b> Eurostat's Structure of Earnings Survey (2022, enterprises with 10+ employees) only publishes Cyprus pay by ISCO-08 <i>major</i> group, so every occupation in a group shows the same figure. "Average pay" is mean gross annual earnings including the 13th salary and bonuses, <b>carried forward to 2025 as an estimate</b> using the growth in Cyprus's wage index (Eurostat labour cost index, wages and salaries, +15.5% from 2022 to 2025). The tooltip also shows the survey's own 2022 figure. The range shows the 10th to 90th percentile of hourly pay in that major group, annualised with the same ratio, so it is an approximation. Pay by sector comes from the same survey and leaves out sectors with fewer than 500 employees in the group. The next survey wave (2026) is expected to be published around 2028.</p>
       <p><b>About job openings:</b> Openings count both new jobs (expansion demand) and jobs freed up by people retiring or leaving (replacement demand). The colour shows HRDA's projected openings a year as a share of the group's 2022 employment. HRDA's <a href="https://www.anad.org.cy/wps/wcm/connect/hrda/b6fbcbf8-14b0-4ee2-817b-ab97496d90a5/Provlepseis+2022-2032.pdf?MOD=AJPERES">Forecasts of Employment Needs in Cyprus 2022&ndash;2032</a> and Cedefop's Skills Forecast use different models and periods, so their numbers differ; both are shown in the tooltip.</p>
+      <p><b>About the EU comparisons:</b> "Distinctly Cypriot" divides each group's share of all jobs in Cyprus by its share of all jobs in the EU27 (Eurostat Labour Force Survey, same year), a measure economists call a location quotient: 2&times; means the job is twice as common in Cyprus as in the EU, 0.5&times; half as common. Groups marked as estimates in the tooltip have small, partly suppressed Cyprus figures, so read them with care. "Pay vs EU" compares mean annual earnings for the whole major group in the same 2022 survey (enterprises with 10+ employees), in euros and in purchasing power standards (PPS), which adjust for the lower price level in Cyprus. It uses the 2022 survey figures for all three, not the 2025 estimate.</p>
       <p><b>Caveat on Growth Outlook:</b> The 10-year outlook is an LLM estimate. Where the tooltip shows historical growth, the model was given that Eurostat figure for Cyprus; otherwise it worked from the occupation group alone. It is not an official projection and should be read as a rough indication only. The tooltip shows HRDA's and Cedefop's official employment forecasts alongside it for comparison.</p>
       <p><b>Caveat on Digital AI Exposure scores:</b> These are rough LLM estimates, not rigorous predictions. A high score does not predict the job will disappear. Software developers score 9/10 because AI is transforming their work &mdash; but demand for software could easily <em>grow</em> as each developer becomes more productive. The score does not account for demand elasticity, latent demand, regulatory barriers, or social preferences for human workers. Many high-exposure jobs will be reshaped, not replaced.</p>
     </details>
@@ -294,6 +295,8 @@ Respond with ONLY a JSON object in this exact format, no other text:
         <button data-mode="openings" aria-pressed="false" title="Projected job openings a year, HRDA 2022-2032">Job Openings</button>
         <button data-mode="education" aria-pressed="false">Education</button>
         <button data-mode="exposure" aria-pressed="false">Digital AI Exposure</button>
+        <button data-mode="lq" aria-pressed="false" title="How much more (or less) common each job is in Cyprus than across the EU">Distinctly Cypriot</button>
+        <button data-mode="payeu" aria-pressed="false" title="Cyprus pay as a share of the EU average, SES 2022">Pay vs EU</button>
       </div>
     </div>
     <div class="gradient-legend">
@@ -405,7 +408,26 @@ function exposureColor(v, a) {
   return greenRedCSS(v / 10, a);
 }
 
+// Location quotient: blue = rarer than in the EU, grey = same, amber = more common.
+// Log scale, so 0.5x and 2x sit the same distance from the middle.
+function lqColor(v, a) {
+  if (v == null) return `rgba(128,128,128,${a})`;
+  const t = Math.max(-1, Math.min(1, Math.log2(v) / 1.5));
+  const mid = [120, 120, 130], lo = [50, 120, 230], hi = [240, 165, 30];
+  const end = t < 0 ? lo : hi, s = Math.abs(t);
+  const c = mid.map((m, i) => Math.round(m + (end[i] - m) * s));
+  return `rgba(${c[0]},${c[1]},${c[2]},${a})`;
+}
+// Pay as % of EU: 50% or less = red, 100% or more = green.
+function payEuColor(v, a) {
+  if (v == null) return `rgba(128,128,128,${a})`;
+  return greenRedCSS(1 - Math.max(0, Math.min(1, (v - 50) / 50)), a);
+}
+function formatLq(v) { return v == null ? "\u2014" : (v >= 10 ? v.toFixed(0) : v.toFixed(1)) + "\u00d7"; }
+
 function tileColorCSS(d, alpha) {
+  if (colorMode === "lq") return lqColor(d.jobs_lq, alpha);
+  if (colorMode === "payeu") return payEuColor(d.pay_vs_eu_pct, alpha);
   if (colorMode === "exposure") return exposureColor(d.exposure, alpha);
   if (colorMode === "outlook") return outlookColor(d.outlook, alpha);
   if (colorMode === "pay") return payColor(d.pay, alpha);
@@ -417,6 +439,14 @@ function tileColorCSS(d, alpha) {
 }
 
 function tileSubInfo(r) {
+  if (colorMode === "lq") {
+    return (r.jobs_lq != null ? formatLq(r.jobs_lq) + " EU" : "") +
+           (r.jobs ? " \u00b7 " + formatNumber(r.jobs) + " jobs" : "");
+  }
+  if (colorMode === "payeu") {
+    return (r.pay_vs_eu_pct != null ? r.pay_vs_eu_pct + "% of EU" : "") +
+           (r.jobs ? " \u00b7 " + formatNumber(r.jobs) + " jobs" : "");
+  }
   if (colorMode === "exposure") {
     return (r.exposure != null ? r.exposure + "/10" : "") +
            (r.jobs ? " \u00b7 " + formatNumber(r.jobs) + " jobs" : "");
@@ -595,8 +625,31 @@ function officialForecastLine(d) {
   return parts.length ? `<div ${SMALL}>Official forecasts: ${parts.join(" \u00b7 ")}</div>` : "";
 }
 
+function bar(pct, color) {
+  return `<div style="margin-top:3px;height:4px;background:rgba(255,255,255,0.08);border-radius:2px;">` +
+    `<div style="height:100%;width:${Math.min(100, Math.max(0, pct))}%;background:${color};border-radius:2px;"></div></div>`;
+}
+
 function tooltipHighlight(d) {
-  if (colorMode === "exposure") {
+  if (colorMode === "lq") {
+    const v = d.jobs_lq;
+    if (v == null) return `<span style="color:var(--fg2);">No EU comparison for this group</span>`;
+    const color = lqColor(v, 1);
+    const words = v >= 1.1 ? `${formatLq(v)} as common as in the EU` : v <= 0.9 ? `${formatLq(v)} as common as in the EU (rarer)` : "About as common as in the EU";
+    return `<span style="color:${color};font-weight:600;">${words}</span>` +
+      `<div ${SMALL}>${d.jobs_cy_share_pct.toFixed(1)}% of jobs in Cyprus vs ${d.jobs_eu_share_pct.toFixed(1)}% in the EU27 (LFS ${d.jobs_eu_year})</div>` +
+      (d.jobs_estimated ? `<div ${SMALL}>Cyprus figure is a small estimate, so this ratio is rough</div>` : "") +
+      bar(50 + Math.log2(v) / 1.5 * 50, color);
+  } else if (colorMode === "payeu") {
+    const v = d.pay_vs_eu_pct;
+    if (v == null) return `<span style="color:var(--fg2);">No EU pay comparison for this group</span>`;
+    const color = payEuColor(v, 1);
+    return `<span style="color:${color};font-weight:600;">Pay: ${v}% of the EU average</span> <span style="color:var(--fg2);">SES ${d.pay_compare_year}</span>` +
+      `<div ${SMALL}>${formatPayK(d.pay_survey)} in Cyprus vs ${formatPayK(d.pay_eu)} EU27${d.pay_el ? ` and ${formatPayK(d.pay_el)} Greece` : ""} (major group, a year)</div>` +
+      (d.pay_vs_eu_pps_pct != null ? `<div ${SMALL}>Adjusted for prices (PPS): ${d.pay_vs_eu_pps_pct}% of the EU</div>` : "") +
+      (d.pay_vs_el_pct != null ? `<div ${SMALL}>Compared with Greece: ${d.pay_vs_el_pct}%</div>` : "") +
+      bar(v, color);
+  } else if (colorMode === "exposure") {
     const v = d.exposure;
     if (v == null) return "";
     const color = exposureColor(v, 1);
@@ -652,7 +705,8 @@ function showTooltip(d, mx, my) {
     <span class="label">Employment</span><span class="value">${d.jobs_estimated ? '~' : ''}${formatNumber(d.jobs)}${d.jobs_estimated ? ' (estimate)' : ''}</span>
     <span class="label">Job openings/yr (HRDA)</span><span class="value">${d.hrda_openings_per_year != null ? d.hrda_openings_per_year.toLocaleString() : '\u2014'}</span>
     <span class="label">10-yr outlook (est.)</span><span class="value">${d.outlook != null ? (d.outlook > 0 ? '+' : '') + d.outlook + '%' : '\u2014'} ${d.outlook_desc ? '(' + d.outlook_desc + ')' : ''}</span>
-    <span class="label">Education</span><span class="value">${d.education || '\u2014'}</span>`;
+    <span class="label">Education</span><span class="value">${d.education || '\u2014'}</span>
+    <span class="label">Vs EU (jobs / pay)</span><span class="value">${formatLq(d.jobs_lq)} / ${d.pay_vs_eu_pct != null ? d.pay_vs_eu_pct + '%' : '\u2014'}</span>`;
   tt.querySelector(".tt-rationale").textContent =
     colorMode === "exposure" ? (d.exposure_rationale || "") :
     colorMode === "outlook" ? (d.outlook_rationale || "") : "";
@@ -787,6 +841,8 @@ function updateStats() {
   else if (colorMode === "pay") updatePayStats(totalJobs);
   else if (colorMode === "openings") updateOpeningsStats(totalJobs);
   else if (colorMode === "education") updateEducationStats(totalJobs);
+  else if (colorMode === "lq") updateLqStats(totalJobs);
+  else if (colorMode === "payeu") updatePayEuStats(totalJobs);
   else updateExposureStats(totalJobs);
 }
 
@@ -948,6 +1004,68 @@ function updateOpeningsStats(totalJobs) {
     <div class="stat-label">openings 2022\u201335</div>`;
   document.getElementById("block8").innerHTML = "";
 }
+
+function shortTitle(t) { return t.length > 18 ? t.slice(0, 17) + "\u2026" : t; }
+function clearBlocks(from) { for (let i = from; i <= 8; i++) document.getElementById("block" + i).innerHTML = ""; }
+
+function updateLqStats(totalJobs) {
+  const withLq = data.filter(d => d.jobs_lq != null && d.jobs);
+  const over = withLq.filter(d => d.jobs_lq >= 1.25).reduce((s, d) => s + d.jobs, 0);
+  document.getElementById("block2").innerHTML = `<h3>In distinctly Cypriot jobs</h3>
+    <div class="stat-big"><span style="color:${lqColor(2, 1)}">${totalJobs ? Math.round(over / totalJobs * 100) : 0}%</span></div>
+    <div class="stat-label">of jobs are in groups 1.25\u00d7 or more as common as in the EU</div>`;
+  const solid = withLq.filter(d => !d.jobs_estimated && d.jobs >= 1000);
+  const top = [...solid].sort((a, b) => b.jobs_lq - a.jobs_lq).slice(0, 5);
+  const low = [...solid].sort((a, b) => a.jobs_lq - b.jobs_lq).slice(0, 5);
+  const maxTop = top.length ? top[0].jobs_lq : 1;
+  document.getElementById("block3").innerHTML = `<h3>More common than in the EU</h3><div class="hbar-chart">${renderHbars(top.map(d => ({
+    label: shortTitle(d.title), val: formatLq(d.jobs_lq), pct: d.jobs_lq / maxTop * 100, color: lqColor(d.jobs_lq, 0.8)
+  })))}</div>`;
+  document.getElementById("block4").innerHTML = `<h3>Rarer than in the EU</h3><div class="hbar-chart">${renderHbars(low.map(d => ({
+    label: shortTitle(d.title), val: formatLq(d.jobs_lq), pct: d.jobs_lq * 100, color: lqColor(d.jobs_lq, 0.8)
+  })))}</div>`;
+  clearBlocks(5);
+}
+
+function updatePayEuStats(totalJobs) {
+  let wC = 0, wEu = 0, wPps = 0, wEl = 0, nPps = 0, nEl = 0;
+  for (const d of data) {
+    if (d.pay_vs_eu_pct == null || !d.jobs) continue;
+    wC += d.jobs; wEu += d.pay_vs_eu_pct * d.jobs;
+    if (d.pay_vs_eu_pps_pct != null) { wPps += d.pay_vs_eu_pps_pct * d.jobs; nPps += d.jobs; }
+    if (d.pay_vs_el_pct != null) { wEl += d.pay_vs_el_pct * d.jobs; nEl += d.jobs; }
+  }
+  const eu = wC ? wEu / wC : 0, pps = nPps ? wPps / nPps : 0, el = nEl ? wEl / nEl : 0;
+  document.getElementById("block2").innerHTML = `<h3>Pay vs EU</h3>
+    <div class="stat-big"><span style="color:${payEuColor(eu, 1)}">${Math.round(eu)}%</span></div>
+    <div class="stat-label">job-weighted, in euros</div>`;
+  document.getElementById("block3").innerHTML = `<h3>Adjusted for prices</h3>
+    <div class="stat-big"><span style="color:${payEuColor(pps, 1)}">${Math.round(pps)}%</span></div>
+    <div class="stat-label">of the EU, in PPS</div>`;
+  document.getElementById("block4").innerHTML = `<h3>Vs Greece</h3>
+    <div class="stat-big"><span style="color:${payEuColor(el, 1)}">${Math.round(el)}%</span></div>
+    <div class="stat-label">job-weighted, in euros</div>`;
+  // One bar per major group (every 2-digit group in it shares the figure)
+  const groups = new Map();
+  for (const d of data) {
+    if (d.pay_vs_eu_pct == null) continue;
+    const k = d.isco_code.slice(0, 3);
+    if (!groups.has(k)) groups.set(k, { label: MAJOR_NAMES[k] || k, eu: d.pay_vs_eu_pct, el: d.pay_vs_el_pct });
+  }
+  const rows = [...groups.values()].sort((a, b) => b.eu - a.eu);
+  document.getElementById("block5").innerHTML = `<h3>% of EU pay by group</h3><div class="hbar-chart">${renderHbars(rows.map(g => ({
+    label: g.label, val: g.eu + "%", pct: Math.min(100, g.eu), color: payEuColor(g.eu, 0.8)
+  })))}</div>`;
+  document.getElementById("block6").innerHTML = `<h3>% of Greek pay by group</h3><div class="hbar-chart">${renderHbars(rows.filter(g => g.el != null).map(g => ({
+    label: g.label, val: g.el + "%", pct: Math.min(100, g.el / 1.5), color: payEuColor(g.el, 0.8)
+  })))}</div>`;
+  clearBlocks(7);
+}
+
+const MAJOR_NAMES = {
+  OC1: "Managers", OC2: "Professionals", OC3: "Technicians", OC4: "Clerks", OC5: "Service & sales",
+  OC6: "Agriculture", OC7: "Trades", OC8: "Machine operators", OC9: "Elementary",
+};
 
 function updateEducationStats(totalJobs) {
   // Headline: % Bachelor's+
@@ -1116,6 +1234,8 @@ const TABLE_COLS = [
   { key: "openings", label: "Openings/yr (HRDA)", mode: "openings", sort: d => d.hrda_openings_per_year, cell: d => d.hrda_openings_per_year != null ? d.hrda_openings_per_year.toLocaleString() + (d.hrda_openings_rate != null ? ` <small>(${d.hrda_openings_rate.toFixed(1)}%)</small>` : "") : "\u2014" },
   { key: "education", label: "Education", mode: "education", sort: d => EDU_LEVELS.indexOf(d.education), cell: d => d.education || "\u2014" },
   { key: "exposure", label: "AI exposure (est.)", mode: "exposure", sort: d => d.exposure, cell: d => d.exposure != null ? d.exposure + "/10" : "\u2014" },
+  { key: "lq", label: "vs EU (jobs)", mode: "lq", sort: d => d.jobs_lq, cell: d => (d.jobs_estimated && d.jobs_lq != null ? "~" : "") + formatLq(d.jobs_lq) },
+  { key: "payeu", label: "Pay vs EU", mode: "payeu", sort: d => d.pay_vs_eu_pct, cell: d => d.pay_vs_eu_pct != null ? d.pay_vs_eu_pct + "%" + (d.pay_vs_eu_pps_pct != null ? ` <small>(${d.pay_vs_eu_pps_pct}% PPS)</small>` : "") : "\u2014" },
 ];
 let tableSort = { key: "jobs", dir: -1 };
 
@@ -1164,6 +1284,8 @@ const LEGEND_CONFIG = {
   pay:       { low: "\u20AC10K", high: "\u20AC80K" },
   openings:  { low: "1.5%/yr", high: "4.5%/yr" },
   education: { low: "Lower secondary", high: "Bachelor's+" },
+  lq:        { low: "Rarer than EU", high: "More common" },
+  payeu:     { low: "50% of EU", high: "100%+" },
 };
 
 function drawGradientLegend() {
@@ -1171,7 +1293,8 @@ function drawGradientLegend() {
   const gctx = c.getContext("2d");
   for (let x = 0; x < 80; x++) {
     const t = x / 79;
-    gctx.fillStyle = colorMode === "exposure" ? greenRedCSS(t, 1) : greenRedCSS(1 - t, 1);
+    gctx.fillStyle = colorMode === "lq" ? lqColor(Math.pow(2, (t * 2 - 1) * 1.5), 1)
+      : colorMode === "exposure" ? greenRedCSS(t, 1) : greenRedCSS(1 - t, 1);
     gctx.fillRect(x, 0, 1, 8);
   }
   const cfg = LEGEND_CONFIG[colorMode];
@@ -1207,6 +1330,7 @@ fetch("data.json")
     if (d0.year_employment) v.push(`Employment: Eurostat LFS ${d0.year_employment}`);
     if (d0.pay_survey_year) v.push(`Pay: SES ${d0.pay_survey_year}${d0.pay_estimated ? `, estimated for ${d0.pay_year}` : ""}`);
     v.push("Job openings: HRDA 2022\u201332, Cedefop 2022\u201335");
+    if (d0.jobs_eu_year || d0.pay_compare_year) v.push(`EU comparison: LFS ${d0.jobs_eu_year || "\u2014"}, SES ${d0.pay_compare_year || "\u2014"}`);
     document.getElementById("vintage").textContent = "Data \u00b7 " + v.join(" \u00b7 ");
     document.getElementById("loading").style.display = "none";
     document.getElementById("wrapper").style.display = "";

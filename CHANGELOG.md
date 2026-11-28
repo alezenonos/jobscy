@@ -4,6 +4,11 @@ All notable changes to JobsCY are listed here. The project follows [Semantic Ver
 
 ## [Unreleased]
 
+### Added
+- **"Distinctly Cypriot" layer.** Colours each occupation by how much more (or less) common it is in Cyprus than across the EU27: its share of Cyprus jobs divided by its share of EU jobs (a location quotient, Eurostat LFS `lfsa_egai2d`). Cleaners and helpers are 2.5× as common, business and administration associate professionals 1.6×.
+- **"Pay vs EU" layer.** Cyprus mean annual pay per major group as a % of the EU27 average, in euros and adjusted for prices (PPS), and compared with Greece, from the same SES 2022 table (`earn_ses22_28`).
+- `refresh_data.py eu-compare` fetches both into `data/cache/eu_compare.json`; the yearly refresh workflow runs it.
+
 ### Fixed
 - **"Jobs by pay" showed nobody earning €50–75K.** The pay histogram, pay tiers and the "by pay" breakdowns put each occupation group's whole workforce at its single average, so no one could fall between Professionals (€48K) and Managers (€85K). Each group's jobs are now spread across pay bands using a log-normal fitted to its SES median, P10 and P90: about 46K people (9%) are in €50–75K and 30K (6%) above €75K.
 - The refresh workflow's wage index fetch used a positional SDMX key that Eurostat rejected; it now uses the JSON-stat API with named filters.

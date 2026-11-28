@@ -12,7 +12,7 @@ An interactive treemap visualisation of the Cyprus labour market, with AI exposu
 
 ## What's here
 
-An interactive treemap of **39 ISCO-08 occupation groups** covering the Cyprus labour market. Each rectangle's **area** is proportional to employment and **colour** shows the selected metric — toggle between growth outlook, average pay (EUR, mean gross earnings), job openings, education level, and AI exposure. Tiles can be explored with a mouse, by tapping on a phone, or with the keyboard (Tab to the chart, then the arrow keys), and the same data is in a sortable table under the treemap.
+An interactive treemap of **39 ISCO-08 occupation groups** covering the Cyprus labour market. Each rectangle's **area** is proportional to employment and **colour** shows the selected metric — toggle between growth outlook, average pay (EUR, mean gross earnings), job openings, education level, AI exposure, how distinctly Cypriot each job is compared with the EU, and Cyprus pay as a share of EU pay. Tiles can be explored with a mouse, by tapping on a phone, or with the keyboard (Tab to the chart, then the arrow keys), and the same data is in a sortable table under the treemap.
 
 Data is sourced from the Eurostat SDMX REST API (employment by ISCO-08 2-digit, earnings by ISCO-08 1-digit, filtered to `geo=CY`). Growth outlook and AI exposure are **LLM estimates** (see below), not official forecasts. Official job-openings forecasts from HRDA (2022-2032) and Cedefop (2022-2035) are shown alongside them and drive the Job Openings layer.
 
@@ -26,6 +26,8 @@ Data is sourced from the Eurostat SDMX REST API (employment by ISCO-08 2-digit, 
 | **Eurostat** | [`earn_ses22_28`](https://ec.europa.eu/eurostat/databrowser/view/earn_ses22_28/default/table?lang=en) | Mean gross **annual** earnings by ISCO-08 1-digit (includes 13th salary and bonuses), Cyprus (SES 2022) | — |
 | **Eurostat** | [`earn_ses22_49`](https://ec.europa.eu/eurostat/databrowser/view/earn_ses22_49/default/table?lang=en), [`earn_ses22_54`](https://ec.europa.eu/eurostat/databrowser/view/earn_ses22_54/default/table?lang=en) | Mean annual earnings and employee counts by ISCO-08 1-digit × NACE section (pay by sector) | `data/cache/earnings_by_sector.json` |
 | **Eurostat** | [`lc_lci_r2_a`](https://ec.europa.eu/eurostat/databrowser/view/lc_lci_r2_a/default/table?lang=en) | Cyprus labour cost index, wages and salaries (business economy), used to carry 2022 pay forward to 2025 | `data/cache/wage_index.json` |
+| **Eurostat** | [`LFSA_EGAI2D`](https://ec.europa.eu/eurostat/databrowser/view/lfsa_egai2d/default/table?lang=en) (EU27) | EU27 employment by ISCO-08 2-digit, for the "Distinctly Cypriot" layer | `data/cache/eu_compare.json` |
+| **Eurostat** | [`earn_ses22_28`](https://ec.europa.eu/eurostat/databrowser/view/earn_ses22_28/default/table?lang=en) (CY, EU27, EL) | Mean annual earnings by ISCO-08 1-digit in EUR and PPS, for the "Pay vs EU" layer | `data/cache/eu_compare.json` |
 | **HRDA** | [Forecasts of Employment Needs in Cyprus 2022-2032](https://www.anad.org.cy/wps/wcm/connect/hrda/b6fbcbf8-14b0-4ee2-817b-ab97496d90a5/Provlepseis+2022-2032.pdf?MOD=AJPERES) (chapter 6) | Employment 2022/2032 and yearly expansion, replacement and total demand per ISCO-08 2-digit group | `data/cache/hrda_2022_2032.csv` |
 | **Cedefop** | [Skills Forecast 2025](https://www.cedefop.europa.eu/en/tools/skills-intelligence) | Job openings and employment growth 2022-2035 per ISCO-08 2-digit group, Cyprus | `data/cache/cedefop_2035.json` |
 
@@ -53,6 +55,13 @@ The 10-year growth outlook is produced by `score_outlook.py`, which asks an LLM 
 - **Cedefop 2022-2035** (`cedefop_*` fields): total job openings and employment growth from the Skills Forecast for Cyprus, saved in `data/cache/cedefop_2035.json`. Cedefop does not publish assemblers (OC82) for Cyprus.
 
 HRDA's 2022 employment can differ from the Eurostat LFS 2025 figure used for tile sizes, because the base year and model differ. Both forecasts are shown next to the LLM growth outlook in its tooltip for comparison; the outlook scores themselves were not re-run.
+
+### EU comparison methodology
+
+`forecasts.py` (`add_eu_compare`) adds two comparisons from `data/cache/eu_compare.json`, which `refresh_data.py eu-compare` fetches:
+
+- **Distinctly Cypriot** (`jobs_lq`): the group's share of Cyprus jobs divided by its share of EU27 jobs, both from the same LFS year and both taken over the same 39 groups. 1× means as common as in the EU, 2× twice as common. For the three groups whose Cyprus figure is a residual estimate (OC62, OC82, OC95) the ratio is rough. If the EU cache is from a different LFS year than the Cyprus data (for example when the EU fetch failed during a refresh), the ratio is left out rather than mixing years.
+- **Pay vs EU** (`pay_vs_eu_pct`, `pay_vs_eu_pps_pct`, `pay_vs_el_pct`): Cyprus mean annual earnings for the major group as a % of the EU27 and of Greece, from SES 2022 (`earn_ses22_28`, enterprises with 10+ employees, B-S excluding O). PPS adjusts for price levels. All three use the 2022 survey figures, not the 2025 estimate.
 
 ### Earnings methodology
 
