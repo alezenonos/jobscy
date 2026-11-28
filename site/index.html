@@ -780,12 +780,34 @@ const OUTLOOK_TIERS = [
 ];
 
 // Weighted avg of metric across a set of group filters
+// Each occupation has one average pay, but its workers earn across a range.
+// To count people by pay band, spread each group's jobs over a log-normal
+// curve fitted to its median and P10/P90 (Eurostat SES, carried to 2025).
+// Without percentiles, all its jobs go to the band of its average.
+function normCdf(z) {
+  // Abramowitz & Stegun 7.1.26, accurate to about 1e-7
+  const t = 1 / (1 + 0.3275911 * Math.abs(z) / Math.SQRT2);
+  const y = 1 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-z * z / 2);
+  return z >= 0 ? (1 + y) / 2 : (1 - y) / 2;
+}
+
+function payShare(d, lo, hi) {
+  if (d.pay == null) return 0;
+  const med = d.pay_median, p10 = d.pay_p10, p90 = d.pay_p90;
+  if (!(med > 0 && p10 > 0 && p90 > p10)) return d.pay >= lo && d.pay < hi ? 1 : 0;
+  const mu = Math.log(med), sigma = (Math.log(p90) - Math.log(p10)) / (2 * 1.2815516);
+  const cdf = v => v <= 0 ? 0 : v === Infinity ? 1 : normCdf((Math.log(v) - mu) / sigma);
+  return cdf(hi) - cdf(lo);
+}
+
+// filterFn returns true/false, or a share between 0 and 1 of the group's jobs
 function weightedAvgByGroups(groups, filterFn, metricFn) {
   return groups.map(g => {
     let wS = 0, wC = 0;
     for (const d of data) {
       const v = metricFn(d);
-      if (v != null && d.jobs && filterFn(d, g)) { wS += v * d.jobs; wC += d.jobs; }
+      const share = Number(filterFn(d, g)) || 0;
+      if (v != null && d.jobs && share > 0) { wS += v * d.jobs * share; wC += d.jobs * share; }
     }
     return { ...g, avg: wC > 0 ? wS / wC : 0, jobs: wC };
   }).filter(g => g.jobs > 0);
@@ -854,7 +876,7 @@ function updateOutlookStats(totalJobs) {
   document.getElementById("block4").innerHTML = `<h3>Outlook tiers</h3><div class="tier-bar">${renderTiers(tiers, totalJobs)}</div>`;
 
   // Cross: outlook by pay
-  const byPay = weightedAvgByGroups(PAY_BANDS, (d, g) => d.pay != null && d.pay >= g.min && d.pay < g.max, d => d.outlook);
+  const byPay = weightedAvgByGroups(PAY_BANDS, (d, g) => payShare(d, g.min, g.max), d => d.outlook);
   document.getElementById("block5").innerHTML = `<h3>Outlook by pay</h3><div class="hbar-chart">${renderHbars(byPay.map(g => ({
     label: g.label, val: (g.avg > 0 ? "+" : "") + g.avg.toFixed(1) + "%",
     pct: Math.max(0, Math.min(100, (g.avg + 10) / 30 * 100)), color: outlookColor(g.avg, 0.8)
@@ -896,17 +918,18 @@ function updatePayStats(totalJobs) {
     { lo: 35000, hi: 50000, mid: 42000 }, { lo: 50000, hi: 75000, mid: 62000 }, { lo: 75000, hi: Infinity, mid: 90000 },
   ];
   const histJobs = buckets.map(() => 0);
-  for (const d of data) { if (d.pay != null && d.jobs) { const i = buckets.findIndex(b => d.pay >= b.lo && d.pay < b.hi); if (i >= 0) histJobs[i] += d.jobs; } }
+  for (const d of data) { if (d.jobs) buckets.forEach((b, i) => { histJobs[i] += d.jobs * payShare(d, b.lo, b.hi); }); }
   const maxH = Math.max(...histJobs);
   document.getElementById("block3").innerHTML = `<h3>Jobs by pay</h3>
     <div class="histogram">${histJobs.map((c, i) => `<div class="bar" style="height:${Math.max(2, maxH > 0 ? c / maxH * 100 : 0)}%;background:${payColor(buckets[i].mid, 0.7)}"></div>`).join("")}</div>
-    <div class="hist-labels"><span>\u20AC15K</span><span>\u20AC40K</span><span>\u20AC75K+</span></div>`;
+    <div class="hist-labels"><span>\u20AC15K</span><span>\u20AC40K</span><span>\u20AC75K+</span></div>
+    <div class="stat-label">estimated spread of individual pay</div>`;
 
   // Tiers
   const tiers = PAY_BANDS.map(t => {
     let jobs = 0;
-    for (const d of data) { if (d.pay != null && d.jobs && d.pay >= t.min && d.pay < t.max) jobs += d.jobs; }
-    return { ...t, label: t.label, jobs, color: payColor(t.max === Infinity ? 130000 : (t.min + t.max) / 2, 1) };
+    for (const d of data) { if (d.jobs) jobs += d.jobs * payShare(d, t.min, t.max); }
+    return { ...t, label: t.label, jobs: Math.round(jobs / 100) * 100, color: payColor(t.max === Infinity ? 130000 : (t.min + t.max) / 2, 1) };
   });
   document.getElementById("block4").innerHTML = `<h3>Pay tiers</h3><div class="tier-bar">${renderTiers(tiers, totalJobs)}</div>`;
 
@@ -1127,7 +1150,7 @@ function updateExposureStats(totalJobs) {
   document.getElementById("block4").innerHTML = `<h3>Exposure tiers</h3><div class="tier-bar">${renderTiers(tiers, totalJobs)}</div>`;
 
   // Cross: exposure by pay
-  const byPay = weightedAvgByGroups(PAY_BANDS, (d, g) => d.pay != null && d.pay >= g.min && d.pay < g.max, d => d.exposure);
+  const byPay = weightedAvgByGroups(PAY_BANDS, (d, g) => payShare(d, g.min, g.max), d => d.exposure);
   document.getElementById("block5").innerHTML = `<h3>Exposure by pay</h3><div class="hbar-chart">${renderHbars(byPay.map(g => ({
     label: g.label, val: g.avg.toFixed(1), pct: g.avg / 10 * 100, color: exposureColor(g.avg, 0.8)
   })))}</div>`;
